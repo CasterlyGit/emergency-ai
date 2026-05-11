@@ -138,7 +138,7 @@ class EmergencyClient:
                     for field, value in _extract_complete_keys(buffer, emitted_keys):
                         emitted_keys.add(field)
                         yield StreamEvent(field=field, value=value)
-        except asyncio.TimeoutError:
+        except TimeoutError:
             yield StreamEvent(field="__error__", value=f"model timed out after {TIMEOUT_S}s")
             yield StreamEvent(field="__final__", value=fallback_response(city.primary_emergency_number))
             return
