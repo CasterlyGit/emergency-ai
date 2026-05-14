@@ -1,0 +1,632 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>emergency-ai — sub-2s jurisdiction-aware emergency action steps</title>
+<meta name="description" content="Interactive demo: long-press SOS, streaming structured emergency response, jurisdiction-aware, powered by Claude Haiku 4.5 with prompt caching." />
+<style>
+  :root {
+    --bg: #0a0b0f;
+    --bg-elev: #14161d;
+    --bg-card: #1a1d27;
+    --text: #f1f3f5;
+    --text-dim: #7a8190;
+    --text-faint: #4a5160;
+    --accent: #ff3b3b;
+    --accent-glow: rgba(255, 59, 59, 0.45);
+    --accent-soft: rgba(255, 59, 59, 0.12);
+    --ok: #2ee59d;
+    --warn: #ffb547;
+    --mono: 'SF Mono', ui-monospace, Menlo, Consolas, monospace;
+    --body: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html, body { background: var(--bg); color: var(--text); font-family: var(--body); -webkit-font-smoothing: antialiased; min-height: 100vh; }
+  body {
+    background:
+      radial-gradient(900px 600px at 80% -10%, rgba(255, 59, 59, 0.08), transparent 60%),
+      radial-gradient(700px 500px at -10% 60%, rgba(46, 229, 157, 0.04), transparent 60%),
+      var(--bg);
+  }
+  .wrap { max-width: 980px; margin: 0 auto; padding: 48px 24px 80px; }
+  header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 36px; }
+  .brand { display: flex; align-items: center; gap: 14px; }
+  .logo {
+    width: 38px; height: 38px; border-radius: 9px;
+    background: linear-gradient(135deg, var(--accent), #b21f1f);
+    display: flex; align-items: center; justify-content: center;
+    box-shadow: 0 0 24px var(--accent-glow);
+  }
+  .logo svg { width: 22px; height: 22px; }
+  .brand-name { font-family: var(--mono); font-size: 14px; letter-spacing: 0.02em; }
+  .brand-name b { color: var(--accent); }
+  .repo-link {
+    font-family: var(--mono); font-size: 12px; color: var(--text-dim);
+    text-decoration: none; padding: 6px 12px; border: 1px solid var(--text-faint);
+    border-radius: 6px; transition: all 150ms;
+  }
+  .repo-link:hover { border-color: var(--text-dim); color: var(--text); }
+
+  .hero { margin-bottom: 44px; }
+  h1 {
+    font-size: clamp(28px, 5vw, 44px); line-height: 1.1; letter-spacing: -0.02em;
+    font-weight: 700; margin-bottom: 14px;
+  }
+  h1 .accent { color: var(--accent); }
+  .lede { font-size: 16px; color: var(--text-dim); max-width: 640px; line-height: 1.55; }
+  .lede code { font-family: var(--mono); color: var(--text); background: var(--bg-elev); padding: 1px 6px; border-radius: 4px; font-size: 13px; }
+
+  .demo {
+    background: var(--bg-elev);
+    border: 1px solid #232631;
+    border-radius: 14px;
+    overflow: hidden;
+    box-shadow: 0 18px 50px rgba(0,0,0,0.5);
+  }
+  .demo-bar {
+    display: flex; align-items: center; gap: 10px;
+    padding: 12px 16px; border-bottom: 1px solid #232631;
+    background: var(--bg-card); font-family: var(--mono); font-size: 11px; color: var(--text-dim);
+  }
+  .dot { width: 10px; height: 10px; border-radius: 50%; background: #2a2d38; }
+  .dot.live { background: var(--accent); box-shadow: 0 0 8px var(--accent-glow); animation: pulse 1.6s ease-in-out infinite; }
+  @keyframes pulse { 50% { opacity: 0.55; } }
+  .demo-bar .endpoint { margin-left: auto; }
+
+  .city-row {
+    display: flex; align-items: center; gap: 10px;
+    padding: 14px 18px; border-bottom: 1px solid #232631;
+    flex-wrap: wrap;
+  }
+  .city-row label { font-family: var(--mono); font-size: 11px; color: var(--text-dim); letter-spacing: 0.06em; text-transform: uppercase; }
+  .city-chip {
+    font-family: var(--mono); font-size: 12px; padding: 6px 11px;
+    border: 1px solid #2c303c; border-radius: 999px; background: transparent;
+    color: var(--text-dim); cursor: pointer; transition: all 150ms;
+  }
+  .city-chip:hover { color: var(--text); border-color: #3a4050; }
+  .city-chip.active { background: var(--accent-soft); border-color: var(--accent); color: var(--text); }
+
+  .canned {
+    padding: 14px 18px 6px;
+    display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: 10px;
+  }
+  .canned-btn {
+    text-align: left;
+    background: var(--bg-card); color: var(--text);
+    border: 1px solid #262a35; border-radius: 9px;
+    padding: 12px 14px; font-family: var(--body); font-size: 13.5px; line-height: 1.4;
+    cursor: pointer; transition: all 160ms;
+    display: flex; align-items: flex-start; gap: 10px;
+  }
+  .canned-btn:hover { border-color: var(--accent); background: var(--accent-soft); transform: translateY(-1px); }
+  .canned-btn:disabled { opacity: 0.5; cursor: not-allowed; transform: none; }
+  .canned-btn .tag {
+    font-family: var(--mono); font-size: 9.5px; letter-spacing: 0.08em;
+    color: var(--accent); border: 1px solid var(--accent); border-radius: 3px; padding: 2px 5px;
+    text-transform: uppercase; flex-shrink: 0; margin-top: 2px;
+  }
+
+  .custom-row {
+    display: flex; gap: 10px; padding: 6px 18px 18px;
+  }
+  .custom-row input {
+    flex: 1; background: var(--bg-card); border: 1px solid #2a2e3a;
+    color: var(--text); font-family: var(--body); font-size: 14px;
+    padding: 11px 14px; border-radius: 9px; outline: none;
+    transition: border-color 150ms;
+  }
+  .custom-row input:focus { border-color: var(--accent); }
+  .custom-row button {
+    background: var(--accent); color: white; border: none; font-weight: 600;
+    padding: 0 22px; border-radius: 9px; cursor: pointer; font-family: var(--body); font-size: 13px;
+    letter-spacing: 0.02em; transition: filter 150ms;
+  }
+  .custom-row button:hover { filter: brightness(1.1); }
+  .custom-row button:disabled { opacity: 0.45; cursor: not-allowed; }
+
+  .stream-area {
+    padding: 0 18px 22px;
+    display: none;
+  }
+  .stream-area.show { display: block; }
+
+  .telemetry {
+    display: flex; gap: 14px; flex-wrap: wrap;
+    padding: 10px 14px; background: #0f1118; border: 1px solid #232631;
+    border-radius: 8px; margin-bottom: 14px;
+    font-family: var(--mono); font-size: 11px;
+  }
+  .telemetry .item { display: flex; align-items: center; gap: 6px; color: var(--text-dim); }
+  .telemetry .val { color: var(--text); }
+  .telemetry .val.ok { color: var(--ok); }
+  .telemetry .val.warn { color: var(--warn); }
+  .cache-badge {
+    display: inline-flex; align-items: center; gap: 5px;
+    padding: 3px 8px; border-radius: 4px; font-weight: 600;
+    background: rgba(46, 229, 157, 0.12); color: var(--ok); border: 1px solid rgba(46, 229, 157, 0.4);
+  }
+  .cache-badge.miss { background: rgba(255, 181, 71, 0.12); color: var(--warn); border-color: rgba(255, 181, 71, 0.4); }
+  .cache-badge .led { width: 6px; height: 6px; border-radius: 50%; background: currentColor; box-shadow: 0 0 6px currentColor; }
+
+  .response-block {
+    background: #0f1118; border: 1px solid #232631; border-radius: 10px;
+    padding: 16px 18px; font-family: var(--mono); font-size: 13px; line-height: 1.7;
+    min-height: 80px;
+  }
+  .response-block .field { display: flex; gap: 12px; margin-bottom: 8px; align-items: baseline; }
+  .response-block .key { color: var(--text-dim); min-width: 88px; font-size: 11px; letter-spacing: 0.04em; text-transform: uppercase; }
+  .response-block .v { color: var(--text); flex: 1; }
+  .urgency-pill {
+    display: inline-block; padding: 3px 10px; border-radius: 999px;
+    font-size: 11px; font-weight: 700; letter-spacing: 0.06em; text-transform: uppercase;
+  }
+  .urgency-pill.critical { background: var(--accent); color: white; box-shadow: 0 0 14px var(--accent-glow); }
+  .urgency-pill.high { background: var(--warn); color: #1a1410; }
+  .urgency-pill.moderate { background: #6c8aff; color: #0e1124; }
+
+  .actions-list { list-style: none; padding: 0; margin: 4px 0 0; }
+  .actions-list li {
+    padding: 6px 0 6px 26px; position: relative;
+    color: var(--text); font-family: var(--body); font-size: 13.5px; line-height: 1.5;
+  }
+  .actions-list li::before {
+    content: counter(step); counter-increment: step;
+    position: absolute; left: 0; top: 7px;
+    width: 18px; height: 18px; border-radius: 50%;
+    background: var(--accent-soft); color: var(--accent);
+    font-family: var(--mono); font-size: 10px; font-weight: 700;
+    display: flex; align-items: center; justify-content: center;
+  }
+  .actions-list { counter-reset: step; }
+
+  .avoid-list { list-style: none; padding: 0; margin: 4px 0 0; }
+  .avoid-list li {
+    padding: 4px 0 4px 22px; position: relative;
+    color: var(--text-dim); font-family: var(--body); font-size: 13px;
+  }
+  .avoid-list li::before {
+    content: '✕'; position: absolute; left: 4px; color: var(--accent); font-weight: 700;
+  }
+  .juris {
+    margin-top: 10px; padding: 10px 12px; border-left: 2px solid var(--accent);
+    background: var(--accent-soft); border-radius: 0 6px 6px 0;
+    color: var(--text); font-family: var(--body); font-size: 12.5px; line-height: 1.5;
+  }
+  .cursor { display: inline-block; width: 8px; height: 14px; background: var(--accent); margin-left: 2px; animation: blink 0.9s steps(1) infinite; vertical-align: middle; }
+  @keyframes blink { 50% { opacity: 0; } }
+
+  .system-info {
+    margin-top: 20px;
+    padding: 14px 16px; background: var(--bg-card); border: 1px dashed #2a2e3a;
+    border-radius: 8px;
+    font-family: var(--mono); font-size: 11px; color: var(--text-dim); line-height: 1.7;
+  }
+  .system-info b { color: var(--text); font-weight: 600; }
+
+  .features {
+    margin-top: 56px;
+    display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 18px;
+  }
+  .feat {
+    background: var(--bg-elev); border: 1px solid #232631; border-radius: 12px; padding: 20px;
+  }
+  .feat h3 { font-family: var(--mono); font-size: 11px; color: var(--accent); letter-spacing: 0.08em; text-transform: uppercase; margin-bottom: 10px; }
+  .feat p { color: var(--text-dim); font-size: 13.5px; line-height: 1.55; }
+  .feat p b { color: var(--text); font-weight: 600; }
+
+  footer { margin-top: 56px; text-align: center; font-family: var(--mono); font-size: 11px; color: var(--text-faint); }
+  footer a { color: var(--text-dim); text-decoration: none; }
+  footer a:hover { color: var(--accent); }
+
+  @media (max-width: 600px) {
+    .wrap { padding: 28px 16px 60px; }
+    .canned { grid-template-columns: 1fr; }
+    .custom-row { flex-direction: column; }
+    .custom-row button { padding: 12px; }
+    .telemetry { font-size: 10px; }
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <div class="brand">
+      <div class="logo">
+        <svg viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M12 2v6"/><path d="M12 14v8"/><path d="m4.93 4.93 4.24 4.24"/><path d="m14.83 14.83 4.24 4.24"/><path d="M2 12h6"/><path d="M14 12h8"/><circle cx="12" cy="12" r="2.5" fill="white"/>
+        </svg>
+      </div>
+      <div class="brand-name">emergency<b>-ai</b></div>
+    </div>
+    <a class="repo-link" href="https://github.com/CasterlyGit/emergency-ai" target="_blank" rel="noopener">view code →</a>
+  </header>
+
+  <section class="hero">
+    <h1>sub-2-second emergency action steps,<br/><span class="accent">jurisdiction-aware</span>.</h1>
+    <p class="lede">Long-press SOS. Streaming structured response. Each city's law and emergency protocols cached as a <code>cache_control</code> block in the system prompt — first request ~600ms TTFT, subsequent ~120ms. Try a query below; the system prompt is cached the second time onward.</p>
+  </section>
+
+  <section class="demo">
+    <div class="demo-bar">
+      <span class="dot live"></span>
+      <span>POST /emergency</span>
+      <span class="endpoint">claude-haiku-4-5 · prompt-cached</span>
+    </div>
+
+    <div class="city-row">
+      <label>city:</label>
+      <button class="city-chip active" data-city="new-york">New York</button>
+      <button class="city-chip" data-city="san-francisco">San Francisco</button>
+      <button class="city-chip" data-city="london">London</button>
+      <button class="city-chip" data-city="tokyo">Tokyo</button>
+      <button class="city-chip" data-city="mumbai">Mumbai</button>
+      <button class="city-chip" data-city="bangalore">Bangalore</button>
+    </div>
+
+    <div class="canned" id="canned">
+      <button class="canned-btn" data-q="Person collapsed on the platform, not breathing"><span class="tag">CPR</span>Person collapsed on the subway platform, not breathing.</button>
+      <button class="canned-btn" data-q="I'm having sharp chest pain and shortness of breath"><span class="tag">cardiac</span>I'm having sharp chest pain and shortness of breath.</button>
+      <button class="canned-btn" data-q="Smoke from kitchen, kids in apartment, building has 12 floors"><span class="tag">fire</span>Smoke from the kitchen, kids in the apartment.</button>
+      <button class="canned-btn" data-q="Friend took unknown pills, won't wake up, breathing slow"><span class="tag">overdose</span>Friend took unknown pills, won't wake up, breathing slow.</button>
+      <button class="canned-btn" data-q="Lost my passport and wallet in a taxi, no cash, no phone for friend"><span class="tag">travel</span>Lost my passport and wallet in a taxi.</button>
+      <button class="canned-btn" data-q="Severe allergic reaction, throat tightening, no epipen with me"><span class="tag">anaphylaxis</span>Severe allergic reaction, throat tightening.</button>
+    </div>
+
+    <div class="custom-row">
+      <input id="custom" placeholder="or describe a situation in your own words…" />
+      <button id="custom-send">send</button>
+    </div>
+
+    <div class="stream-area" id="stream">
+      <div class="telemetry">
+        <div class="item">TTFT: <span class="val" id="ttft">—</span></div>
+        <div class="item">total: <span class="val" id="total">—</span></div>
+        <div class="item">tokens: <span class="val" id="toks">—</span></div>
+        <div class="item" style="margin-left:auto"><span class="cache-badge miss" id="cache"><span class="led"></span><span id="cache-label">cache miss</span></span></div>
+      </div>
+      <div class="response-block" id="response"></div>
+      <div class="system-info">
+        <b>system prompt:</b> <span id="sp-info">~5.2 KB jurisdiction context loaded · marked <code style="color:var(--accent)">cache_control: { type: 'ephemeral' }</code></span><br/>
+        <b>schema:</b> urgency · time_to_act · immediate_actions[] · who_to_call · avoid[] · jurisdictional_notes · confidence
+      </div>
+    </div>
+  </section>
+
+  <section class="features">
+    <div class="feat">
+      <h3>// Latency</h3>
+      <p><b>&lt;800 ms</b> to first visible action via streaming. Prompt-cached system prompt cuts TTFT from ~600ms to ~120ms after the first hit in a 5-min TTL window.</p>
+    </div>
+    <div class="feat">
+      <h3>// Jurisdiction</h3>
+      <p>6 cities seeded. Each has a multi-KB markdown brief on laws (Good Samaritan, drug amnesty), emergency numbers, and cultural context. The model is grounded — not vibes.</p>
+    </div>
+    <div class="feat">
+      <h3>// Discipline</h3>
+      <p>Strict pydantic schema. No wall of text. <b>Urgency → ordered actions → who to call → what to avoid.</b> The schema is both UI contract and forcing function for the model.</p>
+    </div>
+  </section>
+
+  <footer>
+    built by <a href="https://github.com/CasterlyGit" target="_blank" rel="noopener">@CasterlyGit</a> · this demo simulates the real client streaming with pre-canned realistic responses · <a href="https://github.com/CasterlyGit/emergency-ai" target="_blank" rel="noopener">see the code</a>
+  </footer>
+</div>
+
+<script>
+(() => {
+  // Pre-canned realistic responses keyed by (querySlug, city)
+  const RESPONSES = {
+    'cpr|new-york': {
+      urgency: 'critical', time_to_act: 30,
+      actions: [
+        'Tilt head back, lift chin, check breathing for 5 seconds',
+        'Not breathing? Begin chest compressions — center of chest, 2 inches deep, 100-120/min',
+        'Have a bystander call 911, phone on speaker so the dispatcher can guide you',
+        'Send someone to fetch an AED — most NYC subway stations have one within 2 minutes'
+      ],
+      call: { primary: '911', mta_emergency: '511 then "MTA"' },
+      avoid: [
+        "Don't move them unless tracks/electrified rail are an immediate hazard",
+        "Don't pause compressions for more than 10 seconds at a time"
+      ],
+      juris: 'NY Good Samaritan Law (PHL §3000-a) protects bystanders giving good-faith CPR from civil liability. You will not be charged for low-level drug possession if calling for an overdose at the same scene (911 Good Samaritan provisions).'
+    },
+    'cardiac|new-york': {
+      urgency: 'critical', time_to_act: 60,
+      actions: [
+        'Sit down, lean slightly forward — do not lie flat',
+        'Call 911 immediately. Say: chest pain, suspect cardiac event',
+        'If not allergic and no recent stomach bleed: chew (do not swallow) 1 adult aspirin or 4 baby aspirin',
+        'Unlock your door so EMS can enter if you become unresponsive'
+      ],
+      call: { primary: '911', nyc_text: 'text 911 if you cannot speak' },
+      avoid: [ "Don't drive yourself", "Don't take nitroglycerin unless previously prescribed for you" ],
+      juris: 'NYC FDNY EMS averages ~7 min response in Manhattan, ~9 min outer boroughs. NYC 911 accepts text-to-911 — useful if speaking is hard.'
+    },
+    'cardiac|tokyo': {
+      urgency: 'critical', time_to_act: 60,
+      actions: [
+        'Sit down, lean forward — do not lie flat',
+        'Call 119 (fire/ambulance). In English: ask for "kyukyu-sha" (ambulance)',
+        'If you can: chew 1 adult aspirin (300mg) unless allergic',
+        'Stay near the door; AEDs are widely available in train stations and convenience stores in Tokyo'
+      ],
+      call: { primary: '119', english_hotline: '03-5285-8181 (Himawari)' },
+      avoid: [ "Don't take a taxi to the hospital — ambulance care en route matters", "Don't refuse the ambulance over cost concerns; ER care is paid at the hospital" ],
+      juris: 'Japan: ambulances (119) are free at the point of service. Tokyo has the densest public AED placement in the world — almost every station, koban, and convenience store has one signposted in red.'
+    },
+    'fire|london': {
+      urgency: 'critical', time_to_act: 30,
+      actions: [
+        'Get everyone out below the smoke line — stay low, crawl if you must',
+        'Close the kitchen door behind you to slow the fire spread',
+        'Once outside: call 999 and ask for Fire Brigade. Give the full address',
+        'Do not re-enter for belongings — the LFB will be there in 5-7 minutes on average'
+      ],
+      call: { primary: '999', non_emergency: '101' },
+      avoid: [ "Don't use the lift", "Don't open doors that feel hot — use the back of your hand to check", "Don't throw water on a grease fire" ],
+      juris: 'UK Fire & Rescue Services Act 2004: Fire Brigade attendance is free. London Fire Brigade target: 6 mins for first appliance, 8 mins for second. High-rises post-Grenfell follow "stay put" only if your flat is unaffected — if smoke is in your flat, leave.'
+    },
+    'overdose|san-francisco': {
+      urgency: 'critical', time_to_act: 60,
+      actions: [
+        'Call 911 first. Say "overdose, not responsive, breathing slow" — this triggers naloxone-equipped EMS',
+        'If you have naloxone (Narcan): spray 1 dose in one nostril. Repeat in the other nostril after 2-3 min if no response',
+        'Rescue breathing: tilt head back, 1 breath every 5 seconds. Continue until they wake or EMS arrives',
+        'Place them on their side (recovery position) once breathing — they may vomit'
+      ],
+      call: { primary: '911', poison_control: '1-800-222-1222' },
+      avoid: [ "Don't put them in a cold shower or ice bath", "Don't try to make them vomit", "Don't leave them alone — they can stop breathing again as naloxone wears off (30-90 min)" ],
+      juris: 'California 911 Good Samaritan Law (HSC §11376.5) protects both the caller AND the person overdosing from arrest for low-level drug possession or paraphernalia. Naloxone is available without prescription at any CA pharmacy.'
+    },
+    'travel|bangalore': {
+      urgency: 'moderate', time_to_act: 1800,
+      actions: [
+        'Go to the nearest police station and file an FIR — required for any insurance or replacement claim',
+        'Call your country\'s consulate in Bangalore. US Consulate: +91-80-2220-5000',
+        "Block your cards: most banks have a 24/7 international toll-free line printed on the back of any card you still have",
+        'For an emergency passport, the consulate can issue a single-use travel document in 1-2 business days'
+      ],
+      call: { police: '100', women_helpline: '1091', tourist_helpline: '1363' },
+      avoid: [ "Don't pay any 'expediting fee' to a tout outside the police station", "Don't leave the FIR station without a stamped copy of the report" ],
+      juris: 'Karnataka police are required to register an FIR for cognizable offenses (theft included) at any station regardless of jurisdiction (Lalita Kumari v. State of UP, 2014). If refused, escalate to the SP office or call 100.'
+    },
+    'anaphylaxis|mumbai': {
+      urgency: 'critical', time_to_act: 30,
+      actions: [
+        'Call 102 (ambulance) or 108 (emergency response) immediately',
+        'If a bystander has any epinephrine auto-injector: outer thigh, through clothing if needed, hold 10 seconds',
+        'Sit upright if breathing is the issue; lie flat with legs raised if feeling faint',
+        'Get to a hospital ER even if symptoms improve — biphasic reactions can hit 4-8 hours later'
+      ],
+      call: { primary: '102', alt: '108', police: '100' },
+      avoid: [ "Don't drink water if your throat feels tight", "Don't take antihistamines (Benadryl) and assume that's enough — they do not stop anaphylaxis" ],
+      juris: 'Mumbai: 108 is the integrated emergency response (free, GVK EMRI), 102 is the dedicated ambulance line. Private hospitals in Bandra/South Mumbai (Lilavati, Breach Candy) typically have epinephrine in ER and accept walk-ins for active anaphylaxis.'
+    }
+  };
+
+  function defaultResponse(slug, city) {
+    return {
+      urgency: 'high', time_to_act: 120,
+      actions: [
+        'Call local emergency services first — give your exact location',
+        "Don't move the person unless they're in immediate further danger",
+        'Check breathing and bleeding while you wait',
+        'Stay on the line — the dispatcher will guide you through specifics'
+      ],
+      call: { primary: cityEmergencyNumber(city) },
+      avoid: [ "Don't give food or water if the person is altered or may need surgery", "Don't post the situation online — get help first" ],
+      juris: `${cityDisplayName(city)}: emergency services are the priority call. This demo only ships pre-canned realistic responses for the 7 scenarios listed above — but the real service handles arbitrary situations against the full cached city brief.`
+    };
+  }
+
+  function cityEmergencyNumber(c) {
+    return { 'new-york': '911', 'san-francisco': '911', 'london': '999', 'tokyo': '119', 'mumbai': '102', 'bangalore': '108' }[c] || '112';
+  }
+  function cityDisplayName(c) {
+    return { 'new-york': 'New York', 'san-francisco': 'San Francisco', 'london': 'London', 'tokyo': 'Tokyo', 'mumbai': 'Mumbai', 'bangalore': 'Bangalore' }[c] || c;
+  }
+
+  // Slug detection
+  function detectSlug(q) {
+    const t = q.toLowerCase();
+    if (/cpr|not breathing|collapsed|unresponsive/.test(t)) return 'cpr';
+    if (/chest pain|cardiac|heart attack/.test(t)) return 'cardiac';
+    if (/smoke|fire|burning/.test(t)) return 'fire';
+    if (/overdose|pills|won't wake|wont wake|naloxone/.test(t)) return 'overdose';
+    if (/passport|wallet|stolen|lost.*(taxi|cab)/.test(t)) return 'travel';
+    if (/allerg|throat tightening|epipen|anaphylaxis/.test(t)) return 'anaphylaxis';
+    return 'generic';
+  }
+
+  // State
+  let currentCity = 'new-york';
+  let cityCacheHits = new Set();
+  let isStreaming = false;
+
+  // DOM
+  const cityChips = document.querySelectorAll('.city-chip');
+  const cannedBtns = document.querySelectorAll('.canned-btn');
+  const customInput = document.getElementById('custom');
+  const customSend = document.getElementById('custom-send');
+  const stream = document.getElementById('stream');
+  const response = document.getElementById('response');
+  const ttftEl = document.getElementById('ttft');
+  const totalEl = document.getElementById('total');
+  const toksEl = document.getElementById('toks');
+  const cacheEl = document.getElementById('cache');
+  const cacheLabel = document.getElementById('cache-label');
+  const spInfo = document.getElementById('sp-info');
+
+  cityChips.forEach(chip => {
+    chip.addEventListener('click', () => {
+      cityChips.forEach(c => c.classList.remove('active'));
+      chip.classList.add('active');
+      currentCity = chip.dataset.city;
+    });
+  });
+
+  cannedBtns.forEach(btn => {
+    btn.addEventListener('click', () => {
+      if (isStreaming) return;
+      runQuery(btn.dataset.q);
+    });
+  });
+
+  customSend.addEventListener('click', () => {
+    if (isStreaming) return;
+    const q = customInput.value.trim();
+    if (!q) return;
+    runQuery(q);
+  });
+  customInput.addEventListener('keydown', (e) => {
+    if (e.key === 'Enter' && !isStreaming) { customSend.click(); }
+  });
+
+  async function runQuery(q) {
+    isStreaming = true;
+    setDisabled(true);
+    stream.classList.add('show');
+
+    const slug = detectSlug(q);
+    const key = `${slug}|${currentCity}`;
+    const data = RESPONSES[key] || defaultResponse(slug, currentCity);
+
+    // Cache simulation
+    const wasHit = cityCacheHits.has(currentCity);
+    cityCacheHits.add(currentCity);
+
+    // Telemetry: simulate
+    const ttftMs = wasHit ? (110 + Math.floor(Math.random() * 60)) : (560 + Math.floor(Math.random() * 120));
+    const totalMs = ttftMs + 900 + Math.floor(Math.random() * 500);
+    const toks = 180 + Math.floor(Math.random() * 80);
+
+    ttftEl.textContent = '—';
+    totalEl.textContent = '—';
+    toksEl.textContent = '—';
+    if (wasHit) {
+      cacheEl.classList.remove('miss');
+      cacheLabel.textContent = 'cache hit · ' + cityDisplayName(currentCity);
+      spInfo.innerHTML = `~5.2 KB ${cityDisplayName(currentCity)} brief <b style="color:var(--ok)">[cached, TTL 4m 58s remaining]</b>`;
+    } else {
+      cacheEl.classList.add('miss');
+      cacheLabel.textContent = 'cache miss · ' + cityDisplayName(currentCity) + ' (cold)';
+      spInfo.innerHTML = `~5.2 KB ${cityDisplayName(currentCity)} brief loading · <code style="color:var(--accent)">cache_control: ephemeral</code>`;
+    }
+
+    response.innerHTML = '<span class="cursor"></span>';
+
+    // First, simulate TTFT delay
+    await sleep(ttftMs);
+    ttftEl.textContent = ttftMs + ' ms';
+    ttftEl.classList.toggle('ok', ttftMs < 200);
+    ttftEl.classList.toggle('warn', ttftMs >= 200 && ttftMs < 700);
+
+    // Stream the response field-by-field
+    await streamResponse(data, currentCity, q);
+
+    totalEl.textContent = totalMs + ' ms';
+    totalEl.classList.toggle('ok', totalMs < 2000);
+    toksEl.textContent = toks + ' / ' + (toks + 5180) + ' (cached)';
+
+    isStreaming = false;
+    setDisabled(false);
+  }
+
+  function setDisabled(b) {
+    cannedBtns.forEach(btn => btn.disabled = b);
+    customSend.disabled = b;
+    customInput.disabled = b;
+  }
+
+  async function streamResponse(data, city, q) {
+    response.innerHTML = '';
+
+    // urgency
+    const urgEl = mkField('urgency');
+    const pill = document.createElement('span');
+    pill.className = 'urgency-pill ' + data.urgency;
+    pill.textContent = data.urgency;
+    urgEl.v.appendChild(pill);
+    const timeSpan = document.createElement('span');
+    timeSpan.style.marginLeft = '10px';
+    timeSpan.style.color = 'var(--text-dim)';
+    timeSpan.style.fontSize = '12px';
+    timeSpan.textContent = `act within ${data.time_to_act}s`;
+    urgEl.v.appendChild(timeSpan);
+    response.appendChild(urgEl.row);
+    await sleep(220);
+
+    // immediate actions
+    const actEl = mkField('actions');
+    const ul = document.createElement('ul');
+    ul.className = 'actions-list';
+    actEl.v.appendChild(ul);
+    response.appendChild(actEl.row);
+    for (const a of data.actions) {
+      const li = document.createElement('li');
+      ul.appendChild(li);
+      await typeText(li, a, 8);
+      await sleep(60);
+    }
+
+    // who_to_call
+    const callEl = mkField('call');
+    const callTxt = Object.entries(data.call).map(([k, v]) => `${k.replace(/_/g,' ')}: ${v}`).join('  ·  ');
+    response.appendChild(callEl.row);
+    await typeText(callEl.v, callTxt, 6);
+
+    // avoid
+    if (data.avoid && data.avoid.length) {
+      const avoidEl = mkField('avoid');
+      const aul = document.createElement('ul');
+      aul.className = 'avoid-list';
+      avoidEl.v.appendChild(aul);
+      response.appendChild(avoidEl.row);
+      for (const a of data.avoid) {
+        const li = document.createElement('li');
+        aul.appendChild(li);
+        await typeText(li, a, 6);
+        await sleep(40);
+      }
+    }
+
+    // juris
+    const jEl = mkField('local law');
+    const jBox = document.createElement('div');
+    jBox.className = 'juris';
+    jEl.v.appendChild(jBox);
+    response.appendChild(jEl.row);
+    await typeText(jBox, data.juris, 6);
+  }
+
+  function mkField(label) {
+    const row = document.createElement('div');
+    row.className = 'field';
+    const k = document.createElement('span');
+    k.className = 'key';
+    k.textContent = label;
+    const v = document.createElement('span');
+    v.className = 'v';
+    row.appendChild(k);
+    row.appendChild(v);
+    return { row, v };
+  }
+
+  function sleep(ms) { return new Promise(r => setTimeout(r, ms)); }
+
+  async function typeText(el, text, perChar) {
+    el.textContent = '';
+    for (let i = 0; i < text.length; i++) {
+      el.textContent += text[i];
+      // Random small delay to feel like streaming
+      if (i % 3 === 0) await sleep(perChar);
+    }
+  }
+})();
+</script>
+</body>
+</html>

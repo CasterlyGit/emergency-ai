@@ -1,5 +1,7 @@
 # emergency-ai
 
+**[▶ Live demo](https://casterlygit.github.io/emergency-ai/)** — interactive: pick a city, click a scenario, watch the streamed structured response (TTFT, cache-hit indicator, jurisdiction notes).
+
 > Long-press SOS → sub-2-second, jurisdiction-aware action steps. Built around Claude Haiku with prompt-cached city law context and streaming structured output.
 
 **Status:** v0.1 — core service, CLI demo, 6 seeded cities. Mobile shell is the next milestone.
