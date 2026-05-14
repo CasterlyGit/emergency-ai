@@ -1,0 +1,99 @@
+# Reusable GitHub Actions workflow installed into each onboarded repo as
+# .github/workflows/board-sync.yml — moves cards on the Workspace project
+# (CasterlyGit/projects/3) when PRs and issues change state.
+#
+# Requires a repo secret called PROJECT_TOKEN — a fine-grained or classic PAT
+# with:
+#   - Projects: Read and write
+#   - Issues:   Read
+#   - Pull requests: Read
+# (Default GITHUB_TOKEN cannot write to user-level Projects v2.)
+
+name: board-sync
+
+on:
+  issues:
+    types: [opened, closed, reopened]
+  pull_request:
+    types: [opened, ready_for_review, closed, reopened, converted_to_draft]
+
+permissions:
+  contents: read
+
+jobs:
+  sync:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Compute target status
+        id: status
+        run: |
+          # Decide which Status the card should move to based on the event.
+          EVENT="${{ github.event_name }}"
+          ACTION="${{ github.event.action }}"
+
+          STATUS=""
+          case "$EVENT:$ACTION" in
+            issues:opened|issues:reopened)       STATUS="Backlog" ;;
+            issues:closed)                       STATUS="Done" ;;
+            pull_request:opened|pull_request:ready_for_review|pull_request:reopened)
+              if [ "${{ github.event.pull_request.draft }}" = "true" ]; then
+                STATUS="In Progress"
+              else
+                STATUS="In Review"
+              fi
+              ;;
+            pull_request:converted_to_draft)     STATUS="In Progress" ;;
+            pull_request:closed)
+              if [ "${{ github.event.pull_request.merged }}" = "true" ]; then
+                STATUS="Done"
+              else
+                STATUS="Backlog"
+              fi
+              ;;
+          esac
+          echo "status=$STATUS" >> "$GITHUB_OUTPUT"
+          echo "Computed status: $STATUS"
+
+      - name: Update project card
+        if: steps.status.outputs.status != ''
+        env:
+          GH_TOKEN: ${{ secrets.PROJECT_TOKEN }}
+          PROJECT_OWNER: CasterlyGit
+          PROJECT_NUMBER: "3"
+          TARGET_STATUS: ${{ steps.status.outputs.status }}
+          # The URL of the issue or PR that triggered this
+          CONTENT_URL: ${{ github.event.issue.html_url || github.event.pull_request.html_url }}
+          # For PRs, also try to update the linked issue if Closes #N is in the body
+          PR_BODY: ${{ github.event.pull_request.body }}
+        run: |
+          set -euo pipefail
+
+          PROJECT_ID=$(gh project view "$PROJECT_NUMBER" --owner "$PROJECT_OWNER" --format json --jq .id)
+          STATUS_FIELD=$(gh project field-list "$PROJECT_NUMBER" --owner "$PROJECT_OWNER" --format json --jq '.fields[] | select(.name=="Status") | .id')
+          STATUS_OPT=$(gh project field-list "$PROJECT_NUMBER" --owner "$PROJECT_OWNER" --format json --jq ".fields[] | select(.name==\"Status\") | .options[] | select(.name==\"$TARGET_STATUS\") | .id")
+
+          update_card() {
+            local content_url="$1"
+            # Find the project item for this content URL
+            local item_id
+            item_id=$(gh project item-list "$PROJECT_NUMBER" --owner "$PROJECT_OWNER" --format json --limit 200 \
+              --jq ".items[] | select(.content.url==\"$content_url\") | .id")
+            if [ -z "$item_id" ]; then
+              # Not on the board yet — add it
+              item_id=$(gh project item-add "$PROJECT_NUMBER" --owner "$PROJECT_OWNER" --url "$content_url" --format json --jq .id)
+            fi
+            gh project item-edit --id "$item_id" --project-id "$PROJECT_ID" \
+              --field-id "$STATUS_FIELD" --single-select-option-id "$STATUS_OPT"
+            echo "Set $content_url -> $TARGET_STATUS"
+          }
+
+          update_card "$CONTENT_URL"
+
+          # If this is a PR being merged/closed, also update any "Closes #N" issues
+          if [ -n "${PR_BODY:-}" ]; then
+            REPO="${{ github.repository }}"
+            for num in $(echo "$PR_BODY" | grep -oiE '(close[sd]?|fix(e[sd])?|resolve[sd]?)\s+#[0-9]+' | grep -oE '[0-9]+$' | sort -u); do
+              ISSUE_URL="https://github.com/$REPO/issues/$num"
+              update_card "$ISSUE_URL" || true
+            done
+          fi
