@@ -4,7 +4,7 @@
 
 > Long-press SOS → sub-2-second, jurisdiction-aware action steps. Built around Claude Haiku with prompt-cached city law context and streaming structured output.
 
-**Status:** v0.1 — core service, CLI demo, 6 seeded cities. Mobile shell is the next milestone.
+**Status:** v0.2 — multi-tenant API, Postgres, Redis rate limiting, Prometheus metrics, Fly.io deploy
 
 ---
 
@@ -23,23 +23,32 @@ This service is the inference layer. Trigger surface (long-press button, Action 
 ## Architecture
 
 ```
-┌──────────────────────┐    POST /emergency      ┌─────────────────────┐
-│ Mobile / CLI client  │ ──────────────────────▶ │ FastAPI service     │
-│  (long-press SOS)    │   {situation, city}     │                     │
-└──────────────────────┘                         │   1. Load city ctx  │
-        ▲                                        │      (prompt cache) │
-        │  streamed JSON                         │   2. Call Haiku 4.5 │
-        │  (urgency → actions → calls → avoid)   │      with cache hit │
-        └────────────────────────────────────────│   3. Stream parsed  │
-                                                 │      schema fields  │
-                                                 └─────────────────────┘
+┌─────────────────────────────────────────────────────────┐
+│                    emergency-ai v0.2                      │
+│                                                           │
+│  Client ──► FastAPI ──► Auth middleware (API key + hash) │
+│                  │                                        │
+│                  ├──► Rate limiter (Redis sliding window) │
+│                  │                                        │
+│                  ├──► RAG retrieval (pgvector similarity)│
+│                  │                                        │
+│                  ├──► Anthropic Haiku (prompt cache + SSE)│
+│                  │                                        │
+│                  ├──► Request log (Postgres async)        │
+│                  │                                        │
+│                  └──► Prometheus /metrics                 │
+│                                                           │
+│  Postgres: APIKey, RequestLog, StatuteChunk (pgvector)   │
+│  Redis: sliding-window rate limits                        │
+│  Fly.io: sjc region, auto-stop, HTTPS                    │
+└─────────────────────────────────────────────────────────┘
 ```
 
 **Prompt-caching trick.** Each city's law/cultural context is a multi-KB markdown blob. Sent as a `cache_control: ephemeral` block in the system prompt. First request to a city: full read (~600 ms TTFT). Subsequent requests within the 5-minute TTL: cached (~120 ms TTFT). For an emergency hotline serving repeat traffic in a metro, ≥ 90% of queries hit the cache.
 
 **Streaming structured output.** We don't wait for the full JSON. The CLI client renders fields as they arrive — `urgency` first, then the action list line-by-line. The user starts reacting before the model is done generating.
 
-**No tool calls in the hot path.** Tools add round-trips. Everything the model needs is in the cached system prompt. Tools are reserved for a slower v2 "look up specific shelter location" path.
+**No tool calls in the hot path.** Tools add round-trips. Everything the model needs is in the cached system prompt.
 
 ---
 
@@ -134,6 +143,46 @@ These are budgets, not measured guarantees yet. The CLI's latency banner reports
 
 ---
 
+## Running locally
+
+```bash
+cp .env.example .env
+# edit .env — add your ANTHROPIC_API_KEY
+docker compose up -d
+python -m emergency_ai.rag.ingest  # optional: seed RAG
+curl -X POST http://localhost:8080/emergency \
+  -H "Content-Type: application/json" \
+  -d '{"situation": "Person collapsed, not breathing", "city": "new-york"}'
+```
+
+---
+
+## Deploy
+
+Deploy to Fly.io with the included `fly.toml`:
+
+```bash
+fly launch --no-deploy        # first time only
+fly secrets set ANTHROPIC_API_KEY=sk-ant-...
+fly deploy
+```
+
+The app runs in `sjc` region with auto-stop/start and HTTPS enforced.  See `fly.toml` for concurrency and VM config.
+
+---
+
+## Benchmark
+
+Run `k6 run scripts/load_test.js` and fill in your numbers:
+
+| Concurrency | p50   | p95   | p99   | Cache hit rate |
+|-------------|-------|-------|-------|----------------|
+| 10 VUs      | —     | —     | —     | —              |
+| 50 VUs      | —     | —     | —     | —              |
+| 100 VUs     | —     | —     | —     | —              |
+
+---
+
 ## Adding a city
 
 Drop a markdown file into `src/emergency_ai/cities/<slug>.md` following the structure of an existing city. Frontmatter fields: `display_name`, `country`, `emergency_numbers`. The loader hot-reloads on next request.
@@ -144,14 +193,14 @@ Drop a markdown file into `src/emergency_ai/cities/<slug>.md` following the stru
 
 - **No logs of situations.** The default config logs only `{city, urgency, latency, cache_hit}`. The raw situation string is never persisted server-side.
 - **No PII in prompts.** Client should strip names/addresses before sending where reasonable. The model is instructed to ignore identifying details if present.
-- **Rate limiting.** v0.1 has a per-IP limiter (in-memory). Production needs a real edge limiter.
+- **Rate limiting.** Redis sliding-window per API key, 100 req/min default. Configurable via `RATE_LIMIT_RPM`. Fails open if Redis is unavailable.
 - **Disclaimer in every response.** The schema includes a `disclaimer` field rendered prominently in the client. This is decision support, not medical/legal advice.
 
 ---
 
-## What's NOT in v0.1
+## What's next
 
 - Mobile shell (iOS/Android long-press trigger). The service is the dependency; the shell ships next.
 - Voice input. Whisper integration is wired through the CLI but not the HTTP service.
 - More than 6 cities. Coverage expansion is a content task, not an engineering one.
-- Caller location lookup from coordinates. Right now you pass `city` as a string. v0.2 will accept `{lat, lon}` and reverse-geocode.
+- Caller location lookup from coordinates. Right now you pass `city` as a string. A future version will accept `{lat, lon}` and reverse-geocode.

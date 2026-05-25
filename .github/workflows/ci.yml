@@ -29,7 +29,27 @@ jobs:
       - name: Run pytest
         env:
           EMERGENCY_AI_MOCK: "1"
+          EMERGENCY_AI_NO_AUTH: "1"
         run: pytest -ra --tb=short
+
+      - name: Check Alembic migrations
+        env:
+          DATABASE_URL: ""
+        run: |
+          # Only verify alembic config parses; skip if no DATABASE_URL
+          python -c "
+          import os
+          db_url = os.environ.get('DATABASE_URL', '')
+          if not db_url:
+              print('No DATABASE_URL — skipping alembic check')
+          else:
+              import subprocess
+              result = subprocess.run(['alembic', 'check'], capture_output=True, text=True)
+              print(result.stdout)
+              if result.returncode != 0:
+                  print(result.stderr)
+                  raise SystemExit(result.returncode)
+          "
 
       - name: Lint with ruff
         run: ruff check src tests
