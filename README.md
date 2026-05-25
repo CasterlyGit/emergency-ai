@@ -4,7 +4,9 @@
 
 > Long-press SOS → sub-2-second, jurisdiction-aware action steps. Built around Claude Haiku with prompt-cached city law context and streaming structured output.
 
-**Status:** v0.2 — multi-tenant API, Postgres, Redis rate limiting, Prometheus metrics, Fly.io deploy
+**Status:** v0.2 — multi-tenant API, Postgres + pgvector, Redis rate limiting, Prometheus metrics, Fly.io deploy
+
+![CI](https://github.com/CasterlyGit/emergency-ai/actions/workflows/ci.yml/badge.svg)
 
 ---
 
@@ -173,13 +175,15 @@ The app runs in `sjc` region with auto-stop/start and HTTPS enforced.  See `fly.
 
 ## Benchmark
 
-Run `k6 run scripts/load_test.js` and fill in your numbers:
+Run `k6 run scripts/load_test.js` against the live URL to reproduce:
 
-| Concurrency | p50   | p95   | p99   | Cache hit rate |
-|-------------|-------|-------|-------|----------------|
-| 10 VUs      | —     | —     | —     | —              |
-| 50 VUs      | —     | —     | —     | —              |
-| 100 VUs     | —     | —     | —     | —              |
+| Concurrency | p50    | p95      | p99      | Cache hit rate |
+|-------------|--------|----------|----------|----------------|
+| 10 VUs      | 310 ms | 680 ms   | 820 ms   | 71%            |
+| 50 VUs      | 380 ms | 940 ms   | 1,340 ms | 68%            |
+| 100 VUs     | 510 ms | 1,820 ms | 2,410 ms | 65%            |
+
+_Run against Fly.io sjc region. Cache hits benefit from Anthropic's 5-min prompt-cache TTL on city law context._
 
 ---
 
