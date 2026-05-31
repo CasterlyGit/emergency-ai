@@ -1,0 +1,71 @@
+# Version control
+.git
+.gitignore
+.gitattributes
+
+# Python caches and build artifacts
+__pycache__
+*.pyc
+*.pyo
+*.pyd
+*.egg-info
+*.egg
+.eggs
+dist
+build
+.cache
+.mypy_cache
+.ruff_cache
+.pytest_cache
+htmlcov
+.coverage
+coverage.xml
+
+# Virtual environments
+.venv
+venv
+env
+ENV
+
+# Development tooling and editor config
+.env
+.env.*
+*.env
+.editorconfig
+.flake8
+.pre-commit-config.yaml
+pyrightconfig.json
+mypy.ini
+.vscode
+.idea
+
+# Docs site (served via GitHub Pages, not needed in the container image)
+docs/
+
+# Local infra files not needed at runtime
+docker-compose.yml
+docker-compose.override.yml
+infra/
+bench/
+
+# Test suite
+tests/
+conftest.py
+
+# CI / workflow files
+.github/
+.flow/
+
+# Local development scratch
+inbox/
+scripts/
+cities_data/
+
+# macOS metadata
+.DS_Store
+**/.DS_Store
+
+# Logs and transient data
+*.log
+*.sqlite
+*.db

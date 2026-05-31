@@ -13,7 +13,6 @@ from __future__ import annotations
 
 import asyncio
 import logging
-import os
 from pathlib import Path
 
 log = logging.getLogger("emergency_ai.rag.ingest")
@@ -60,8 +59,8 @@ async def ingest_city_statutes(
     """
     if session is None or not chunks:
         return 0
-    from .embed import embed_texts  # noqa: PLC0415
-    from ..db.models import StatuteChunk  # noqa: PLC0415
+    from ..db.models import StatuteChunk
+    from .embed import embed_texts
 
     try:
         embeddings = embed_texts(chunks)
@@ -73,7 +72,7 @@ async def ingest_city_statutes(
         await session.commit()
         log.info("Upserted %d chunks for jurisdiction=%s", count, jurisdiction)
         return count
-    except Exception as exc:  # noqa: BLE001
+    except Exception as exc:
         log.warning("ingest_city_statutes failed (%s) — skipping", exc)
         await session.rollback()
         return 0
@@ -103,7 +102,7 @@ async def ingest_all_from_cities_dir(session, cities_dir: str | Path | None = No
 
 async def _main() -> None:
     """Entry point when run as ``python -m emergency_ai.rag.ingest``."""
-    from ..db.session import create_all, get_session  # noqa: PLC0415
+    from ..db.session import create_all, get_session
 
     logging.basicConfig(level=logging.INFO)
     await create_all()

@@ -9,7 +9,6 @@ from __future__ import annotations
 import logging
 import os
 import time
-from typing import Optional
 
 log = logging.getLogger("emergency_ai.cache")
 
@@ -29,7 +28,7 @@ class RateLimiter:
     Falls back to allowing all requests when Redis is unreachable.
     """
 
-    def __init__(self, redis_url: Optional[str] = None, rpm: Optional[int] = None) -> None:
+    def __init__(self, redis_url: str | None = None, rpm: int | None = None) -> None:
         """Initialise the limiter.
 
         Args:
@@ -47,14 +46,14 @@ class RateLimiter:
         if self._client is not None:
             return self._client
         try:
-            import redis.asyncio as aioredis  # noqa: PLC0415
+            import redis.asyncio as aioredis
 
             self._client = aioredis.from_url(self._url, decode_responses=True)
             # Ping to verify connectivity
             await self._client.ping()
             log.info("Redis connected: %s", self._url)
             return self._client
-        except Exception as exc:  # noqa: BLE001
+        except Exception as exc:
             log.warning("Redis unavailable (%s) — rate limiting disabled", exc)
             self._available = False
             return None
@@ -83,7 +82,7 @@ class RateLimiter:
 
             count_before_add = results[1]
             return int(count_before_add) >= self._rpm
-        except Exception as exc:  # noqa: BLE001
+        except Exception as exc:
             log.warning("Rate-limit check failed (%s) — allowing request", exc)
             return False
 

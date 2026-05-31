@@ -1,0 +1,951 @@
+{
+  "version": 1,
+  "scenarios": [
+    {
+      "id": "cardiac-arrest",
+      "title": "Cardiac arrest / not breathing",
+      "short": "Not breathing",
+      "icon": "🫀",
+      "category": "medical",
+      "keywords": ["cardiac arrest", "not breathing", "no pulse", "collapsed", "unconscious", "heart stopped", "CPR", "AED", "unresponsive"],
+      "urgency": "critical",
+      "time_to_act_seconds": 60,
+      "immediate_actions": [
+        "Call 911 immediately — do not leave the person alone if possible; use speakerphone.",
+        "Check for responsiveness: tap shoulders firmly and shout 'Are you okay?' If no response, confirm no normal breathing.",
+        "Begin chest compressions: place heel of hand on center of chest, lock hands, compress hard and fast at 100–120 bpm (at least 2 inches deep). Count aloud.",
+        "Allow full chest recoil between compressions — do not lean on the chest.",
+        "If trained, give 2 rescue breaths after every 30 compressions: tilt head, lift chin, seal lips, breath for 1 second each.",
+        "Use an AED as soon as one arrives: power on, follow voice prompts, resume CPR immediately after shock.",
+        "Continue CPR until EMS arrives, the person shows clear signs of life, or you are physically unable to continue."
+      ],
+      "reasoning": [
+        "Every minute without CPR reduces survival by 7–10%; 911 activates ALS before EMS arrival.",
+        "Confirming unresponsiveness prevents performing CPR on someone who is conscious; no normal breathing is the key trigger.",
+        "Chest compressions maintain coronary and cerebral perfusion; AHA recommends 100–120 bpm with at least 2-inch depth for adults.",
+        "Full recoil allows the heart to refill between compressions; leaning prevents adequate refill and reduces cardiac output.",
+        "Rescue breaths restore oxygen when airway is confirmed open; if untrained or unwilling, hands-only CPR is still highly effective.",
+        "AEDs can restore normal rhythm; every minute to defibrillation dramatically increases survival — attach pads, minimize pauses.",
+        "Bystander CPR bridges the gap until ALS; stopping prematurely abandons the only perfusion the person is receiving."
+      ],
+      "avoid": [
+        "Do not stop compressions to check for pulse more than briefly.",
+        "Do not compress too slowly or too shallowly — rate and depth both matter.",
+        "Do not move the person unless there is immediate danger (e.g., fire).",
+        "Do not give rescue breaths if you are untrained — hands-only CPR is preferred over no CPR.",
+        "Do not leave the person alone until EMS takes over."
+      ],
+      "who_to_call": {
+        "primary": "911",
+        "non_emergency": "911 (this IS an emergency)"
+      },
+      "triage": [
+        {
+          "id": "ca-breathing",
+          "q": "Is the person breathing normally (regular rise and fall, not just gasping)?",
+          "options": [
+            { "label": "Yes, breathing normally", "effect": { "set_urgency": "high", "note": "Monitor closely — may still need 911 if deteriorating." } },
+            { "label": "No / only gasping / unsure", "effect": { "set_urgency": "critical", "note": "Gasping (agonal breathing) is NOT normal breathing — start CPR now." } }
+          ]
+        },
+        {
+          "id": "ca-pulse",
+          "q": "Can you feel a pulse at the neck (carotid) — check for no more than 10 seconds?",
+          "options": [
+            { "label": "Yes, clear pulse", "effect": { "set_urgency": "high", "note": "Start rescue breaths only if trained; keep monitoring." } },
+            { "label": "No pulse / unsure", "effect": { "set_urgency": "critical", "note": "Begin CPR immediately — do not wait to be certain." } }
+          ]
+        },
+        {
+          "id": "ca-aed",
+          "q": "Is there an AED (defibrillator) within 90 seconds of your location?",
+          "options": [
+            { "label": "Yes, someone can get it", "effect": { "note": "Send a bystander to retrieve AED while you continue CPR — do not stop compressions." } },
+            { "label": "No AED available", "effect": { "note": "Maintain CPR until EMS arrives." } }
+          ]
+        }
+      ],
+      "metronome_bpm": 110,
+      "beacon": false,
+      "tags": ["cpr", "aed", "compressions", "defibrillator", "cardiac", "critical"]
+    },
+    {
+      "id": "choking-adult",
+      "title": "Choking adult or child (over 1 year)",
+      "short": "Choking",
+      "icon": "🫁",
+      "category": "medical",
+      "keywords": ["choking", "airway obstruction", "cannot breathe", "foreign object", "Heimlich", "blocked airway", "cannot speak", "blue lips", "coughing"],
+      "urgency": "critical",
+      "time_to_act_seconds": 90,
+      "immediate_actions": [
+        "Ask the person 'Are you choking?' — if they can cough forcefully or speak, encourage continuous coughing; do not intervene yet.",
+        "If they cannot cough, speak, or breathe: stand behind them, place one foot forward for stability, and lean them slightly forward.",
+        "Give 5 firm back blows: use the heel of your hand between the shoulder blades.",
+        "Give 5 abdominal thrusts (Heimlich): make a fist above the navel below the breastbone, cover with other hand, thrust sharply inward and upward.",
+        "Alternate 5 back blows and 5 abdominal thrusts until the object is expelled or the person loses consciousness.",
+        "If unconscious, lower them to the floor, call 911, and begin CPR — each time you open the airway look for and remove any visible object before giving breaths.",
+        "For a visibly pregnant or obese person: give chest thrusts instead of abdominal thrusts (same hand position as CPR, center of chest)."
+      ],
+      "reasoning": [
+        "Effective coughing generates higher airway pressure than any manual maneuver; forcing intervention on a partial obstruction can worsen it.",
+        "Leaning forward uses gravity to help dislodge the object; positioning is critical before applying force.",
+        "Back blows create a sudden increase in thoracic pressure behind the obstruction, often dislodging it.",
+        "Abdominal thrusts compress the diaphragm, forcing residual lung air upward to expel the object like a plunger.",
+        "Alternating techniques maximizes chances; a single technique alone is less effective than combining both.",
+        "Unconscious choking requires CPR because the airway may partially open with compressions; look for the object before every breath attempt.",
+        "Chest thrusts avoid uterine compression in pregnancy and are anatomically appropriate for obese individuals."
+      ],
+      "avoid": [
+        "Do not perform abdominal thrusts on infants under 1 year — use back blows and chest thrusts only.",
+        "Do not do a blind finger sweep — only remove an object you can clearly see.",
+        "Do not slap the back while the person is upright if they are still coughing effectively.",
+        "Do not give water or try to 'wash down' an obstruction."
+      ],
+      "who_to_call": {
+        "primary": "911"
+      },
+      "triage": [
+        {
+          "id": "ch-severity",
+          "q": "Can the person cough forcefully, speak, or make any sound?",
+          "options": [
+            { "label": "Yes — coughing or speaking", "effect": { "set_urgency": "high", "note": "Encourage forceful coughing; stand by and watch for deterioration." } },
+            { "label": "No — silent, turning blue, or losing consciousness", "effect": { "set_urgency": "critical", "note": "Complete obstruction — begin back blows and abdominal thrusts immediately. Call 911." } }
+          ]
+        },
+        {
+          "id": "ch-infant",
+          "q": "Is the person an infant (under 1 year old)?",
+          "options": [
+            { "label": "Yes, under 1 year", "effect": { "jump": "choking-infant", "note": "Switch to the infant choking protocol immediately." } },
+            { "label": "No, over 1 year or adult", "effect": { "note": "Continue with Heimlich / back blow sequence." } }
+          ]
+        }
+      ],
+      "metronome_bpm": null,
+      "beacon": false,
+      "tags": ["heimlich", "airway", "choking", "obstruction", "back-blows"]
+    },
+    {
+      "id": "choking-infant",
+      "title": "Choking infant (under 1 year)",
+      "short": "Infant choking",
+      "icon": "👶",
+      "category": "medical",
+      "keywords": ["choking infant", "baby choking", "infant airway", "baby not breathing", "choking newborn", "infant obstruction"],
+      "urgency": "critical",
+      "time_to_act_seconds": 60,
+      "immediate_actions": [
+        "Call 911 immediately or have someone call while you act.",
+        "Hold the infant face-down on your forearm, supporting the head lower than the chest; give 5 firm back blows between the shoulder blades with the heel of your hand.",
+        "Turn the infant face-up on your forearm, keeping the head lower than the trunk; give 5 chest thrusts — two fingers on the center of the chest just below the nipple line, compress about 1.5 inches.",
+        "Alternate 5 back blows and 5 chest thrusts until the object is expelled or the infant becomes unresponsive.",
+        "If the infant loses consciousness: begin infant CPR (30 compressions with two fingers at 100–120 bpm, then 2 gentle puffs of air).",
+        "Before each breath attempt, look in the mouth — only remove an object if you can clearly see it; never do a blind finger sweep.",
+        "Continue until EMS arrives or the airway is cleared."
+      ],
+      "reasoning": [
+        "911 must be activated immediately — an infant's airway is tiny and can close completely within seconds.",
+        "Face-down position uses gravity plus the shock wave of back blows to move the obstruction toward the mouth.",
+        "Chest thrusts rather than abdominal thrusts are used in infants because abdominal organs are less protected; chest thrusts deliver a higher airway pressure pulse.",
+        "Alternating both techniques covers both mechanisms — gravity/pressure from back, compression reflex from front.",
+        "Infant CPR compressions may create enough intrathoracic pressure to expel the object while also providing perfusion.",
+        "Blind sweeps push objects deeper into the airway; visual confirmation is essential before any removal attempt.",
+        "Continuous cycles are necessary — the obstruction may take multiple cycles to dislodge."
+      ],
+      "avoid": [
+        "Never do abdominal thrusts on an infant under 1 year.",
+        "Never shake the infant.",
+        "Never do a blind finger sweep of the mouth.",
+        "Do not hold the infant upright — head must stay lower than chest.",
+        "Do not give water or food."
+      ],
+      "who_to_call": {
+        "primary": "911"
+      },
+      "triage": [],
+      "metronome_bpm": null,
+      "beacon": false,
+      "tags": ["infant", "choking", "airway", "back-blows", "chest-thrusts", "cpr"]
+    },
+    {
+      "id": "severe-bleeding",
+      "title": "Severe / life-threatening bleeding",
+      "short": "Severe bleeding",
+      "icon": "🩸",
+      "category": "trauma",
+      "keywords": ["bleeding", "severe bleeding", "blood loss", "arterial bleed", "wound", "cut", "laceration", "gushing blood", "tourniquet"],
+      "urgency": "critical",
+      "time_to_act_seconds": 120,
+      "immediate_actions": [
+        "Call 911. If blood is bright red and spurting rhythmically with the heartbeat, this is arterial — act immediately.",
+        "Protect yourself from bloodborne exposure if gloves are available; use plastic bags or extra clothing if no gloves.",
+        "Apply firm, direct pressure with a thick folded cloth or bandage. Press hard and do not release to 'check' — maintain continuous pressure for at least 10 minutes.",
+        "If the cloth soaks through, do not remove it — add more material on top and press even harder.",
+        "For a limb wound that will not stop with direct pressure: apply a tourniquet 2–3 inches above the wound (not over a joint). Tighten until bleeding stops. Note the time applied.",
+        "Lay the person flat, elevate legs if no spinal injury is suspected, and keep them warm to reduce shock.",
+        "Monitor for signs of shock: pale, cold, clammy skin; rapid weak pulse; confusion. Keep them still and reassure them until EMS arrives."
+      ],
+      "reasoning": [
+        "Arterial bleeding can cause fatal blood loss in under 3 minutes; knowing the type helps calibrate urgency.",
+        "Bloodborne pathogens can be transmitted through open cuts; barrier protection protects the rescuer without delaying care.",
+        "Continuous, firm pressure allows clotting factors to aggregate; releasing pressure disrupts the forming clot and restarts bleeding.",
+        "Removing a blood-soaked cloth disturbs any clot that has begun to form; layering maintains the clot while adding absorptive material.",
+        "A tourniquet is the definitive intervention for uncontrolled limb hemorrhage; proper placement 2–3 inches proximal to the wound avoids joint damage and ensures arterial compression.",
+        "Laying flat improves venous return to the heart; warmth reduces vasodilation caused by cold, helping maintain blood pressure.",
+        "Hypovolemic shock develops when blood volume drops — early recognition allows EMS to prepare blood products before arrival."
+      ],
+      "avoid": [
+        "Do not remove the cloth to check the wound if bleeding is severe.",
+        "Do not place a tourniquet directly over a joint.",
+        "Do not use a tourniquet for head, neck, or torso wounds — direct pressure only.",
+        "Do not give the person anything to eat or drink.",
+        "Do not remove impaled objects — stabilize them in place."
+      ],
+      "who_to_call": {
+        "primary": "911"
+      },
+      "triage": [],
+      "metronome_bpm": null,
+      "beacon": false,
+      "tags": ["bleeding", "tourniquet", "hemorrhage", "trauma", "wound"]
+    },
+    {
+      "id": "stroke",
+      "title": "Stroke / FAST signs",
+      "short": "Stroke signs",
+      "icon": "🧠",
+      "category": "medical",
+      "keywords": ["stroke", "FAST", "face drooping", "arm weakness", "speech slurred", "sudden numbness", "brain attack", "TIA", "facial droop"],
+      "urgency": "critical",
+      "time_to_act_seconds": 180,
+      "immediate_actions": [
+        "Use the FAST test: Face — ask them to smile (does one side droop?); Arms — ask them to raise both (does one drift down?); Speech — ask them to repeat 'The sky is blue' (slurred or garbled?); Time — if any one sign is positive, call 911 immediately.",
+        "Note the exact time symptoms began — 'last known well' is critical for clot-busting treatment eligibility (window is 4.5 hours).",
+        "Keep the person calm and still; have them sit or lie down in a comfortable position — do not give food, water, or medication.",
+        "Do not drive them yourself unless EMS response exceeds 30 minutes — EMS can pre-notify the hospital and start tPA workup en route.",
+        "If they lose consciousness and stop breathing, begin CPR and continue until EMS arrives.",
+        "Loosen any tight clothing around the neck or chest to ensure the airway is not restricted.",
+        "Stay with the person and relay all observations — time of onset, symptoms, medications — to EMS when they arrive."
+      ],
+      "reasoning": [
+        "FAST identifies the three most common stroke signs; each minute of untreated stroke destroys approximately 1.9 million neurons.",
+        "tPA (clot-dissolving drug) eligibility depends strictly on time from last known well; a precise time window can be the difference between recovery and permanent disability.",
+        "Physical activity can increase blood pressure and worsen hemorrhagic stroke; aspirin is contraindicated without imaging to rule out bleeding stroke.",
+        "EMS pre-notification triggers a 'stroke code' that assembles the CT and neurology team before arrival, shaving critical minutes.",
+        "Cardiorespiratory arrest can occur secondary to stroke — bystander CPR bridges perfusion until ALS.",
+        "Tight clothing can compromise venous drainage from the brain; a relaxed airway is also easier to monitor.",
+        "Accurate bystander history guides treatment decisions; the treating team needs to know what the person was doing when symptoms started."
+      ],
+      "avoid": [
+        "Do not give aspirin — you cannot rule out hemorrhagic stroke without a CT scan.",
+        "Do not give food or water — swallowing reflex may be impaired.",
+        "Do not let the person 'sleep it off' or wait to see if symptoms improve.",
+        "Do not drive if EMS is available — hospital pre-notification by EMS is valuable.",
+        "Do not restrain a person having a seizure secondary to stroke."
+      ],
+      "who_to_call": {
+        "primary": "911"
+      },
+      "triage": [
+        {
+          "id": "str-fast-face",
+          "q": "FAST — Face: Ask the person to smile. Is one side of the face drooping?",
+          "options": [
+            { "label": "Yes, one side droops", "effect": { "set_urgency": "critical", "note": "Positive FAST sign — call 911 immediately and note the time." } },
+            { "label": "No, smile looks even", "effect": { "note": "Face negative — continue checking Arms and Speech." } }
+          ]
+        },
+        {
+          "id": "str-fast-arms",
+          "q": "FAST — Arms: Ask them to raise both arms and hold for 10 seconds. Does one arm drift down?",
+          "options": [
+            { "label": "Yes, one arm drifts", "effect": { "set_urgency": "critical", "note": "Positive FAST sign — call 911 now." } },
+            { "label": "No, both arms hold steady", "effect": { "note": "Arms negative — check Speech." } }
+          ]
+        },
+        {
+          "id": "str-fast-speech",
+          "q": "FAST — Speech: Ask them to say 'The sky is blue.' Is their speech slurred, strange, or impossible?",
+          "options": [
+            { "label": "Yes, speech is off", "effect": { "set_urgency": "critical", "note": "Positive FAST sign — call 911 immediately." } },
+            { "label": "No, speech is clear", "effect": { "set_urgency": "medium", "note": "All FAST signs negative but keep observing — other stroke signs include sudden vision loss, severe headache, or loss of balance." } }
+          ]
+        }
+      ],
+      "metronome_bpm": null,
+      "beacon": false,
+      "tags": ["stroke", "fast", "brain", "tpa", "neuro", "critical"]
+    },
+    {
+      "id": "anaphylaxis",
+      "title": "Anaphylaxis / severe allergic reaction",
+      "short": "Anaphylaxis",
+      "icon": "💉",
+      "category": "medical",
+      "keywords": ["anaphylaxis", "severe allergy", "allergic reaction", "EpiPen", "epinephrine", "throat swelling", "hives", "bee sting", "food allergy", "cannot breathe allergy"],
+      "urgency": "critical",
+      "time_to_act_seconds": 120,
+      "immediate_actions": [
+        "Inject epinephrine (EpiPen) into the outer mid-thigh immediately — through clothing is fine. Hold for 10 seconds. Call 911 right after.",
+        "Lay the person flat and raise their legs unless they are having difficulty breathing, in which case let them sit upright.",
+        "Call 911 even if symptoms begin to improve — anaphylaxis has a biphasic phase in 20% of cases; they need hospital observation for 4–6 hours.",
+        "If a second EpiPen is available and symptoms return or do not improve within 5–15 minutes, administer a second dose.",
+        "Remove or move away from the trigger if identifiable (e.g., stop IV infusion, remove stinger by scraping — do not squeeze).",
+        "If the person loses consciousness and stops breathing, begin CPR.",
+        "On EMS arrival, tell them the time of epinephrine injection, the dose, any additional medications, and the suspected trigger."
+      ],
+      "reasoning": [
+        "Epinephrine is the only life-saving drug for anaphylaxis — it reverses bronchospasm, vasodilation, and angioedema within minutes; antihistamines do not treat the life-threatening components.",
+        "Supine position with elevated legs increases venous return during vasodilatory shock; upright position reduces respiratory distress when airway is compromised.",
+        "The biphasic response (recurrence 1–72 hours later) makes hospital monitoring mandatory even after apparent recovery.",
+        "A second dose can be required as epinephrine has a short half-life (~20 minutes); guidelines support re-dosing if symptoms persist.",
+        "Removing the antigen reduces ongoing mast-cell activation; squeezing a bee stinger injects more venom — scraping minimizes additional dose.",
+        "Anaphylaxis can cause cardiac arrest; CPR sustains perfusion until epinephrine and ALS can restore vascular tone.",
+        "Epinephrine timing is critical for EMS to decide on repeat dosing and to document for the treating ED."
+      ],
+      "avoid": [
+        "Do not give antihistamines (Benadryl) as a substitute for epinephrine — they are too slow and do not address airway swelling.",
+        "Do not wait to see if symptoms improve before using the EpiPen.",
+        "Do not leave the person standing or walking.",
+        "Do not squeeze or grasp a bee stinger — scrape it off.",
+        "Do not assume one EpiPen dose is sufficient; always call 911 and monitor for recurrence."
+      ],
+      "who_to_call": {
+        "primary": "911"
+      },
+      "triage": [
+        {
+          "id": "ana-epipen",
+          "q": "Does the person have a prescribed EpiPen or epinephrine auto-injector?",
+          "options": [
+            { "label": "Yes, it is available", "effect": { "set_urgency": "critical", "note": "Inject into outer thigh now, then call 911." } },
+            { "label": "No EpiPen available", "effect": { "set_urgency": "critical", "note": "Call 911 immediately — EMS carries epinephrine." } }
+          ]
+        },
+        {
+          "id": "ana-airway",
+          "q": "Is the person able to breathe and swallow, or do you notice throat tightness, stridor, or voice change?",
+          "options": [
+            { "label": "Breathing normally, no throat symptoms", "effect": { "set_urgency": "high", "note": "Still administer epinephrine and call 911 — airway can close rapidly." } },
+            { "label": "Throat tightening, stridor, or cannot swallow", "effect": { "set_urgency": "critical", "note": "Airway compromise imminent — use EpiPen now and call 911." } }
+          ]
+        }
+      ],
+      "metronome_bpm": null,
+      "beacon": false,
+      "tags": ["anaphylaxis", "epipen", "epinephrine", "allergy", "airway", "critical"]
+    },
+    {
+      "id": "opioid-overdose",
+      "title": "Opioid overdose / unresponsive",
+      "short": "Opioid overdose",
+      "icon": "💊",
+      "category": "poison",
+      "keywords": ["opioid overdose", "heroin", "fentanyl", "narcan", "naloxone", "overdose", "unresponsive opioid", "pinpoint pupils", "slow breathing drugs"],
+      "urgency": "critical",
+      "time_to_act_seconds": 120,
+      "immediate_actions": [
+        "Call 911. Many states have 911 Good Samaritan laws protecting callers from drug-related prosecution.",
+        "Try to rouse the person: sternal rub (knuckles hard on breastbone), call their name. If unresponsive and breathing fewer than 1 breath per 5 seconds, administer naloxone.",
+        "Administer naloxone (Narcan): nasal spray — insert tip into one nostril and press plunger firmly. Inject form: 0.4 mg IM into the outer thigh or upper arm.",
+        "Place in the recovery position (on their side) to prevent aspiration if breathing on their own.",
+        "If not breathing, begin rescue breathing: tilt head back, lift chin, give 1 breath every 5 seconds until breathing resumes or EMS arrives.",
+        "If still unresponsive after 2–3 minutes, give a second dose of naloxone in the other nostril.",
+        "Stay with the person — naloxone wears off in 30–90 minutes and opioids may outlast it, causing re-sedation."
+      ],
+      "reasoning": [
+        "Good Samaritan laws exist in most US states to encourage bystanders to call 911 without fear of arrest; this barrier saves lives.",
+        "Classic opioid triad: pinpoint pupils, slow/shallow breathing (<1/5 sec), unresponsiveness — sternal rub confirms unresponsiveness and confirms not merely sleeping.",
+        "Naloxone competitively displaces opioids from mu-receptors, reversing respiratory depression within 2–5 minutes; nasal and IM forms are equally rapid.",
+        "Recovery position keeps the airway patent and allows secretions or vomit to drain — aspiration pneumonia is a common overdose complication.",
+        "Rescue breathing delivers oxygen to compensate for respiratory depression; opioids suppress the brainstem respiratory drive.",
+        "A second dose is needed if fentanyl or carfentanil is involved — these agents are far more potent and may require 2–3 doses to reverse.",
+        "Re-narcotization after naloxone wears off is a leading cause of post-overdose death at home; hospital observation is essential."
+      ],
+      "avoid": [
+        "Do not leave the person alone — re-sedation after naloxone wears off is common.",
+        "Do not put the person in a cold bath or give coffee or stimulants.",
+        "Do not induce vomiting.",
+        "Do not give another dose of opioids to 'balance' — this will worsen the situation.",
+        "Do not restrain them if naloxone triggers acute withdrawal agitation — they may become combative but are breathing."
+      ],
+      "who_to_call": {
+        "primary": "911",
+        "poison_control": "1-800-222-1222"
+      },
+      "triage": [],
+      "metronome_bpm": null,
+      "beacon": false,
+      "tags": ["opioid", "naloxone", "narcan", "overdose", "fentanyl", "poison"]
+    },
+    {
+      "id": "seizure",
+      "title": "Seizure / convulsions",
+      "short": "Seizure",
+      "icon": "⚡",
+      "category": "medical",
+      "keywords": ["seizure", "convulsion", "epilepsy", "fitting", "shaking", "tonic-clonic", "absence seizure", "grand mal"],
+      "urgency": "high",
+      "time_to_act_seconds": 300,
+      "immediate_actions": [
+        "Time the seizure from the start — call 911 if it lasts more than 5 minutes, if a second seizure begins immediately after, or if the person is pregnant, injured, or this is their first known seizure.",
+        "Protect from injury: clear hard or sharp objects nearby; place something soft under the head; do not restrain the person.",
+        "Gently roll them onto their side (recovery position) if possible to keep the airway clear and prevent aspiration.",
+        "Stay with them, speak calmly, and monitor breathing throughout.",
+        "After convulsions stop, check for breathing. Most people are confused and sleepy (postictal state) for 5–30 minutes — this is normal; reassure them.",
+        "Do not give food, water, or medication until fully alert.",
+        "Document the duration, type of movements, and any injury — report to EMS or their neurologist."
+      ],
+      "reasoning": [
+        "A seizure lasting over 5 minutes is status epilepticus — a medical emergency requiring IV benzodiazepines; timing determines when to call 911.",
+        "Restraining during a seizure can cause fractures and dislocations; the goal is to prevent external injury, not stop the movements.",
+        "The recovery position prevents the relaxed tongue from blocking the airway and allows vomit to drain rather than being aspirated.",
+        "Calm presence reduces post-ictal agitation; bystanders monitoring breathing can detect apnea early.",
+        "The postictal state is a normal post-seizure phenomenon of CNS recovery; mistaking it for prolonged unconsciousness causes unnecessary interventions.",
+        "Eating or drinking before full consciousness returns risks aspiration because gag reflex may be impaired.",
+        "Accurate documentation aids differential diagnosis (focal vs. generalized) and medication adjustment."
+      ],
+      "avoid": [
+        "Never put anything in the person's mouth — the 'swallowing the tongue' myth is false and you risk being bitten.",
+        "Do not hold the person down or restrain movements.",
+        "Do not give water or food until fully awake.",
+        "Do not leave them alone until fully recovered.",
+        "Do not assume one seizure means they need CPR — check breathing first."
+      ],
+      "who_to_call": {
+        "primary": "911 (if >5 min, repeated, pregnant, first seizure, or injured)"
+      },
+      "triage": [],
+      "metronome_bpm": null,
+      "beacon": false,
+      "tags": ["seizure", "epilepsy", "convulsion", "recovery-position"]
+    },
+    {
+      "id": "burns",
+      "title": "Burns — thermal, chemical, or electrical",
+      "short": "Burns",
+      "icon": "🔥",
+      "category": "trauma",
+      "keywords": ["burn", "scald", "thermal burn", "chemical burn", "fire injury", "blister", "skin burn", "hot liquid"],
+      "urgency": "high",
+      "time_to_act_seconds": 300,
+      "immediate_actions": [
+        "Remove the person from the source of burn and ensure your own safety (turn off power, ventilate chemical vapors).",
+        "For thermal burns: cool with cool (not ice-cold) running water for at least 10–20 minutes — begin cooling within 3 hours of the burn for best effect.",
+        "Remove jewelry, watches, and clothing from the burned area unless it is stuck to the skin — swelling develops rapidly.",
+        "Cover the burn loosely with a clean, non-fluffy dressing or cling film (plastic wrap laid flat, not wrapped tight) — do not use cotton wool, butter, or toothpaste.",
+        "Call 911 or go to the ED for: burns larger than a hand (>1% BSA), deep burns (waxy/leathery/charred), face/hands/genitals/joints burns, chemical or electrical burns, or burns in children, elderly, or immunocompromised.",
+        "Treat for shock: lay the person flat (unless burn is on the face/airway), keep warm with a blanket over unburned areas, and give small sips of water only if alert and burns are not on the face.",
+        "For chemical burns: brush off dry chemicals first, then flush with large amounts of running water for 20+ minutes — call poison control for specific neutralization advice."
+      ],
+      "reasoning": [
+        "Removing the heat or chemical source stops ongoing tissue destruction.",
+        "Cool water lowers tissue temperature and limits the zone of coagulation; ice causes vasoconstriction and worsens tissue damage; the 10–20 minute window is evidence-based.",
+        "Constrictive items cause tourniquet effect as edema forms in burned tissue within minutes of injury.",
+        "Cling film maintains a moist wound environment, reduces pain by excluding air, and allows visual inspection without disturbing the wound; butter and toothpaste promote infection and trap heat.",
+        "Large, deep, or critical-location burns require hospital burn unit management — delayed transfer worsens outcomes.",
+        "Burns cause significant fluid loss; shock management prevents circulatory collapse; oral fluid is appropriate only for alert patients with non-oral burns.",
+        "Dry chemicals can react exothermically with water; brushing first removes bulk before flushing; 20+ minutes dilutes residual chemical; specific antidotes may be needed."
+      ],
+      "avoid": [
+        "Do not use ice or ice-cold water — this causes vasoconstriction and worsens tissue damage.",
+        "Do not apply butter, toothpaste, egg white, or any home remedy.",
+        "Do not break blisters — intact blisters are sterile barriers.",
+        "Do not remove clothing that is stuck to the skin.",
+        "Do not wrap chemical burns tightly — wrap loosely to allow continued fluid drainage."
+      ],
+      "who_to_call": {
+        "primary": "911 (for large, deep, or chemical/electrical burns)",
+        "poison_control": "1-800-222-1222 (for chemical burns)"
+      },
+      "triage": [],
+      "metronome_bpm": null,
+      "beacon": false,
+      "tags": ["burn", "scald", "chemical", "thermal", "wound"]
+    },
+    {
+      "id": "drowning",
+      "title": "Drowning / near-drowning",
+      "short": "Drowning",
+      "icon": "🌊",
+      "category": "environmental",
+      "keywords": ["drowning", "near drowning", "submersion", "water rescue", "swimming pool", "pulled from water", "not breathing water"],
+      "urgency": "critical",
+      "time_to_act_seconds": 60,
+      "immediate_actions": [
+        "Ensure your own safety first — a panicking drowning victim can pull rescuers under. Reach or throw rather than entering the water unless trained in water rescue.",
+        "Remove the victim from the water as quickly as possible, supporting the head and neck if spinal injury is possible (diving incident, pool edge impact).",
+        "Call 911 the moment the victim is out of the water.",
+        "If the person is not breathing normally, begin rescue breathing immediately: give 5 initial rescue breaths, then start standard CPR (30 compressions : 2 breaths) at 100–120 bpm.",
+        "Drowning victims are often hypothermic — remove wet clothing, cover with blankets, and keep warm while continuing CPR.",
+        "Do not waste time trying to drain water from the lungs — begin CPR immediately; the lungs will not meaningfully drain by positioning.",
+        "Even if the person appears to recover, all near-drowning victims must be evaluated in hospital — secondary drowning (delayed pulmonary edema) can occur 1–24 hours later."
+      ],
+      "reasoning": [
+        "More rescuers drown attempting unsupported entry than lives saved; throwing a rope or life ring is equally or more effective.",
+        "Spinal cord injuries are common in diving incidents; neutral spine during extraction prevents worsening a cord injury.",
+        "911 activates advanced airway management, defibrillation, and hypothermia protocols.",
+        "Respiratory arrest precedes cardiac arrest in drowning; rescue breaths address the primary problem; the 5-breath opening sequence pre-oxygenates the patient before compressions.",
+        "Cold water drowning is associated with mammalian dive reflex — hypothermia can be protective and patients have survived prolonged submersion; continuous CPR is warranted.",
+        "Attempting to drain the lungs (e.g., hanging upside down) delays CPR and has no clinical benefit — most water is absorbed, not drainable.",
+        "Secondary drowning (non-cardiogenic pulmonary edema) can be fatal hours after apparent recovery — hospital observation is mandatory."
+      ],
+      "avoid": [
+        "Do not enter the water unless you are a trained water rescue swimmer.",
+        "Do not attempt to drain water from the lungs — it delays CPR.",
+        "Do not assume the person is fine because they are conscious — secondary drowning is real.",
+        "Do not remove a cervical collar or move the spine aggressively if diving is involved.",
+        "Do not give up CPR based on water temperature alone — cold water drowning survival has been recorded after prolonged submersion."
+      ],
+      "who_to_call": {
+        "primary": "911"
+      },
+      "triage": [],
+      "metronome_bpm": 110,
+      "beacon": true,
+      "tags": ["drowning", "cpr", "water", "submersion", "hypothermia", "rescue-breathing"]
+    },
+    {
+      "id": "heart-attack",
+      "title": "Heart attack (myocardial infarction)",
+      "short": "Heart attack",
+      "icon": "❤️",
+      "category": "medical",
+      "keywords": ["heart attack", "myocardial infarction", "chest pain", "chest pressure", "MI", "angina", "jaw pain", "left arm pain", "heart"],
+      "urgency": "critical",
+      "time_to_act_seconds": 300,
+      "immediate_actions": [
+        "Call 911 immediately — do not drive to the hospital. EMS can begin treatment en route and alert the cath lab to prepare.",
+        "Have the person sit or lie in whatever position is most comfortable — typically semi-reclined.",
+        "If the person is not allergic to aspirin and can swallow, give 325 mg regular aspirin (or 4 × 81 mg baby aspirin) to chew, not swallow whole — unless a doctor has told them not to take aspirin.",
+        "Loosen tight clothing around the chest and neck.",
+        "Keep them calm and still — physical exertion increases myocardial oxygen demand.",
+        "If the person has nitroglycerin prescribed, assist them in taking it as directed (one tablet or spray under the tongue); may repeat every 5 minutes up to 3 doses if prescribed.",
+        "Monitor closely — heart attacks can deteriorate into cardiac arrest; be prepared to start CPR."
+      ],
+      "reasoning": [
+        "The cardiac cath lab 'door-to-balloon' time target is 90 minutes; EMS bypasses triage and activates the team while en route — self-transport loses this advantage.",
+        "There is no single position that reduces ischemia; comfort reduces anxiety and catecholamine-driven oxygen demand.",
+        "Aspirin irreversibly inhibits platelet thromboxane A2 production, inhibiting clot propagation; chewing achieves faster buccal absorption and earlier therapeutic levels.",
+        "Tight clothing can impair chest expansion and venous return, worsening cardiac output.",
+        "Physical activity raises heart rate and BP, increasing oxygen demand in already ischemic myocardium.",
+        "Nitroglycerin dilates coronary and systemic vessels, reducing preload and afterload; repeat dosing is safe if BP stays adequate and it is prescribed to the patient.",
+        "VF and cardiac arrest are the leading cause of MI death in the first hour — bystander CPR readiness is essential."
+      ],
+      "avoid": [
+        "Do not drive the person to the hospital yourself — EMS response is faster and begins treatment en route.",
+        "Do not give aspirin if the person has a known allergy or has been told not to take it.",
+        "Do not give nitroglycerin if it is not prescribed to the person, or if they have taken a PDE-5 inhibitor (Viagra/Cialis) in the past 24–48 hours.",
+        "Do not let the person walk or exert themselves.",
+        "Do not wait to see if the pain 'goes away' — every minute of untreated MI destroys more heart muscle."
+      ],
+      "who_to_call": {
+        "primary": "911"
+      },
+      "triage": [],
+      "metronome_bpm": null,
+      "beacon": false,
+      "tags": ["heart-attack", "MI", "chest-pain", "aspirin", "cardiac", "critical"]
+    },
+    {
+      "id": "heat-stroke",
+      "title": "Heat stroke / hyperthermia",
+      "short": "Heat stroke",
+      "icon": "🌡️",
+      "category": "environmental",
+      "keywords": ["heat stroke", "hyperthermia", "overheating", "hot weather", "heat emergency", "no sweating", "confusion heat", "heat exhaustion serious"],
+      "urgency": "critical",
+      "time_to_act_seconds": 300,
+      "immediate_actions": [
+        "Call 911 — heat stroke is a true emergency. Classic heat stroke (dry, hot skin, confusion, temperature >104°F/40°C) is rapidly fatal if untreated.",
+        "Move the person immediately to a cool environment — air-conditioned room, shade, or near a fan.",
+        "Begin aggressive cooling immediately: remove excess clothing; apply ice packs to armpits, groin, neck, and wrists (where blood vessels are near the surface); if outdoors, pour cool water over the body and fan vigorously.",
+        "Do not give fluids by mouth if the person is confused, vomiting, or not fully alert — they may aspirate.",
+        "If fully conscious and able to swallow, offer cool water or an electrolyte drink in small sips.",
+        "Monitor for seizures (cool the person as fast as possible — the seizure is from hyperthermia).",
+        "Continue cooling until EMS arrives or body temperature is under 102°F/39°C — stop cooling at that point to avoid overcorrection to hypothermia."
+      ],
+      "reasoning": [
+        "Heat stroke causes multi-organ failure above 41°C — cooling rate determines organ survival; every minute of delay matters.",
+        "Removing the heat source (environment) is the first step in any thermal emergency.",
+        "Evaporative cooling with fanning and ice to high-flow vascular regions (axilla, groin, neck) achieves faster core temperature reduction than passive cooling alone.",
+        "A confused or nauseated person has impaired airway protection; oral fluids risk aspiration and are not the priority — cooling is.",
+        "Electrolyte-balanced fluid prevents hyponatremia from plain water overconsumption in a heat-depleted person.",
+        "Seizures in heat stroke are a sign of severe neurological compromise — rapid cooling is the only treatment.",
+        "Iatrogenic hypothermia worsens outcome; stopping cooling at 39°C prevents overshoot."
+      ],
+      "avoid": [
+        "Do not give aspirin or paracetamol for heat stroke — these do not help and aspirin may worsen bleeding.",
+        "Do not give fluids by mouth to a confused or unconscious person.",
+        "Do not use alcohol rubs — alcohol is absorbed through skin and can cause toxicity.",
+        "Do not use only a cold shower without monitoring — the person may lose consciousness in the shower.",
+        "Do not stop cooling too early — the target is under 39°C, not just 'feeling cooler'."
+      ],
+      "who_to_call": {
+        "primary": "911"
+      },
+      "triage": [],
+      "metronome_bpm": null,
+      "beacon": false,
+      "tags": ["heat-stroke", "hyperthermia", "heat", "cooling", "environmental"]
+    },
+    {
+      "id": "hypothermia",
+      "title": "Hypothermia / cold exposure",
+      "short": "Hypothermia",
+      "icon": "🧊",
+      "category": "environmental",
+      "keywords": ["hypothermia", "cold exposure", "freezing", "cold water immersion", "frostbite", "shivering", "low body temperature", "cold injury"],
+      "urgency": "high",
+      "time_to_act_seconds": 600,
+      "immediate_actions": [
+        "Move the person out of the cold environment — indoors, into a vehicle, or any shelter from wind and moisture.",
+        "Remove wet clothing gently and carefully — handle the person minimally and avoid rough movement (cold heart is prone to ventricular fibrillation).",
+        "Wrap the person in dry blankets, sleeping bags, or coats — cover the head. Focus on the torso first.",
+        "Apply chemical heat packs or warm water bottles (not hot — use warm: 40–42°C) to the armpits, groin, and neck, wrapped in cloth to prevent burns.",
+        "If conscious and able to swallow, give warm (not hot) sweetened drinks — no alcohol. Alcohol causes vasodilation and accelerates heat loss.",
+        "Do not rub the extremities — this drives cold blood from the periphery to the core, worsening core temperature drop ('afterdrop').",
+        "Call 911 — severe hypothermia (unconscious, not shivering, rigid) requires hospital rewarming; even a person in cardiac arrest from hypothermia may be resuscitated in hospital with cardiopulmonary bypass."
+      ],
+      "reasoning": [
+        "Removing the cold source halts ongoing heat loss; wind and wet clothing dramatically accelerate conductive and evaporative cooling.",
+        "Rough handling of a hypothermic patient can trigger VF — the cold myocardium is electrically irritable and requires gentle positioning.",
+        "Insulation prevents further radiant and conductive heat loss; the head loses disproportionately more heat per surface area.",
+        "Warm (not hot) heat packs applied to vascular regions conduct heat to returning blood; hot packs cause burns on cold, poorly perfused skin.",
+        "Warm fluids raise core temperature and provide glucose; alcohol causes cutaneous vasodilation, increasing heat loss and creating a false sense of warmth.",
+        "Peripheral limb rubbing causes 'afterdrop' — a paradoxical core temperature fall as cold venous blood from extremities rushes to the core during massage.",
+        "Severe hypothermia is potentially reversible even from apparent death — the adage 'not dead until warm and dead' applies; hospital ECMO rewarming has saved patients."
+      ],
+      "avoid": [
+        "Do not rub or massage the extremities vigorously.",
+        "Do not give alcohol.",
+        "Do not apply direct high heat (hot water bottles without cloth wrapping, electric blankets on high).",
+        "Do not assume a hypothermic person is dead — start CPR and call 911.",
+        "Do not give up on CPR until the person is rewarmed in hospital."
+      ],
+      "who_to_call": {
+        "primary": "911 (for severe/unconscious hypothermia)"
+      },
+      "triage": [],
+      "metronome_bpm": null,
+      "beacon": true,
+      "tags": ["hypothermia", "cold", "frostbite", "environmental", "rewarming"]
+    },
+    {
+      "id": "broken-bone",
+      "title": "Broken bone / fracture",
+      "short": "Broken bone",
+      "icon": "🦴",
+      "category": "trauma",
+      "keywords": ["fracture", "broken bone", "broken arm", "broken leg", "snap", "deformity", "splint", "bone injury"],
+      "urgency": "medium",
+      "time_to_act_seconds": 1800,
+      "immediate_actions": [
+        "Call 911 if: the fracture is open (bone through skin), the limb is severely deformed, there is severe blood loss, a femur/pelvis/spine is involved, or the person cannot be moved safely.",
+        "Do not attempt to straighten or realign the bone — immobilize it in the position found.",
+        "Splint the fractured area: use a rigid item (board, rolled magazine, umbrella) padded with cloth. The splint must extend beyond the joints above and below the fracture.",
+        "Secure the splint with bandages, clothing strips, or tape — snug but not so tight as to cut circulation. Check circulation (capillary refill, pulse, sensation) below the splint every 10 minutes.",
+        "Apply ice (wrapped in cloth) to reduce swelling and pain. Do not apply ice directly to skin.",
+        "Elevate the injured limb if possible and if it does not cause more pain.",
+        "For an open fracture: cover the wound with a clean dressing — do not push the bone back. Apply gentle pressure around (not on) the wound to control bleeding."
+      ],
+      "reasoning": [
+        "Open fractures, femur fractures (can lose 1–2 L blood internally), and spinal fractures are orthopedic emergencies; EMS is needed for field immobilization and imaging.",
+        "Manipulation of a fracture without imaging risks neurovascular injury; field realignment is only appropriate for medical training in specific circumstances.",
+        "Rigid immobilization prevents muscle spasm, reduces pain, limits soft tissue damage from bone ends, and reduces blood loss at the fracture site.",
+        "Circulation must be confirmed above and below the fracture; excessive compression causes compartment syndrome, which is limb-threatening.",
+        "Ice (wrapped) causes vasoconstriction, reducing swelling and prostaglandin-mediated pain; direct ice causes frostbite.",
+        "Elevation reduces venous pressure and limits hematoma formation at the fracture site.",
+        "An open fracture is a contaminated wound requiring IV antibiotics and surgical irrigation — covering it protects from further contamination; never push bone back through the skin."
+      ],
+      "avoid": [
+        "Do not attempt to straighten or set the bone.",
+        "Do not apply a splint so tightly that circulation is impaired.",
+        "Do not apply ice directly to skin.",
+        "Do not push exposed bone back under the skin.",
+        "Do not move a person with a suspected spinal fracture unless there is immediate danger."
+      ],
+      "who_to_call": {
+        "primary": "911 (for open fractures, femur/pelvis/spine, or severe blood loss)",
+        "non_emergency": "911 or urgent care (for stable closed fractures)"
+      },
+      "triage": [],
+      "metronome_bpm": null,
+      "beacon": false,
+      "tags": ["fracture", "broken-bone", "splint", "orthopedic", "trauma"]
+    },
+    {
+      "id": "head-injury",
+      "title": "Head injury / concussion / TBI",
+      "short": "Head injury",
+      "icon": "🤕",
+      "category": "trauma",
+      "keywords": ["head injury", "concussion", "TBI", "traumatic brain injury", "hit head", "head trauma", "skull fracture", "unconscious head"],
+      "urgency": "high",
+      "time_to_act_seconds": 300,
+      "immediate_actions": [
+        "Call 911 immediately for: loss of consciousness (any duration), repeated vomiting, worsening headache, seizure, confusion, weakness in limbs, unequal pupils, blood or clear fluid from ears or nose, or if the mechanism was a high-energy impact.",
+        "Assume a cervical spine injury if the head injury was from a fall >1 meter, motor vehicle collision, or diving — do not move the person's neck until EMS stabilizes it.",
+        "Keep the person still and calm; if they must be moved, keep the head, neck, and body in a straight line.",
+        "If unconscious but breathing, place in the recovery position while maintaining spinal alignment (log-roll with assistance if possible).",
+        "Control any scalp bleeding with firm direct pressure — scalp wounds bleed profusely but do not cause fatal blood loss alone; the brain injury is the priority.",
+        "Monitor level of consciousness every 5 minutes using AVPU: Alert / responds to Voice / responds to Pain / Unresponsive.",
+        "Do not give pain medications until evaluated — NSAIDs increase bleeding risk; all analgesic decisions should be made by the treating clinician."
+      ],
+      "reasoning": [
+        "The listed signs indicate intracranial hemorrhage, epidural or subdural hematoma, or raised intracranial pressure — all require urgent neurosurgical evaluation.",
+        "Cervical spine injury co-occurs in 5–10% of significant head trauma; immobilization prevents cord injury from an unstable fracture.",
+        "In-line stabilization limits rotational forces on a potentially injured cervical cord; unnecessary movement risks converting an incomplete injury to a complete one.",
+        "Recovery position prevents aspiration in an unconscious person; log-rolling maintains spinal alignment during repositioning.",
+        "Scalp is highly vascular (external carotid territory); direct pressure controls venous bleeding; the intracranial injury drives prognosis, not scalp bleeding.",
+        "AVPU is a simple, repeatable consciousness scale that detects deterioration faster than waiting for obvious signs.",
+        "NSAIDs inhibit platelet aggregation and worsen intracranial bleeding; opioids impair the neurological exam and mask deterioration."
+      ],
+      "avoid": [
+        "Do not move the neck without spinal immobilization if trauma mechanism was significant.",
+        "Do not give aspirin, ibuprofen, or other NSAIDs for head injury pain.",
+        "Do not allow a concussed person to return to play or drive the same day.",
+        "Do not leave a head-injured person alone for the first 24 hours — deterioration can be rapid.",
+        "Do not assume the person is 'fine' because they walked away from the incident."
+      ],
+      "who_to_call": {
+        "primary": "911"
+      },
+      "triage": [
+        {
+          "id": "hi-consciousness",
+          "q": "Did the person lose consciousness, even briefly?",
+          "options": [
+            { "label": "Yes — any loss of consciousness", "effect": { "set_urgency": "critical", "note": "Call 911 immediately. Any LOC indicates moderate-to-severe TBI." } },
+            { "label": "No, they stayed conscious throughout", "effect": { "set_urgency": "high", "note": "Still requires monitoring — call 911 if vomiting, severe headache, or confusion develops." } }
+          ]
+        },
+        {
+          "id": "hi-vomiting",
+          "q": "Has the person vomited more than once since the injury?",
+          "options": [
+            { "label": "Yes, vomited more than once", "effect": { "set_urgency": "critical", "note": "Repeated vomiting is a red flag for raised intracranial pressure — call 911." } },
+            { "label": "No vomiting or vomited once", "effect": { "note": "Single vomiting is common after head injury; monitor closely for recurrence." } }
+          ]
+        }
+      ],
+      "metronome_bpm": null,
+      "beacon": false,
+      "tags": ["head-injury", "concussion", "TBI", "trauma", "spinal", "neuro"]
+    },
+    {
+      "id": "poisoning",
+      "title": "Poisoning / ingestion",
+      "short": "Poisoning",
+      "icon": "☠️",
+      "category": "poison",
+      "keywords": ["poisoning", "ingestion", "toxic", "swallowed", "chemical ingestion", "household chemicals", "medication overdose", "accidental ingestion", "toxin"],
+      "urgency": "high",
+      "time_to_act_seconds": 300,
+      "immediate_actions": [
+        "Call Poison Control at 1-800-222-1222 immediately — they provide real-time, substance-specific guidance 24/7 and can tell you whether to call 911.",
+        "Call 911 directly if the person is unconscious, not breathing, having a seizure, or in severe distress.",
+        "Identify the substance: gather the container, pill bottle, or chemical label and have it ready for poison control or EMS.",
+        "Do not induce vomiting unless explicitly instructed by Poison Control — many substances (caustics, hydrocarbons, certain medications) cause more damage coming back up.",
+        "If the poison is on the skin or in the eyes: remove contaminated clothing and flush the affected area with large amounts of cool water for at least 15–20 minutes.",
+        "If the person is conscious and the substance is known to be non-caustic: follow Poison Control's specific instructions — they may recommend water or milk to dilute.",
+        "Keep the person calm and in the recovery position if drowsy — monitor breathing and level of consciousness every 5 minutes until help arrives or Poison Control advises otherwise."
+      ],
+      "reasoning": [
+        "Poison Control's 1-800-222-1222 is a specialized toxicology service with substance-specific antidote and decontamination protocols unavailable at the 911 level — they should be the first call for stable patients.",
+        "Unconscious, seizing, or apneic patients require ALS; 911 and Poison Control can be called simultaneously.",
+        "Substance identification determines treatment: corrosives, hydrocarbons, and some medications have specific contraindications to vomiting and require different antidotes.",
+        "Caustic substances (bleach, drain cleaner, strong acids) cause chemical burns to the esophagus and pharynx on the way back up; hydrocarbons risk aspiration pneumonitis.",
+        "Skin and eye decontamination removes the ongoing toxic exposure; copious irrigation dilutes chemical concentration below tissue-damaging threshold.",
+        "Dilution with water or milk is appropriate for some ingestions but not others; only Poison Control has the real-time database to make this call.",
+        "The recovery position protects the airway from aspiration in a drowsy or obtunded patient."
+      ],
+      "avoid": [
+        "Never induce vomiting without explicit Poison Control instruction.",
+        "Do not give milk, water, or anything by mouth without guidance from Poison Control.",
+        "Do not use 'universal antidotes' — there is no such thing.",
+        "Do not wait for symptoms — many poisons have a latency period before serious effects appear.",
+        "Do not leave the person alone if drowsy or confused."
+      ],
+      "who_to_call": {
+        "primary": "911 (if unconscious, seizing, or not breathing)",
+        "poison_control": "1-800-222-1222"
+      },
+      "triage": [],
+      "metronome_bpm": null,
+      "beacon": false,
+      "tags": ["poisoning", "ingestion", "toxic", "poison-control", "chemical"]
+    },
+    {
+      "id": "house-fire",
+      "title": "House fire / building fire",
+      "short": "House fire",
+      "icon": "🏠",
+      "category": "threat",
+      "keywords": ["house fire", "building fire", "fire escape", "smoke", "trapped in fire", "fire alarm", "evacuation fire"],
+      "urgency": "critical",
+      "time_to_act_seconds": 60,
+      "immediate_actions": [
+        "Activate the building fire alarm and call 911 immediately — do not assume others have called.",
+        "Get out now: do not stop to collect belongings. Close doors behind you as you leave — a closed door buys minutes of fire containment.",
+        "Before opening any door, touch the back of your hand to the door and the doorknob — if hot, do not open it; find an alternate exit.",
+        "Stay low: smoke and toxic gases rise; crawl below the smoke layer if visibility is poor.",
+        "If your exit is blocked: seal gaps under the door with towels or clothing, signal from a window with a bright cloth, and call 911 to report your exact location.",
+        "Once outside, go to your designated meeting point and stay out — never re-enter a burning building for any reason.",
+        "If clothing is on fire: stop, drop to the ground, and roll to smother the flames. Cover your face with your hands."
+      ],
+      "reasoning": [
+        "Fire doubles in size every 30–60 seconds; the alarm activates suppression systems and alerts other occupants — delay costs lives.",
+        "Smoke inhalation kills more people than flames; belongings are replaceable.",
+        "A closed interior door can reduce room temperature by hundreds of degrees, giving occupants on the other side additional survival time.",
+        "Carbon monoxide and hydrogen cyanide from modern synthetic materials are denser at height — staying low keeps a person below the toxic gas layer.",
+        "Sealed gaps prevent convective gas exchange, significantly slowing smoke entry; visual signaling from a window allows firefighters to prioritize that room.",
+        "Structural collapse and re-ignition make re-entry extremely dangerous; firefighters have thermal imaging and protective equipment — civilians do not.",
+        "Stop-drop-roll deprives the flame of oxygen by removing the fanning effect of movement and covering the face from burns."
+      ],
+      "avoid": [
+        "Do not use elevators — power may fail and shafts channel smoke.",
+        "Do not open a hot door — it may be holding back a flashover.",
+        "Do not re-enter the building for any reason.",
+        "Do not hide under beds or in closets unless all exits are blocked — firefighters may not find you.",
+        "Do not wait for all family members before calling 911 — call first, then search."
+      ],
+      "who_to_call": {
+        "primary": "911"
+      },
+      "triage": [],
+      "metronome_bpm": null,
+      "beacon": true,
+      "tags": ["fire", "evacuation", "smoke", "escape", "threat"]
+    },
+    {
+      "id": "childbirth",
+      "title": "Emergency childbirth / baby coming",
+      "short": "Emergency birth",
+      "icon": "👶",
+      "category": "medical",
+      "keywords": ["childbirth", "labor", "baby coming", "delivery", "pushing", "crowning", "emergency delivery", "baby born", "labor contractions"],
+      "urgency": "high",
+      "time_to_act_seconds": 600,
+      "immediate_actions": [
+        "Call 911 immediately — a dispatcher can guide you through delivery in real time. Do not hang up.",
+        "Help the mother into a comfortable position: lying on her back with knees bent and apart, or on her side. Place clean towels or clothing underneath her.",
+        "Do not attempt to stop or delay the delivery — if the baby is crowning (head visible), birth is imminent.",
+        "As the head emerges, support it gently with both hands — do not pull. If the amniotic sac is still intact over the face, gently tear it open with your fingers.",
+        "Check for the umbilical cord around the neck: if present and loose, gently slip it over the baby's head. If tight and cannot be slipped, call 911 dispatcher for guidance.",
+        "After the head is out, the body usually delivers with the next contraction. Support the entire body — babies are slippery; hold firmly but gently.",
+        "Keep the baby warm immediately: dry vigorously with a clean towel (this also stimulates breathing), wrap in dry cloth, and place on the mother's chest. Do not cut the umbilical cord unless instructed by 911 dispatch and you have clean scissors."
+      ],
+      "reasoning": [
+        "911 dispatchers are trained in emergency delivery guidance; they provide step-by-step instructions and can dispatch EMS simultaneously.",
+        "The supine or lateral position allows gravity to assist descent; clean material prevents infection and absorbs fluids.",
+        "Fighting or delaying an imminent delivery risks fetal distress from cord compression or maternal injury; once crowning occurs, delivery is inevitable within minutes.",
+        "Gentle support of the emerging head prevents rapid expulsion that could tear the perineum; maintaining membrane integrity is irrelevant once the head is at the perineum.",
+        "A nuchal cord (cord around neck) occurs in ~25% of deliveries and is usually managed by slipping it over the head; cutting a cord without proper clamping causes hemorrhage.",
+        "Unsupported delivery of the body risks dropping the baby or allowing rapid expulsion that tears tissue.",
+        "Vigorous drying stimulates the newborn respiratory reflex; hypothermia is dangerous in newborns (large surface-to-volume ratio); the umbilical cord remains functional for several minutes and need not be cut urgently."
+      ],
+      "avoid": [
+        "Do not pull on the head or body to speed delivery.",
+        "Do not cut the umbilical cord unless EMS or a healthcare provider instructs you to and you have clean instruments.",
+        "Do not give the mother anything to eat or drink if a C-section may be needed.",
+        "Do not leave the mother alone.",
+        "Do not place the baby on a cold surface — skin-to-skin on the mother's chest with a blanket over both is optimal."
+      ],
+      "who_to_call": {
+        "primary": "911"
+      },
+      "triage": [],
+      "metronome_bpm": null,
+      "beacon": false,
+      "tags": ["childbirth", "delivery", "labor", "newborn", "obstetric"]
+    },
+    {
+      "id": "allergic-reaction",
+      "title": "Mild to moderate allergic reaction",
+      "short": "Allergic reaction",
+      "icon": "🌸",
+      "category": "medical",
+      "keywords": ["allergic reaction", "allergy", "hives", "itching", "rash", "swelling", "food allergy", "mild allergy", "bee sting allergy"],
+      "urgency": "medium",
+      "time_to_act_seconds": 900,
+      "immediate_actions": [
+        "Identify and remove the allergen if possible: move away from the trigger, remove the stinger by scraping (not squeezing), or stop eating the food.",
+        "Give an oral antihistamine (e.g., cetirizine 10 mg or diphenhydramine 25–50 mg) if available and the person has no contraindications — follow package dosing.",
+        "Monitor closely for signs of anaphylaxis: spreading hives plus throat tightening, difficulty breathing, dizziness, drop in blood pressure, or vomiting — if any appear, treat as anaphylaxis and call 911.",
+        "Apply a cool, damp cloth to itchy skin areas to relieve discomfort.",
+        "Keep the person calm and seated — anxiety can amplify perceived severity.",
+        "If symptoms are not improving within 30–60 minutes or worsen at all, seek medical evaluation.",
+        "If the person has a prescribed EpiPen for known severe allergies, have it ready at all times — mild reactions can escalate without warning."
+      ],
+      "reasoning": [
+        "Removing the antigen reduces ongoing mast cell degranulation and limits histamine release; scraping prevents additional venom injection.",
+        "Oral antihistamines (H1 blockers) relieve urticaria, pruritus, and nasal symptoms within 30–60 minutes; they are appropriate for mild-moderate reactions without systemic signs.",
+        "Anaphylaxis can begin as a mild reaction; the combination of skin plus respiratory or cardiovascular signs defines the threshold — constant monitoring enables early intervention.",
+        "Topical cooling reduces local histamine-mediated vasodilation and mast cell activity, relieving itching without systemic effects.",
+        "The anxiety-allergy cycle is real: stress hormones can worsen mast cell degranulation, and perceived severity may lead to hyperventilation mimicking anaphylaxis.",
+        "Antihistamines require 30–60 minutes to reach peak effect; no improvement suggests either inadequate dosing or a progressing reaction requiring evaluation.",
+        "Mild reactions can 'bridge' to anaphylaxis, especially with foods and insects; EpiPen availability is critical for known allergy sufferers."
+      ],
+      "avoid": [
+        "Do not give a second antihistamine dose too soon — wait the full recommended interval on the package.",
+        "Do not give antihistamines as a substitute for epinephrine if anaphylaxis signs appear.",
+        "Do not scratch — this worsens histamine release in the skin.",
+        "Do not apply heat to hives — heat worsens vasodilation and itching.",
+        "Do not dismiss progressive symptoms as 'just a mild allergy'."
+      ],
+      "who_to_call": {
+        "primary": "911 (if progressing to anaphylaxis)",
+        "non_emergency": "Urgent care or primary physician for non-resolving mild reactions"
+      },
+      "triage": [],
+      "metronome_bpm": null,
+      "beacon": false,
+      "tags": ["allergy", "hives", "antihistamine", "reaction", "mild"]
+    },
+    {
+      "id": "electric-shock",
+      "title": "Electric shock / electrocution",
+      "short": "Electric shock",
+      "icon": "⚡",
+      "category": "trauma",
+      "keywords": ["electric shock", "electrocution", "electrical injury", "lightning strike", "power line", "shock from outlet", "electrical burn"],
+      "urgency": "critical",
+      "time_to_act_seconds": 60,
+      "immediate_actions": [
+        "Do NOT touch the person while they are in contact with the electrical source — you will be electrocuted too. Turn off the power at the breaker or main switch first.",
+        "If you cannot turn off the power, use a dry, non-conductive object (dry wood, plastic chair) to push the source or person away from the current. Stand on a dry surface.",
+        "Call 911 immediately after the person is separated from the source.",
+        "Once safe to touch: if the person is unresponsive and not breathing, begin CPR immediately. Electrical injuries commonly cause cardiac arrest via VF.",
+        "Look for and treat entry and exit burn wounds: apply clean, non-stick dressings. Exit wounds are often on the feet and can be severe.",
+        "Immobilize the cervical spine if the shock may have caused the person to fall or be thrown.",
+        "All significant electrical injuries require hospital evaluation — internal tissue damage can be far greater than surface burns suggest; myoglobin from muscle destruction can damage the kidneys."
+      ],
+      "reasoning": [
+        "The primary rescuer risk is electrocution; the circuit must be broken before contact — bodies in contact with an active source will conduct current to a rescuer.",
+        "Non-conductive, dry materials do not complete an electrical circuit; the rescuer's insulation from ground is critical.",
+        "911 activates ALS for cardiac monitoring, IV access, and burn care — all essential for electrical injuries.",
+        "Ventricular fibrillation is the leading cause of death from electrical shock; bystander CPR and early defibrillation are the only bridges to ALS.",
+        "Electrical current takes the path of least resistance through the body — entry/exit burns mark the path; exit wounds are often on soles and may be deep.",
+        "The electromagnetic force of a large shock can cause muscle tetany and throw the person, risking spinal injury; immobilize until cleared by imaging.",
+        "Rhabdomyolysis from muscle destruction releases myoglobin that precipitates in renal tubules, causing acute kidney injury — IV fluid and monitoring are required even with minor surface burns."
+      ],
+      "avoid": [
+        "Never touch a person who is still in contact with the electrical source.",
+        "Do not use metal objects or wet materials to separate person from source.",
+        "Do not assume the person is fine because surface burns appear minor.",
+        "Do not allow the person to walk away and decline evaluation — internal injuries may not be apparent immediately.",
+        "Do not give food or water until evaluated — anesthesia for wound care may be needed."
+      ],
+      "who_to_call": {
+        "primary": "911"
+      },
+      "triage": [],
+      "metronome_bpm": null,
+      "beacon": true,
+      "tags": ["electric-shock", "electrocution", "cpr", "cardiac", "burn", "trauma"]
+    }
+  ]
+}

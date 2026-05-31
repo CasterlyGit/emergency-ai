@@ -1,0 +1,227 @@
+{
+  "version": 1,
+  "substances": [
+    {
+      "name": "bleach (sodium hypochlorite)",
+      "category": "household-chemical",
+      "induce_vomiting": false,
+      "first_aid": [
+        "Call Poison Control immediately: 1-800-222-1222 (US) or your regional center.",
+        "Do NOT induce vomiting — bleach is caustic and causes additional burns on the way back up.",
+        "If swallowed: rinse mouth with water, then give small sips of water or milk (4–8 oz adults, 2–4 oz children) to dilute.",
+        "If on skin or eyes: flush with large amounts of cool running water for 15–20 minutes.",
+        "If inhaled fumes: move to fresh air immediately; loosen tight clothing.",
+        "Remove contaminated clothing and wash skin thoroughly with soap and water.",
+        "Monitor breathing; if difficulty breathing develops, call 911."
+      ],
+      "antidote": null,
+      "call": "1-800-222-1222"
+    },
+    {
+      "name": "ammonia",
+      "category": "household-chemical",
+      "induce_vomiting": false,
+      "first_aid": [
+        "Call Poison Control immediately: 1-800-222-1222 (US) or your regional center.",
+        "Do NOT induce vomiting — ammonia is corrosive and causes additional airway and esophageal burns.",
+        "NEVER mix ammonia with bleach — produces toxic chloramine gas; evacuate if this occurred.",
+        "If swallowed: rinse mouth, give small sips of water or milk (4–8 oz adults, 2–4 oz children).",
+        "If on skin: remove contaminated clothing; flush with copious running water for 15–20 minutes.",
+        "If in eyes: flush with clean water for at least 20 minutes, holding eyelids open.",
+        "If inhaled: move to fresh air immediately; call 911 if breathing is labored or person is unconscious."
+      ],
+      "antidote": null,
+      "call": "1-800-222-1222"
+    },
+    {
+      "name": "medication overdose (general)",
+      "category": "medication",
+      "induce_vomiting": false,
+      "first_aid": [
+        "Call 911 or Poison Control 1-800-222-1222 immediately — do NOT wait for symptoms.",
+        "Do NOT induce vomiting unless explicitly instructed by Poison Control or a clinician.",
+        "Note the medication name, dose, and estimated quantity taken; have this ready for responders.",
+        "If the person is unconscious and breathing: place in recovery position (on their side) to protect the airway.",
+        "If the person stops breathing: begin CPR at 100–120 compressions/min and call 911 if not already done.",
+        "Do not leave the person alone.",
+        "Save the pill bottle or packaging to give to emergency responders."
+      ],
+      "antidote": null,
+      "call": "1-800-222-1222"
+    },
+    {
+      "name": "opioids (heroin, fentanyl, prescription opioids)",
+      "category": "medication",
+      "induce_vomiting": false,
+      "first_aid": [
+        "Call 911 immediately — opioid overdose is rapidly fatal without intervention.",
+        "Administer naloxone (Narcan) if available: one spray into one nostril (or inject per kit instructions); repeat in 2–3 minutes if no response.",
+        "Do NOT induce vomiting.",
+        "If unconscious and not breathing normally: begin rescue breathing (1 breath every 5 seconds) or full CPR.",
+        "Place in recovery position if breathing but unconscious to prevent choking on vomit.",
+        "Stay until EMS arrives — naloxone wears off in 30–90 minutes and person can re-sedate.",
+        "Good Samaritan laws protect callers in most US states — call 911 without fear."
+      ],
+      "antidote": "naloxone (Narcan) — reverses opioid effects; available without prescription at many pharmacies",
+      "call": "911"
+    },
+    {
+      "name": "acetaminophen (Tylenol / paracetamol)",
+      "category": "medication",
+      "induce_vomiting": false,
+      "first_aid": [
+        "Call Poison Control 1-800-222-1222 or 911 immediately — liver damage is delayed 24–72 hours and may not be apparent.",
+        "Do NOT induce vomiting.",
+        "Note exact dose taken, timing, and any other substances consumed.",
+        "Hospital treatment with N-acetylcysteine (NAC) is highly effective if given early — time is critical.",
+        "Do not give any additional medications without medical guidance.",
+        "Even if the person feels well, immediate evaluation is essential because symptoms appear late."
+      ],
+      "antidote": "N-acetylcysteine (NAC) — administered in hospital; most effective within 8–10 hours of ingestion",
+      "call": "1-800-222-1222"
+    },
+    {
+      "name": "button battery (disc battery)",
+      "category": "foreign-body",
+      "induce_vomiting": false,
+      "first_aid": [
+        "Call 911 or go to the emergency department IMMEDIATELY — do not wait for symptoms.",
+        "Do NOT induce vomiting — can worsen damage and delay definitive care.",
+        "Do NOT eat or drink anything (keep NPO for potential surgery).",
+        "If a button battery is swallowed and the child is over 1 year old, give 2 teaspoons of honey every 10 minutes en route to the ER ONLY if advised by Poison Control — honey may slow tissue damage.",
+        "Do NOT give honey to infants under 12 months.",
+        "Time is critical: a 20mm lithium battery can burn through the esophagus within 2 hours.",
+        "If battery is lodged in the ear or nose: do not attempt removal at home — go to the ED immediately."
+      ],
+      "antidote": "Surgical or endoscopic removal — emergency procedure; honey may reduce injury in transit",
+      "call": "1-800-222-1222"
+    },
+    {
+      "name": "antifreeze (ethylene glycol)",
+      "category": "household-chemical",
+      "induce_vomiting": false,
+      "first_aid": [
+        "Call Poison Control 1-800-222-1222 or 911 immediately.",
+        "Do NOT induce vomiting.",
+        "Note the product name, amount ingested, and time of ingestion.",
+        "Antifreeze tastes sweet — do not underestimate ingestion in children or pets.",
+        "Hospital treatment with fomepizole or ethanol is required; early treatment prevents kidney failure.",
+        "Keep the person still and calm while awaiting emergency services.",
+        "If on skin: remove contaminated clothing and wash with soap and water."
+      ],
+      "antidote": "Fomepizole (4-MP) or ethanol — administered in hospital to block toxic metabolism",
+      "call": "1-800-222-1222"
+    },
+    {
+      "name": "carbon monoxide",
+      "category": "gas",
+      "induce_vomiting": false,
+      "first_aid": [
+        "Get everyone — including yourself — out of the building immediately; do not re-enter.",
+        "Call 911 from outside or from a neighbor's home.",
+        "Do not induce vomiting (not applicable — CO is inhaled, not ingested).",
+        "Lie down if dizzy or unconscious — keeping the airway open is the priority.",
+        "If the person is unconscious and not breathing: begin CPR at 100–120 compressions/min; call 911.",
+        "High-flow oxygen is the primary treatment — paramedics will administer it via mask.",
+        "Do not re-enter the building until emergency services clear it."
+      ],
+      "antidote": "High-flow oxygen (100%) — administered by EMS; hyperbaric oxygen for severe cases",
+      "call": "911"
+    },
+    {
+      "name": "alcohol (ethanol — acute poisoning)",
+      "category": "beverage",
+      "induce_vomiting": false,
+      "first_aid": [
+        "Call 911 if the person is unconscious, not responding, breathing fewer than 8 breaths/min, or having seizures.",
+        "Do NOT induce vomiting — risk of aspiration is high; unconscious persons can choke.",
+        "Place an unconscious but breathing person in the recovery position (on their side) to prevent choking.",
+        "Keep the person warm — alcohol causes heat loss and hypothermia.",
+        "Do not give coffee or water to 'sober them up' — time and medical support are the only treatments.",
+        "Stay with the person and monitor breathing continuously.",
+        "Call Poison Control 1-800-222-1222 if concerned about quantity consumed."
+      ],
+      "antidote": null,
+      "call": "1-800-222-1222"
+    },
+    {
+      "name": "household cleaner (multi-surface, drain cleaner, oven cleaner)",
+      "category": "household-chemical",
+      "induce_vomiting": false,
+      "first_aid": [
+        "Call Poison Control 1-800-222-1222 immediately and follow their specific instructions.",
+        "Do NOT induce vomiting — caustic cleaners cause severe burns to the mouth, throat, and esophagus on the way back up.",
+        "For skin contact: remove contaminated clothing and flush affected area with cool running water for 15–20 minutes.",
+        "For eye contact: flush eyes with clean water for at least 20 minutes, holding eyelids open; seek eye care evaluation.",
+        "If swallowed: rinse mouth with water; give small sips of water only if instructed by Poison Control.",
+        "If inhaling fumes: move to fresh air; call 911 if breathing is difficult.",
+        "Save the container or take a photo of the label to assist medical staff."
+      ],
+      "antidote": null,
+      "call": "1-800-222-1222"
+    },
+    {
+      "name": "pesticide (organophosphate, carbamate, rodenticide)",
+      "category": "pesticide",
+      "induce_vomiting": false,
+      "first_aid": [
+        "Call Poison Control 1-800-222-1222 and 911 immediately — pesticide poisoning can progress quickly.",
+        "Do NOT induce vomiting.",
+        "Identify the specific product if possible — different pesticide classes require different treatments.",
+        "For skin contact: remove contaminated clothing using gloves; flush skin with soap and large amounts of water.",
+        "For eye contact: flush with clean water for 15–20 minutes.",
+        "If inhaled: move person to fresh air; loosen restrictive clothing; administer CPR if not breathing.",
+        "Warning signs of organophosphate poisoning: excessive salivation, tearing, small pupils, muscle twitching — report these immediately to responders."
+      ],
+      "antidote": "Atropine and pralidoxime for organophosphates — administered in hospital; vitamin K1 for anticoagulant rodenticides",
+      "call": "1-800-222-1222"
+    },
+    {
+      "name": "unknown plant or berry",
+      "category": "plant",
+      "induce_vomiting": false,
+      "first_aid": [
+        "Call Poison Control 1-800-222-1222 immediately — do not wait for symptoms.",
+        "Do NOT induce vomiting unless Poison Control specifically directs you to.",
+        "Try to identify the plant: take a photo or collect a sample (with leaves, berries, or flowers if possible).",
+        "Note how much was eaten, which part of the plant, and when.",
+        "Rinse mouth with water; do not eat or drink more until cleared by Poison Control.",
+        "Watch for: rash, swelling of mouth/throat, drooling, nausea, vomiting, confusion, or irregular heartbeat.",
+        "Call 911 immediately if the person has difficulty breathing, seizures, or loses consciousness."
+      ],
+      "antidote": null,
+      "call": "1-800-222-1222"
+    },
+    {
+      "name": "iron supplements (acute iron toxicity)",
+      "category": "medication",
+      "induce_vomiting": false,
+      "first_aid": [
+        "Call Poison Control 1-800-222-1222 and 911 immediately — iron toxicity is especially dangerous in children.",
+        "Do NOT induce vomiting.",
+        "Note the number of tablets missing and the iron content per tablet (mg elemental iron).",
+        "Symptoms can appear delayed 6–24 hours — absence of early symptoms does not mean safety.",
+        "Hospital treatment with deferoxamine chelation is required for significant ingestion.",
+        "Keep the bottle and label to give to emergency responders."
+      ],
+      "antidote": "Deferoxamine — administered in hospital for iron chelation",
+      "call": "1-800-222-1222"
+    },
+    {
+      "name": "lead (paint chips, dust, or water)",
+      "category": "heavy-metal",
+      "induce_vomiting": false,
+      "first_aid": [
+        "Call Poison Control 1-800-222-1222 — for acute exposure, prioritize decontamination.",
+        "Do NOT induce vomiting.",
+        "Remove the child or person from the source of exposure immediately.",
+        "Wash hands, face, and any exposed skin thoroughly with soap and water.",
+        "For ingested paint chips: do NOT induce vomiting; seek medical evaluation for blood lead testing.",
+        "Arrange for the source (old paint, pipes) to be properly remediated by a certified professional.",
+        "Blood lead testing is necessary to assess exposure level — symptoms are often delayed or subtle."
+      ],
+      "antidote": "Chelation therapy (succimer/DMSA or EDTA) — prescribed by physician based on blood lead level",
+      "call": "1-800-222-1222"
+    }
+  ]
+}

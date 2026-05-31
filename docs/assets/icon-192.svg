@@ -1,0 +1,71 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 192 192" width="192" height="192" shape-rendering="crispEdges">
+  <defs>
+    <!-- Matte-black rounded background -->
+    <linearGradient id="bg192" x1="0" y1="0" x2="192" y2="192" gradientUnits="userSpaceOnUse">
+      <stop offset="0%" stop-color="#070b12"/>
+      <stop offset="100%" stop-color="#04060a"/>
+    </linearGradient>
+    <!-- Cyan neon glow for the cross -->
+    <filter id="neon192" x="-40%" y="-40%" width="180%" height="180%" color-interpolation-filters="sRGB">
+      <feGaussianBlur in="SourceGraphic" stdDeviation="3.5" result="blur1"/>
+      <feGaussianBlur in="SourceGraphic" stdDeviation="7" result="blur2"/>
+      <feMerge>
+        <feMergeNode in="blur2"/>
+        <feMergeNode in="blur1"/>
+        <feMergeNode in="SourceGraphic"/>
+      </feMerge>
+    </filter>
+    <!-- Pulse waveform glow -->
+    <filter id="pulse192" x="-20%" y="-60%" width="140%" height="220%" color-interpolation-filters="sRGB">
+      <feGaussianBlur in="SourceGraphic" stdDeviation="2" result="b1"/>
+      <feGaussianBlur in="SourceGraphic" stdDeviation="4.5" result="b2"/>
+      <feMerge>
+        <feMergeNode in="b2"/>
+        <feMergeNode in="b1"/>
+        <feMergeNode in="SourceGraphic"/>
+      </feMerge>
+    </filter>
+    <!-- Clip to rounded square for maskable safe zone -->
+    <clipPath id="mask192">
+      <rect x="0" y="0" width="192" height="192" rx="38" ry="38"/>
+    </clipPath>
+  </defs>
+
+  <!-- Background: matte-black rounded square -->
+  <rect x="0" y="0" width="192" height="192" rx="38" ry="38" fill="url(#bg192)"/>
+
+  <!-- Subtle inner border luminous rim -->
+  <rect x="1" y="1" width="190" height="190" rx="37" ry="37" fill="none"
+        stroke="rgba(46,230,255,0.10)" stroke-width="1.2"/>
+
+  <!-- === MEDICAL CROSS === -->
+  <!-- Horizontal bar: x=58, y=81, w=76, h=30 — centered at 96,96 -->
+  <!-- Vertical bar:   x=81, y=58, w=30, h=76 -->
+  <!-- Combined as group with neon filter -->
+  <g filter="url(#neon192)" clip-path="url(#mask192)">
+    <!-- Cross fill: slightly dimmed inner, bright stroke -->
+    <rect x="58" y="81" width="76" height="30" rx="5" ry="5"
+          fill="rgba(46,230,255,0.08)" stroke="#2ee6ff" stroke-width="2.2"/>
+    <rect x="81" y="58" width="30" height="76" rx="5" ry="5"
+          fill="rgba(46,230,255,0.08)" stroke="#2ee6ff" stroke-width="2.2"/>
+    <!-- Cross center highlight (intersection, no double-stroke) -->
+    <rect x="81" y="81" width="30" height="30" rx="3" ry="3"
+          fill="rgba(46,230,255,0.14)" stroke="none"/>
+  </g>
+
+  <!-- === PULSE WAVEFORM === below cross, y≈140..162 -->
+  <!-- Baseline flat → spike up → spike down → flat; mimics ECG -->
+  <g filter="url(#pulse192)" clip-path="url(#mask192)">
+    <polyline
+      points="34,151 60,151 68,151 72,138 78,162 84,140 88,151 124,151 128,151 132,144 136,158 140,151 158,151"
+      fill="none"
+      stroke="#2ee6ff"
+      stroke-width="2.4"
+      stroke-linecap="round"
+      stroke-linejoin="round"/>
+  </g>
+
+  <!-- Faint horizontal rule separating cross from waveform -->
+  <line x1="34" y1="134" x2="158" y2="134"
+        stroke="rgba(46,230,255,0.08)" stroke-width="0.8"/>
+</svg>

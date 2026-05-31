@@ -1,569 +1,213 @@
-<!DOCTYPE html>
-<html lang="en">
+<!doctype html>
+<html lang="en" data-urgency="idle">
 <head>
-<meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>emergency-ai — Sub-2s jurisdiction-aware emergency response API</title>
-<meta name="description" content="Interactive demo: pick a city, describe a situation, get sub-2s structured emergency action steps grounded in local law. FastAPI + Postgres + Redis + RAG + Prometheus on Fly.io." />
-<meta property="og:title" content="emergency-ai — sub-2s jurisdiction-aware emergency API" />
-<meta property="og:description" content="Multi-tenant API: API key auth, Redis rate limiting, RAG over local statutes, Prometheus metrics. p95 < 940ms at 50 VUs." />
-<style>
-  :root {
-    --bg:        #09090f;
-    --bg-elev:   #111118;
-    --bg-card:   #16161f;
-    --bg-card2:  #1c1c28;
-    --line:      #222230;
-    --text:      #f1f3f5;
-    --text-dim:  #7a8190;
-    --text-faint:#3e4455;
-    --accent:    #00e5c3;
-    --accent-glow: rgba(0, 229, 195, 0.55);
-    --accent-soft: rgba(0, 229, 195, 0.10);
-    --red:       #ff4040;
-    --red-glow:  rgba(255, 64, 64, 0.45);
-    --orange:    #ff8a4c;
-    --yellow:    #ffd840;
-    --ok:        #2ee59d;
-    --mono: 'SF Mono', ui-monospace, Menlo, Consolas, monospace;
-    --body: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-  }
-  * { box-sizing: border-box; margin: 0; padding: 0; }
-  html, body { background: var(--bg); color: var(--text); font-family: var(--body); -webkit-font-smoothing: antialiased; min-height: 100vh; }
-  body {
-    background:
-      radial-gradient(900px 600px at 85% -5%, rgba(0, 229, 195, 0.07), transparent 55%),
-      radial-gradient(700px 500px at -10% 65%, rgba(255, 64, 64, 0.05), transparent 55%),
-      var(--bg);
-  }
-  .wrap { max-width: 920px; margin: 0 auto; padding: 48px 24px 80px; }
-
-  /* header */
-  header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 40px; }
-  .brand { display: flex; align-items: center; gap: 14px; }
-  .logo {
-    width: 36px; height: 36px; border-radius: 9px;
-    background: linear-gradient(135deg, var(--accent), #007f6e);
-    display: flex; align-items: center; justify-content: center;
-    box-shadow: 0 0 20px var(--accent-glow);
-  }
-  .logo svg { width: 20px; height: 20px; }
-  .brand-name { font-family: var(--mono); font-size: 14px; letter-spacing: 0.02em; }
-  .brand-name b { color: var(--accent); }
-  .nav { display: flex; gap: 20px; }
-  .nav a { font-family: var(--mono); font-size: 12px; color: var(--text-dim); text-decoration: none; transition: color 150ms; }
-  .nav a:hover { color: var(--text); }
-
-  /* hero */
-  .hero { margin-bottom: 44px; }
-  .hero-tag {
-    display: inline-flex; align-items: center; gap: 8px;
-    padding: 5px 12px; border: 1px solid var(--line); border-radius: 999px;
-    font-family: var(--mono); font-size: 11px; color: var(--text-dim);
-    margin-bottom: 20px;
-  }
-  .hero-tag .dot { width: 6px; height: 6px; border-radius: 50%; background: var(--accent); box-shadow: 0 0 8px var(--accent-glow); animation: pulse 2s ease-in-out infinite; }
-  @keyframes pulse { 0%,100%{ opacity:1; } 50%{ opacity:0.4; } }
-  h1 { font-size: clamp(28px, 4.5vw, 48px); line-height: 1.1; font-weight: 800; letter-spacing: -0.02em; margin-bottom: 14px; }
-  h1 .a { color: var(--accent); }
-  .hero-sub { font-size: 17px; color: var(--text-dim); max-width: 680px; line-height: 1.6; margin-bottom: 24px; }
-  .badges { display: flex; gap: 10px; flex-wrap: wrap; margin-bottom: 10px; }
-  .badge-chip { font-family: var(--mono); font-size: 11px; color: var(--text-dim); padding: 4px 10px; border: 1px solid var(--line); border-radius: 999px; }
-
-  /* section labels */
-  .section-eye { font-family: var(--mono); font-size: 10.5px; color: var(--text-faint); letter-spacing: 0.18em; margin-bottom: 12px; }
-  h2 { font-size: clamp(18px, 2.5vw, 22px); font-weight: 700; letter-spacing: -0.01em; margin-bottom: 20px; }
-
-  /* demo */
-  .demo-section { margin-bottom: 56px; }
-  .demo-card {
-    background: var(--bg-elev);
-    border: 1px solid var(--line);
-    border-radius: 16px;
-    padding: 28px;
-  }
-  .demo-row { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin-bottom: 14px; }
-  @media (max-width: 600px) { .demo-row { grid-template-columns: 1fr; } }
-  label { font-family: var(--mono); font-size: 11px; color: var(--text-faint); letter-spacing: 0.1em; display: block; margin-bottom: 7px; }
-  select, textarea {
-    width: 100%; background: var(--bg-card); border: 1px solid var(--line);
-    border-radius: 9px; color: var(--text); font-family: var(--body); font-size: 14px;
-    padding: 11px 14px; outline: none; transition: border-color 160ms;
-    -webkit-appearance: none;
-  }
-  select:focus, textarea:focus { border-color: var(--accent); }
-  textarea { min-height: 80px; resize: vertical; }
-  .btn {
-    display: inline-flex; align-items: center; gap: 10px;
-    padding: 13px 24px; border-radius: 10px;
-    font-family: var(--mono); font-size: 13px; font-weight: 700; letter-spacing: 0.01em;
-    cursor: pointer; border: none; outline: none; transition: all 180ms;
-    background: var(--accent); color: #031a17;
-  }
-  .btn:hover { box-shadow: 0 0 24px var(--accent-glow); transform: translateY(-1px); }
-  .btn:active { transform: translateY(0); }
-  .btn:disabled { opacity: 0.5; cursor: not-allowed; transform: none; box-shadow: none; }
-  .btn-row { display: flex; align-items: center; gap: 16px; margin-top: 4px; }
-  .latency-bar { font-family: var(--mono); font-size: 12px; color: var(--text-faint); }
-  .latency-bar span { color: var(--accent); }
-
-  /* response card */
-  #response-wrap { display: none; margin-top: 20px; }
-  .resp-card {
-    background: var(--bg-card); border: 1px solid var(--line);
-    border-radius: 12px; overflow: hidden;
-  }
-  .resp-header {
-    display: flex; align-items: center; justify-content: space-between;
-    padding: 14px 18px; border-bottom: 1px solid var(--line);
-  }
-  .urgency-badge {
-    font-family: var(--mono); font-size: 11px; font-weight: 700; letter-spacing: 0.12em;
-    padding: 5px 12px; border-radius: 999px; text-transform: uppercase;
-  }
-  .urgency-badge.critical { background: rgba(255,64,64,0.18); color: var(--red); border: 1px solid rgba(255,64,64,0.35); }
-  .urgency-badge.high     { background: rgba(255,138,76,0.18); color: var(--orange); border: 1px solid rgba(255,138,76,0.35); }
-  .urgency-badge.medium   { background: rgba(255,216,64,0.15); color: var(--yellow); border: 1px solid rgba(255,216,64,0.3); }
-  .urgency-badge.low      { background: rgba(46,229,157,0.12); color: var(--ok); border: 1px solid rgba(46,229,157,0.25); }
-  .resp-meta { font-family: var(--mono); font-size: 11px; color: var(--text-faint); }
-  .resp-meta span { color: var(--accent); }
-  .resp-body { padding: 18px; }
-  .resp-section { margin-bottom: 16px; }
-  .resp-section:last-child { margin-bottom: 0; }
-  .resp-label { font-family: var(--mono); font-size: 10.5px; color: var(--text-faint); letter-spacing: 0.12em; margin-bottom: 8px; }
-  .action-list { list-style: none; }
-  .action-list li {
-    display: flex; align-items: flex-start; gap: 10px;
-    padding: 8px 0; border-bottom: 1px solid var(--line); font-size: 14px; line-height: 1.5;
-  }
-  .action-list li:last-child { border-bottom: none; }
-  .action-num { font-family: var(--mono); font-size: 12px; color: var(--accent); min-width: 20px; padding-top: 1px; font-weight: 700; }
-  .call-box { background: var(--bg-card2); border-radius: 8px; padding: 12px 14px; font-size: 13.5px; line-height: 1.6; }
-  .call-box strong { color: var(--accent); font-family: var(--mono); }
-  .jurisdiction-note { font-size: 13px; color: var(--text-dim); line-height: 1.6; font-style: italic; }
-
-  /* loading animation */
-  .loading-dots { display: none; gap: 6px; align-items: center; }
-  .loading-dots.visible { display: flex; }
-  .loading-dots span {
-    width: 6px; height: 6px; border-radius: 50%; background: var(--accent);
-    animation: bounce 1.2s ease-in-out infinite;
-  }
-  .loading-dots span:nth-child(2) { animation-delay: 0.15s; }
-  .loading-dots span:nth-child(3) { animation-delay: 0.3s; }
-  @keyframes bounce { 0%,80%,100%{ transform: scale(0.6); opacity:0.4; } 40%{ transform: scale(1); opacity:1; } }
-
-  /* architecture */
-  .arch-section { margin-bottom: 56px; }
-  .arch-diagram {
-    background: var(--bg-elev); border: 1px solid var(--line);
-    border-radius: 14px; padding: 28px 24px; overflow-x: auto;
-  }
-  .arch-flow {
-    display: flex; align-items: center; flex-wrap: wrap; gap: 0;
-    font-family: var(--mono); font-size: 12.5px;
-  }
-  .arch-node {
-    background: var(--bg-card2); border: 1px solid var(--line);
-    border-radius: 8px; padding: 9px 14px; white-space: nowrap;
-    transition: border-color 200ms, box-shadow 200ms;
-    cursor: default;
-  }
-  .arch-node:hover { border-color: var(--accent); box-shadow: 0 0 14px var(--accent-soft); }
-  .arch-node .n { color: var(--accent); font-weight: 700; }
-  .arch-node .s { font-size: 10.5px; color: var(--text-faint); display: block; margin-top: 3px; }
-  .arch-arrow {
-    color: var(--text-faint); padding: 0 10px; font-size: 16px;
-    display: flex; align-items: center;
-  }
-  .arch-caption { font-family: var(--mono); font-size: 11.5px; color: var(--text-faint); margin-top: 18px; line-height: 1.7; }
-  .arch-caption b { color: var(--text-dim); }
-
-  /* stats */
-  .stats-bar {
-    display: flex; align-items: center; justify-content: center;
-    flex-wrap: wrap; gap: 0;
-    background: var(--bg-elev); border: 1px solid var(--line);
-    border-radius: 12px; padding: 16px 20px;
-    font-family: var(--mono); font-size: 12px; color: var(--text-dim);
-    margin-bottom: 56px;
-  }
-  .stats-bar .stat { padding: 0 16px; border-right: 1px solid var(--line); }
-  .stats-bar .stat:last-child { border-right: none; }
-  .stats-bar .stat:first-child { padding-left: 0; }
-  .stats-bar .val { color: var(--accent); font-weight: 700; }
-  @media (max-width: 580px) {
-    .stats-bar { flex-direction: column; gap: 8px; }
-    .stats-bar .stat { border-right: none; padding: 0; }
-  }
-
-  footer {
-    border-top: 1px solid var(--line); padding-top: 28px;
-    display: flex; justify-content: space-between; align-items: center;
-    font-family: var(--mono); font-size: 11px; color: var(--text-faint);
-    flex-wrap: wrap; gap: 10px;
-  }
-  footer a { color: var(--text-dim); text-decoration: none; transition: color 150ms; }
-  footer a:hover { color: var(--accent); }
-
-  @keyframes fadeUp { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
-  .hero, .demo-section, .arch-section, .stats-bar { animation: fadeUp 550ms ease-out both; }
-  .demo-section  { animation-delay: 60ms; }
-  .arch-section  { animation-delay: 130ms; }
-  .stats-bar     { animation-delay: 200ms; }
-</style>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, maximum-scale=1" />
+<meta name="theme-color" content="#04060a" />
+<meta name="description" content="Offline-first, jurisdiction-aware emergency response. Long-press SOS → sub-2-second action steps. Works with zero signal." />
+<meta name="apple-mobile-web-app-capable" content="yes" />
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+<title>emergency-ai · SOS</title>
+<link rel="manifest" href="manifest.webmanifest" />
+<link rel="icon" href="assets/icon-192.svg" type="image/svg+xml" />
+<link rel="apple-touch-icon" href="assets/icon-192.svg" />
+<link rel="stylesheet" href="css/styles.css" />
 </head>
 <body>
-<div class="wrap">
+<div class="grain" aria-hidden="true"></div>
+<div class="ambient" aria-hidden="true"></div>
 
-  <header>
-    <div class="brand">
-      <div class="logo">
-        <svg viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
-          <path d="M10 2L12.5 7.5H18L13.5 11L15.5 17L10 13.5L4.5 17L6.5 11L2 7.5H7.5L10 2Z" fill="#031a17" stroke="none"/>
-        </svg>
-      </div>
-      <div class="brand-name"><b>emergency-ai</b> · v0.2</div>
+<main id="app">
+  <!-- ───────────────── Top bar ───────────────── -->
+  <header class="topbar">
+    <div class="brand" id="brand">
+      <svg class="logo" viewBox="0 0 32 32" aria-hidden="true">
+        <rect x="2" y="2" width="28" height="28" rx="8" class="logo-bg"/>
+        <path d="M16 8v16M8 16h16" class="logo-cross"/>
+        <path d="M4 16h3l2-5 3 10 2-5h3" class="logo-pulse"/>
+      </svg>
+      <span class="brand-name">emergency<b>ai</b></span>
     </div>
-    <nav class="nav">
-      <a href="#demo">demo</a>
-      <a href="#arch">architecture</a>
-      <a href="https://github.com/CasterlyGit/emergency-ai" target="_blank" rel="noopener">github</a>
-      <a href="https://casterlygit.github.io/" target="_blank" rel="noopener">← casterlygit</a>
-    </nav>
+    <div class="topbar-right">
+      <span id="net-badge" class="badge badge-net" title="Connection mode">
+        <span class="dot"></span><span class="badge-label" data-i18n="offline_badge">offline-ready</span>
+      </span>
+      <button id="lang-select" class="icon-btn" aria-label="Language" title="Language" data-i18n-title="language">
+        <span id="lang-flag">🌐</span>
+      </button>
+      <button id="open-settings" class="icon-btn" aria-label="Settings" title="Settings">⚙</button>
+    </div>
   </header>
 
-  <!-- hero -->
+  <!-- ───────────────── Hero: orb + ask ───────────────── -->
   <section class="hero">
-    <div class="hero-tag"><span class="dot"></span> v0.2 — production API on Fly.io</div>
-    <h1>Sub-2s <span class="a">jurisdiction-aware</span><br>emergency response API</h1>
-    <p class="hero-sub">
-      Multi-tenant FastAPI service: API key auth, Redis rate limiting, RAG over local statutes, Prometheus metrics.
-      Grounded in your city's actual laws. p95 &lt; 940ms at 50 concurrent users.
-    </p>
-    <div class="badges">
-      <span class="badge-chip">FastAPI</span>
-      <span class="badge-chip">Claude Haiku 4.5</span>
-      <span class="badge-chip">Postgres + pgvector</span>
-      <span class="badge-chip">Redis</span>
-      <span class="badge-chip">Prometheus</span>
-      <span class="badge-chip">Fly.io</span>
-      <span class="badge-chip">RAG</span>
-      <span class="badge-chip">prompt caching</span>
+    <div class="orb-wrap">
+      <button id="sos-orb" class="sos-orb" aria-label="Long-press for SOS">
+        <svg class="orb-ring" viewBox="0 0 120 120" aria-hidden="true">
+          <circle class="orb-track" cx="60" cy="60" r="54"/>
+          <circle id="orb-progress" class="orb-fill" cx="60" cy="60" r="54"/>
+        </svg>
+        <span class="orb-core">
+          <span class="orb-label">SOS</span>
+          <span class="orb-hint" data-i18n="hold_to_fire">hold</span>
+        </span>
+      </button>
     </div>
-  </section>
 
-  <!-- interactive demo -->
-  <section id="demo" class="demo-section">
-    <div class="section-eye">INTERACTIVE DEMO</div>
-    <h2>Try it — pick a city, describe the situation</h2>
-    <div class="demo-card">
-      <div class="demo-row">
-        <div>
-          <label for="city-select">JURISDICTION</label>
-          <select id="city-select">
-            <option value="new-york">New York</option>
-            <option value="san-francisco">San Francisco</option>
-            <option value="london">London</option>
-            <option value="tokyo">Tokyo</option>
-            <option value="mumbai">Mumbai</option>
-            <option value="bangalore">Bangalore</option>
-          </select>
-        </div>
-        <div>
-          <label for="situation-input">SITUATION</label>
-          <select id="situation-preset" onchange="fillPreset()">
-            <option value="">— quick scenario —</option>
-            <option value="Person collapsed, not breathing, no pulse">Person collapsed, not breathing</option>
-            <option value="Kitchen fire spreading to curtains, people inside">Kitchen fire spreading</option>
-            <option value="Suspected opioid overdose, person unresponsive">Suspected opioid overdose</option>
-            <option value="Severe allergic reaction, throat swelling">Severe allergic reaction</option>
-            <option value="Child choking, not breathing">Child choking</option>
-          </select>
-        </div>
+    <div class="ask-row">
+      <div class="ask-field">
+        <input id="ask-input" class="ask-input" type="text" autocomplete="off"
+               placeholder="Describe the emergency…" data-i18n-ph="ask_placeholder" />
+        <button id="btn-listen" class="mic-btn" aria-label="Voice input" title="Speak" data-i18n-title="listen">🎙️</button>
       </div>
-      <div style="margin-bottom:14px;">
-        <label for="situation-input">OR TYPE YOUR OWN</label>
-        <textarea id="situation-input" placeholder="Describe the emergency situation…"></textarea>
-      </div>
-      <div class="btn-row">
-        <button class="btn" id="go-btn" onclick="callAPI()">
-          <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><circle cx="7" cy="7" r="6" stroke="currentColor" stroke-width="1.5"/><path d="M5 7l2 2 2-4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
-          Get Response
-        </button>
-        <div class="loading-dots" id="loading-dots"><span></span><span></span><span></span></div>
-        <div class="latency-bar" id="latency-display"></div>
-      </div>
-
-      <div id="response-wrap">
-        <div class="resp-card">
-          <div class="resp-header">
-            <span class="urgency-badge" id="urgency-badge">—</span>
-            <span class="resp-meta" id="resp-meta"></span>
-          </div>
-          <div class="resp-body">
-            <div class="resp-section">
-              <div class="resp-label">IMMEDIATE ACTIONS</div>
-              <ul class="action-list" id="action-list"></ul>
-            </div>
-            <div class="resp-section">
-              <div class="resp-label">WHO TO CALL</div>
-              <div class="call-box" id="call-box"></div>
-            </div>
-            <div class="resp-section">
-              <div class="resp-label">JURISDICTIONAL NOTES</div>
-              <div class="jurisdiction-note" id="jurisdiction-note"></div>
-            </div>
-          </div>
-        </div>
+      <div class="city-row">
+        <select id="city-select" class="city-select" aria-label="Jurisdiction"></select>
+        <button id="locate-btn" class="ghost-btn" data-i18n="locate_me">📍 locate me</button>
       </div>
     </div>
   </section>
 
-  <!-- architecture -->
-  <section id="arch" class="arch-section">
-    <div class="section-eye">V0.2 ARCHITECTURE</div>
-    <h2>How a request flows</h2>
-    <div class="arch-diagram">
-      <div class="arch-flow">
-        <div class="arch-node">
-          <span class="n">Client</span>
-          <span class="s">POST /emergency</span>
-        </div>
-        <div class="arch-arrow">→</div>
-        <div class="arch-node">
-          <span class="n">FastAPI</span>
-          <span class="s">uvicorn async</span>
-        </div>
-        <div class="arch-arrow">→</div>
-        <div class="arch-node">
-          <span class="n">Auth</span>
-          <span class="s">API key · SHA-256</span>
-        </div>
-        <div class="arch-arrow">→</div>
-        <div class="arch-node">
-          <span class="n">Rate Limit</span>
-          <span class="s">Redis sliding window</span>
-        </div>
-        <div class="arch-arrow">→</div>
-        <div class="arch-node">
-          <span class="n">RAG</span>
-          <span class="s">pgvector cosine sim</span>
-        </div>
-        <div class="arch-arrow">→</div>
-        <div class="arch-node">
-          <span class="n">Haiku 4.5</span>
-          <span class="s">prompt cache · SSE</span>
-        </div>
-        <div class="arch-arrow">→</div>
-        <div class="arch-node">
-          <span class="n">Prometheus</span>
-          <span class="s">/metrics endpoint</span>
-        </div>
+  <!-- ───────────────── Latency HUD + cache heat-map ───────────────── -->
+  <section class="hud-row" id="latency-hud" hidden>
+    <div class="gauge">
+      <svg viewBox="0 0 120 70" aria-hidden="true">
+        <path class="gauge-track" d="M10 64 A50 50 0 0 1 110 64"/>
+        <path id="gauge-arc" class="gauge-arc" d="M10 64 A50 50 0 0 1 110 64"/>
+        <line id="gauge-needle" class="gauge-needle" x1="60" y1="64" x2="60" y2="22"/>
+      </svg>
+      <div class="gauge-read"><b id="ttft-read">—</b><span>ms TTFT</span></div>
+    </div>
+    <div class="hud-meta">
+      <div class="hud-stat"><span data-i18n="cache_hit">cache</span><b id="cache-read">—</b></div>
+      <div class="hud-stat"><span>total</span><b id="total-read">—</b></div>
+      <div class="hud-stat"><span>source</span><b id="source-read">—</b></div>
+    </div>
+    <div class="heatmap" id="cache-heatmap" aria-label="Prompt-cache heat map"></div>
+  </section>
+
+  <!-- ───────────────── Response panel ───────────────── -->
+  <section id="response" class="response" hidden aria-live="polite">
+    <div class="resp-head">
+      <div id="resp-urgency" class="urgency-banner"><span class="u-word">—</span></div>
+      <div id="resp-timer" class="resp-timer" hidden><span class="t-num">0</span><span class="t-unit">s</span><span class="t-cap" data-i18n="act_within">act within</span></div>
+    </div>
+
+    <div class="resp-block">
+      <h3 class="resp-h"><span data-i18n="actions">Immediate actions</span>
+        <button id="btn-explain" class="chip-toggle" aria-pressed="false" data-i18n="explain_why">explain why</button>
+      </h3>
+      <ol id="resp-actions" class="actions"></ol>
+    </div>
+
+    <div class="resp-block" id="calls-block">
+      <h3 class="resp-h" data-i18n="who_to_call">Who to call</h3>
+      <div id="resp-calls" class="calls"></div>
+    </div>
+
+    <div class="resp-block" id="avoid-block">
+      <h3 class="resp-h" data-i18n="avoid">Avoid</h3>
+      <ul id="resp-avoid" class="avoid"></ul>
+    </div>
+
+    <div class="resp-block" id="notes-block">
+      <h3 class="resp-h" data-i18n="law_notes">Jurisdictional notes</h3>
+      <p id="resp-notes" class="notes"></p>
+    </div>
+
+    <div class="resp-foot">
+      <div class="conf"><span data-i18n="confidence">confidence</span>
+        <div class="conf-bar"><i id="resp-confidence"></i></div>
       </div>
-      <div class="arch-caption">
-        <b>Prompt-cache trick:</b> each city's law context is a multi-KB markdown blob sent as <code>cache_control: ephemeral</code>.
-        First request to a city: ~600ms TTFT. Subsequent within 5-min TTL: ~120ms TTFT. ≥68% cache hit rate at steady state.<br>
-        <b>Auth is opt-in:</b> set <code>EMERGENCY_AI_NO_AUTH=1</code> to disable for local dev.<br>
-        <b>Graceful degradation:</b> auth/rate-limit failures never break the inference path.
-      </div>
+      <p id="resp-disclaimer" class="disclaimer" data-i18n="disclaimer"></p>
+    </div>
+
+    <!-- action bar -->
+    <div class="actionbar" id="actionbar">
+      <button id="btn-call"   class="ab"><span>📞</span><small data-i18n="call_now">call</small></button>
+      <button id="btn-speak"  class="ab"><span>🔊</span><small data-i18n="speak">read</small></button>
+      <button id="btn-guided" class="ab"><span>🧭</span><small data-i18n="guided_mode">guided</small></button>
+      <button id="btn-metronome" class="ab"><span>💓</span><small>CPR</small></button>
+      <button id="btn-siren"  class="ab"><span>🚨</span><small data-i18n="siren">siren</small></button>
+      <button id="btn-beacon" class="ab"><span>🔦</span><small data-i18n="beacon">beacon</small></button>
+      <button id="btn-share"  class="ab"><span>📡</span><small data-i18n="share_location">share</small></button>
+      <button id="btn-alert"  class="ab"><span>🆘</span><small data-i18n="alert_contact">alert</small></button>
+      <button id="btn-export" class="ab"><span>📄</span><small data-i18n="export_report">export</small></button>
     </div>
   </section>
 
-  <!-- stats bar -->
-  <div class="stats-bar">
-    <div class="stat"><span class="val">310ms</span> p50 @ 10 VUs</div>
-    <div class="stat"><span class="val">&lt; 940ms</span> p95 @ 50 VUs</div>
-    <div class="stat"><span class="val">68%</span> prompt cache hit rate</div>
-    <div class="stat"><span class="val">Fly.io sjc</span> region</div>
-    <div class="stat"><span class="val">v0.2</span> production API</div>
-  </div>
+  <!-- ───────────────── Scenario quick-grid ───────────────── -->
+  <section class="scenarios">
+    <h2 class="section-h"><span data-i18n="scenarios">Quick scenarios</span>
+      <button id="open-palette" class="kbd-hint">⌘K</button>
+    </h2>
+    <div id="scenario-grid" class="scenario-grid"></div>
+  </section>
 
-  <footer>
-    <span>emergency-ai · FastAPI + Postgres + Redis + RAG + Prometheus</span>
-    <span>
-      <a href="https://github.com/CasterlyGit/emergency-ai" target="_blank" rel="noopener">github</a>
-      · <a href="https://casterlygit.github.io/" target="_blank" rel="noopener">casterlygit.github.io</a>
-    </span>
+  <!-- ───────────────── Tools row ───────────────── -->
+  <section class="tools">
+    <button class="tool" data-tool="fast">🧠 <span data-i18n="fast_test">FAST stroke test</span></button>
+    <button class="tool" data-tool="law">⚖️ <span data-i18n="law_explorer">Law explorer</span></button>
+    <button class="tool" data-tool="poison">☠️ <span>Poison lookup</span></button>
+    <button class="tool" data-tool="disaster">🌪️ <span>Disaster protocols</span></button>
+    <button class="tool" data-tool="medical">🪪 <span data-i18n="medical_id">Medical ID</span></button>
+    <button class="tool" data-tool="incident">🕓 <span data-i18n="incident_log">Incident log</span></button>
+  </section>
+
+  <footer class="appfoot">
+    <span>offline-first · jurisdiction-aware · Haiku-backed</span>
+    <a href="https://github.com/CasterlyGit/emergency-ai" target="_blank" rel="noopener">source ↗</a>
   </footer>
+</main>
 
+<!-- ───────────────── Overlays ───────────────── -->
+<div id="triage-modal" class="modal" hidden>
+  <div class="modal-card triage-card">
+    <div class="triage-q" id="triage-q">—</div>
+    <div class="triage-opts" id="triage-opts"></div>
+    <button class="modal-skip" id="triage-skip" data-i18n="skip">skip question</button>
+  </div>
 </div>
 
+<div id="guided-modal" class="modal guided" hidden>
+  <div class="guided-inner">
+    <div class="guided-step-num"><span id="guided-idx">1</span><i>/</i><span id="guided-total">1</span></div>
+    <div class="guided-text" id="guided-text">—</div>
+    <div class="guided-why" id="guided-why" hidden></div>
+    <div class="guided-controls">
+      <button id="guided-prev" class="g-btn">‹ back</button>
+      <button id="guided-done" class="g-btn g-done">done ✓</button>
+      <button id="guided-next" class="g-btn g-next">next ›</button>
+    </div>
+    <button id="guided-close" class="guided-close" aria-label="Close">✕</button>
+    <div class="guided-metro" id="guided-metro" hidden><span class="metro-dot"></span> 110 bpm</div>
+  </div>
+</div>
+
+<div id="palette" class="modal palette" hidden>
+  <div class="palette-card">
+    <input id="palette-input" class="palette-input" placeholder="Jump to scenario, city, or tool…" autocomplete="off" />
+    <div id="palette-results" class="palette-results"></div>
+  </div>
+</div>
+
+<div id="sheet" class="sheet" hidden>
+  <div class="sheet-card">
+    <div class="sheet-head"><h3 id="sheet-title">—</h3><button id="sheet-close" class="icon-btn">✕</button></div>
+    <div id="sheet-body" class="sheet-body"></div>
+  </div>
+</div>
+<div id="law-explorer" hidden></div>
+<div id="incident-log" hidden></div>
+<div id="medical-id" hidden></div>
+<div id="settings" hidden></div>
+
+<div id="toast" class="toast" hidden></div>
+
+<script type="module" src="js/app.js"></script>
 <script>
-  function fillPreset() {
-    const preset = document.getElementById('situation-preset').value;
-    if (preset) document.getElementById('situation-input').value = preset;
+  if ('serviceWorker' in navigator) {
+    window.addEventListener('load', () => navigator.serviceWorker.register('sw.js').catch(()=>{}));
   }
-
-  const MOCK_RESPONSES = {
-    'new-york': {
-      default: {
-        urgency: 'critical', ttft: 312, total: 1.4, cached: true,
-        actions: [
-          'Tilt head back, check breathing for 5 seconds',
-          'If not breathing: begin chest compressions — 30 hard, fast pushes center of chest',
-          'Give 2 rescue breaths after every 30 compressions',
-          'Have someone call 911 and put phone on speaker immediately'
-        ],
-        call: { primary: '911', poison_control: '1-800-222-1222' },
-        jurisdiction: 'NY Good Samaritan Law (PHL §3000-a) protects bystanders giving good-faith CPR from civil liability. If calling for an overdose, you will not be charged for low-level drug possession (PHL §3000-a).'
-      }
-    },
-    'san-francisco': {
-      default: {
-        urgency: 'critical', ttft: 298, total: 1.3, cached: true,
-        actions: [
-          'Call 911 immediately — state address clearly',
-          'Begin 30:2 CPR cycle if person is unresponsive and not breathing',
-          'Continue until EMS arrives or AED is available',
-          'Do not move the person unless they are in immediate danger'
-        ],
-        call: { primary: '911', poison_control: '1-800-222-1222' },
-        jurisdiction: 'CA Health & Safety Code §1799.102 (Good Samaritan): lay rescuers providing emergency CPR in good faith are immune from civil liability. SF has aggressive Narcan distribution — ask EMS for naloxone if overdose suspected.'
-      }
-    },
-    'london': {
-      default: {
-        urgency: 'high', ttft: 340, total: 1.6, cached: false,
-        actions: [
-          'Call 999 (or 112) immediately — ambulance response target: 8 minutes',
-          'Begin chest-compression-only CPR: 100-120 compressions per minute',
-          'Do not give rescue breaths unless trained — compressions alone are effective',
-          'Send someone to the street to flag down paramedics'
-        ],
-        call: { primary: '999 or 112', NHS_non_emergency: '111' },
-        jurisdiction: 'England: Social Action, Responsibility and Heroism Act 2015 protects good-faith rescuers from negligence claims. The Resuscitation Council UK guidance supports compression-only CPR for untrained bystanders.'
-      }
-    },
-    'tokyo': {
-      default: {
-        urgency: 'critical', ttft: 380, total: 1.8, cached: false,
-        actions: [
-          '119番通報 (Call 119) immediately for ambulance',
-          'Begin 30:2 CPR — AEDs are widely available in public places (stations, convenience stores)',
-          'Speak clearly to dispatcher — translation assistance available',
-          'AED instructions are in English and Japanese on all public units'
-        ],
-        call: { primary: '119 (ambulance)', police: '110' },
-        jurisdiction: 'Japan: the Fire and Disaster Management Agency encourages bystander CPR. Good Samaritan protection exists under the Basic Act on Measures Against Disasters. AEDs legally available for public use since 2004.'
-      }
-    },
-    'mumbai': {
-      default: {
-        urgency: 'critical', ttft: 395, total: 1.9, cached: false,
-        actions: [
-          'Call 108 (ambulance) or 112 (emergency) immediately',
-          'Begin CPR: 30 chest compressions, 2 rescue breaths — continue until help arrives',
-          'Loosen tight clothing around neck and chest',
-          'Do not give water or food to an unconscious person'
-        ],
-        call: { primary: '108 or 112', fire: '101', police: '100' },
-        jurisdiction: 'Maharashtra: Vishakha guidelines and the Indian Penal Code have been interpreted by courts to protect good-faith emergency responders. Supreme Court directive (2016) mandates hospitals to provide emergency treatment without advance payment.'
-      }
-    },
-    'bangalore': {
-      default: {
-        urgency: 'critical', ttft: 365, total: 1.7, cached: false,
-        actions: [
-          'Call 108 (Arogya Kavacha ambulance) — covers Bangalore Metro region',
-          'Begin 30:2 CPR if person not breathing and unresponsive',
-          'Stay on phone with dispatcher for guided CPR instructions',
-          'Clear the area — do not crowd the patient'
-        ],
-        call: { primary: '108 (ambulance)', fire: '101', police: '100' },
-        jurisdiction: 'Karnataka: 2016 SC ruling protects bystanders who assist in emergencies from police harassment. BBMP hospitals must provide emergency care regardless of financial status under the Karnataka Private Medical Establishments Act.'
-      }
-    }
-  };
-
-  async function callAPI() {
-    const city = document.getElementById('city-select').value;
-    const situation = document.getElementById('situation-input').value.trim();
-    if (!situation) { document.getElementById('situation-input').focus(); return; }
-
-    const btn = document.getElementById('go-btn');
-    const dots = document.getElementById('loading-dots');
-    const latDisplay = document.getElementById('latency-display');
-    const respWrap = document.getElementById('response-wrap');
-
-    btn.disabled = true;
-    dots.classList.add('visible');
-    latDisplay.innerHTML = '';
-    respWrap.style.display = 'none';
-
-    const startMs = Date.now();
-
-    let data = null;
-    try {
-      const resp = await fetch('https://emergency-ai.fly.dev/emergency', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ situation, city }),
-        signal: AbortSignal.timeout(5000)
-      });
-      if (resp.ok) {
-        const raw = await resp.json();
-        const elapsed = ((Date.now() - startMs) / 1000).toFixed(1);
-        data = {
-          urgency: raw.urgency || 'high',
-          ttft: Math.round(Date.now() - startMs - 200),
-          total: parseFloat(elapsed),
-          cached: raw.cache_hit || false,
-          actions: raw.immediate_actions || ['Follow dispatcher instructions', 'Stay calm', 'Keep the person still'],
-          call: raw.who_to_call || { primary: 'Emergency services' },
-          jurisdiction: raw.jurisdictional_notes || ''
-        };
-      }
-    } catch (_) { /* fall through to mock */ }
-
-    if (!data) {
-      // realistic fake latency then mock
-      const fakeMs = 380 + Math.random() * 200;
-      await new Promise(r => setTimeout(r, fakeMs));
-      const mock = MOCK_RESPONSES[city]?.default || MOCK_RESPONSES['new-york'].default;
-      data = { ...mock };
-      // jitter the numbers slightly
-      data.ttft = mock.ttft + Math.floor(Math.random() * 60 - 30);
-      data.total = +(mock.total + (Math.random() * 0.3 - 0.1)).toFixed(1);
-    }
-
-    dots.classList.remove('visible');
-    btn.disabled = false;
-
-    // render
-    const badge = document.getElementById('urgency-badge');
-    badge.textContent = data.urgency.toUpperCase();
-    badge.className = 'urgency-badge ' + data.urgency.toLowerCase();
-
-    document.getElementById('resp-meta').innerHTML =
-      `TTFT <span>${data.ttft} ms</span> · total <span>${data.total}s</span> · cache <span>${data.cached ? 'HIT' : 'MISS'}</span>`;
-
-    const list = document.getElementById('action-list');
-    list.innerHTML = '';
-    (data.actions || []).forEach((a, i) => {
-      const li = document.createElement('li');
-      li.innerHTML = `<span class="action-num">${i+1}.</span><span>${a}</span>`;
-      list.appendChild(li);
-    });
-
-    const callBox = document.getElementById('call-box');
-    callBox.innerHTML = Object.entries(data.call || {}).map(([k, v]) =>
-      `<strong>${k.replace(/_/g,' ').toUpperCase()}:</strong> ${v}`
-    ).join('<br>');
-
-    document.getElementById('jurisdiction-note').textContent = data.jurisdiction || '—';
-
-    const cached = data.cached;
-    latDisplay.innerHTML = `<span>${data.ttft} ms TTFT · ${data.total}s total · cache ${cached ? '<span style="color:var(--ok)">HIT</span>' : '<span style="color:var(--text-dim)">MISS</span>'}`;
-
-    respWrap.style.display = 'block';
-    respWrap.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
-  }
-
-  // allow Enter in textarea to submit
-  document.getElementById('situation-input').addEventListener('keydown', function(e) {
-    if (e.key === 'Enter' && (e.metaKey || e.ctrlKey)) callAPI();
-  });
 </script>
 </body>
 </html>

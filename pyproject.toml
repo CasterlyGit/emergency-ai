@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "emergency-ai"
-version = "0.2.0"
+version = "1.0.0"
 description = "Sub-2-second emergency response: long-press SOS, get jurisdiction-aware action steps."
 readme = "README.md"
 requires-python = ">=3.11"
@@ -61,3 +61,10 @@ target-version = "py311"
 [tool.ruff.lint]
 select = ["E", "F", "I", "B", "UP", "SIM", "RUF"]
 ignore = ["E501"]
+
+[tool.ruff.lint.flake8-bugbear]
+# FastAPI dependency-injection markers are the idiomatic way to declare defaults.
+extend-immutable-calls = [
+    "fastapi.Depends", "fastapi.Query", "fastapi.Header", "fastapi.Path",
+    "fastapi.Body", "fastapi.Cookie", "fastapi.Form", "fastapi.File", "fastapi.Security",
+]

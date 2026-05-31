@@ -1,0 +1,635 @@
+{
+  "version": 1,
+  "cities": [
+    {
+      "slug": "new-york",
+      "display_name": "New York",
+      "country": "USA",
+      "flag": "🇺🇸",
+      "region": "North America",
+      "lat": 40.7128,
+      "lon": -74.006,
+      "primary": "911",
+      "numbers": {
+        "poison_control": "1-800-222-1222",
+        "crisis_lifeline": "988",
+        "domestic_violence": "1-800-621-4673",
+        "non_emergency": "311"
+      },
+      "laws": [
+        {
+          "title": "Good Samaritan Law",
+          "ref": "NY PHL §3000-a",
+          "text": "A person who voluntarily and without expectation of payment renders first aid in good faith is immune from civil liability for ordinary negligence."
+        },
+        {
+          "title": "Overdose Good Samaritan",
+          "ref": "NY PHL §220.78",
+          "text": "Calling 911 to report a suspected overdose grants the caller and the victim limited immunity from prosecution for small-quantity drug possession and possession of paraphernalia. Tell the dispatcher it is an overdose."
+        }
+      ],
+      "notes": [
+        "FDNY responds to medical calls faster than NYPD in most boroughs. Saying 'person not breathing' or 'chest pains' routes to FDNY EMS.",
+        "Subway emergency: pull the red emergency cord between cars only if the train must be stopped now (fire, person on tracks). Otherwise wait for the next station and notify the conductor — pulling the cord between stations strands the train mid-tunnel.",
+        "Heat emergencies: NYC opens cooling centers; 311 has the list. Risk groups: elderly without AC in walk-ups.",
+        "Cold emergencies: Code Blue activates when feels-like temp drops below 32°F; outreach teams will transport unsheltered people to shelters even involuntarily.",
+        "In parts of NYC, calling 911 for a mental health emergency may dispatch a B-HEARD social-worker + EMT team instead of police. You can request 'no police, mental health response' but availability depends on the precinct and time of day."
+      ],
+      "hospitals": [
+        "Bellevue Hospital Center (Manhattan) — Level 1 Trauma",
+        "Lincoln Medical Center (Bronx) — Level 1 Trauma",
+        "Kings County Hospital (Brooklyn) — Level 1 Trauma",
+        "Jamaica Hospital Medical Center (Queens) — Level 1 Trauma",
+        "Staten Island University Hospital — Level 1 Trauma"
+      ]
+    },
+    {
+      "slug": "san-francisco",
+      "display_name": "San Francisco",
+      "country": "USA",
+      "flag": "🇺🇸",
+      "region": "North America",
+      "lat": 37.7749,
+      "lon": -122.4194,
+      "primary": "911",
+      "numbers": {
+        "poison_control": "1-800-222-1222",
+        "crisis_lifeline": "988",
+        "mobile_crisis": "415-970-4000",
+        "non_emergency": "311"
+      },
+      "laws": [
+        {
+          "title": "California Good Samaritan Law",
+          "ref": "Health & Safety Code §1799.102",
+          "text": "Provides immunity for both medical and non-medical care rendered in good faith at the scene of an emergency."
+        },
+        {
+          "title": "California 911 Good Samaritan Drug Law",
+          "ref": "Health & Safety Code §11376.5",
+          "text": "Calling 911 for a drug overdose grants limited immunity for possession and being under the influence. The caller and victim are protected if they remain at the scene and cooperate."
+        }
+      ],
+      "notes": [
+        "SFFD is fast for medical calls. For mental health, Mobile Crisis Response Team (call 415-970-4000) sends clinicians, not police — preferable when the person is non-violent.",
+        "Earthquake (≥ M5): expect cellular congestion. Text messages and certain data apps may work when calls don't. Drop-Cover-Hold-On indoors; do NOT run outside during shaking.",
+        "Wildfire smoke: AirNow.gov AQI; >150 = unhealthy, mask up; >300 = avoid outdoors entirely.",
+        "Fentanyl overdose is common. Narcan (naloxone) is free at most SF pharmacies and DPH sites without prescription.",
+        "5150 (W&I Code §5150): Involuntary 72-hour psychiatric hold — only a designated officer or clinician can initiate, not family members."
+      ],
+      "hospitals": [
+        "Zuckerberg San Francisco General Hospital — Level 1 Trauma",
+        "UCSF Medical Center (Parnassus/Mission Bay)",
+        "California Pacific Medical Center",
+        "St. Mary's Medical Center"
+      ]
+    },
+    {
+      "slug": "london",
+      "display_name": "London",
+      "country": "UK",
+      "flag": "🇬🇧",
+      "region": "Europe",
+      "lat": 51.5074,
+      "lon": -0.1278,
+      "primary": "999",
+      "numbers": {
+        "alternate_emergency": "112",
+        "non_emergency_police": "101",
+        "nhs_non_emergency": "111",
+        "samaritans": "116 123",
+        "domestic_abuse": "0808 2000 247"
+      },
+      "laws": [
+        {
+          "title": "Social Action, Responsibility and Heroism Act",
+          "ref": "SARAH Act 2015",
+          "text": "Courts must take into account that a person was acting heroically or for the benefit of society when assessing negligence. No general statutory duty for bystanders to render aid, but once aid begins the giver owes a duty of reasonable care."
+        }
+      ],
+      "notes": [
+        "999 operators ask which service first (police/fire/ambulance). Be ready to choose. 112 also works in the UK.",
+        "Ambulances: NHS targets 7 min for category 1 (life-threatening), 18 min for category 2 (emergency). Outside central London, response can be slower.",
+        "TfL (Tube/bus): in a Tube emergency, use the passenger emergency alarm. Driver will hold at the next station so emergency services can board easily — better than stopping mid-tunnel.",
+        "Fire safety: if you're in a tower block fire, follow the building's posted plan. If smoke enters your flat, leave immediately.",
+        "Knife crime: if you find a knife/weapon, do not pick it up. Cover it and call 999 — UK forensics matters.",
+        "No formal Good Samaritan drug-law immunity in England/Wales, but police guidance generally prioritises saving life over arrest for personal possession at an overdose scene."
+      ],
+      "hospitals": [
+        "Royal London Hospital (Whitechapel) — Major Trauma Centre",
+        "King's College Hospital (Denmark Hill) — Major Trauma Centre",
+        "St George's Hospital (Tooting) — Major Trauma Centre",
+        "St Mary's Hospital (Paddington) — Major Trauma Centre",
+        "North Middlesex University Hospital — Major Trauma Centre"
+      ]
+    },
+    {
+      "slug": "tokyo",
+      "display_name": "Tokyo",
+      "country": "Japan",
+      "flag": "🇯🇵",
+      "region": "Asia",
+      "lat": 35.6762,
+      "lon": 139.6503,
+      "primary": "119",
+      "numbers": {
+        "police": "110",
+        "english_lifeline": "03-5774-0992",
+        "japan_helpline_english": "0570-000-911"
+      },
+      "laws": [
+        {
+          "title": "Duty to Render Aid",
+          "ref": "Criminal Code Art. 218",
+          "text": "Japan has a general duty to render assistance to those whose lives are in danger when one is in a position to help. Failure can carry criminal liability, though prosecution is rare."
+        },
+        {
+          "title": "AED Civilian Use Authorization",
+          "ref": "Japan Resuscitation Council Guidelines",
+          "text": "Untrained civilians are explicitly authorized and encouraged to use public AEDs. Public AEDs are common at stations, convenience stores, and offices."
+        }
+      ],
+      "notes": [
+        "119 = fire + ambulance; 110 = police. Calling the wrong number adds delay.",
+        "Ambulances are free in Japan. Do not hesitate to call for a true emergency.",
+        "Foreign nationals: 119 has interpreters via three-way call, but it adds 30-60 seconds. Practice: 'Kyūkyū desu' (救急です — 'this is an emergency').",
+        "Earthquakes: J-Alert / area-mail will buzz seconds before strong shaking. Drop-Cover-Hold. After shaking: open a door to prevent it jamming, then check gas.",
+        "In a crowded train: pull the emergency stop button (red, marked) only for immediate danger. For ill passenger, alert station staff at next stop — they have an AED.",
+        "Most hospitals don't take walk-in foreigners after hours. Ambulance is the path for night/weekend emergency care."
+      ],
+      "hospitals": [
+        "St. Luke's International Hospital (Tsukiji) — English-speaking",
+        "Tokyo Midtown Medical Center (Roppongi) — English-speaking",
+        "Tokyo Medical University Hospital (Shinjuku)",
+        "Keio University Hospital (Shinjuku)",
+        "Tokyo University Hospital (Bunkyo)"
+      ]
+    },
+    {
+      "slug": "mumbai",
+      "display_name": "Mumbai",
+      "country": "India",
+      "flag": "🇮🇳",
+      "region": "Asia",
+      "lat": 19.076,
+      "lon": 72.8777,
+      "primary": "112",
+      "numbers": {
+        "police": "100",
+        "fire": "101",
+        "ambulance_govt": "102",
+        "ambulance_integrated": "108",
+        "women_helpline": "1091",
+        "child_helpline": "1098",
+        "disaster_management": "1916"
+      },
+      "laws": [
+        {
+          "title": "Good Samaritan Law",
+          "ref": "Supreme Court Guidelines 2016 + MoRTH 2020",
+          "text": "Anyone who helps a road accident victim is protected from civil/criminal liability and cannot be detained at the hospital or police station for questioning beyond a single statement. Identity disclosure is optional."
+        },
+        {
+          "title": "Hospital Emergency Duty",
+          "ref": "Pt. Parmanand Katara v. Union of India, 1989",
+          "text": "Every doctor, government or private, has a constitutional duty to provide immediate emergency care, regardless of medico-legal formalities. Hospitals cannot refuse citing 'MLC formalities.'"
+        },
+        {
+          "title": "Mental Healthcare Act",
+          "ref": "Mental Healthcare Act 2017",
+          "text": "Decriminalizes attempted suicide. A person attempting suicide should be presumed to be under severe stress and given care, not detained."
+        }
+      ],
+      "notes": [
+        "108 ambulance is the most reliable in Mumbai for true emergencies — GPS-tracked, free, govt-run. 102 is also free but typically slower.",
+        "Monsoon (Jun-Sep) can paralyze city movement. For a heart attack or stroke during peak traffic/flooding, consider private transport directly to hospital if ambulance ETA is high.",
+        "Local trains: in a medical emergency, pull the alarm chain (₹1000 fine waived for genuine emergency). Station Master's office has first-aid and direct hospital lines.",
+        "Mumbai Police App and 'Mumbai 112' mobile app allow GPS-located emergency reporting — useful when you cannot speak.",
+        "No specific drug Good Samaritan law in Mumbai. Calling 108 is generally safe; police involvement is at the hospital's MLC discretion."
+      ],
+      "hospitals": [
+        "KEM Hospital (Parel) — Govt, free, Level 1 equivalent",
+        "Sion Hospital — Govt, free",
+        "JJ Hospital — Govt, free",
+        "Nair Hospital (Mumbai Central) — Govt",
+        "Lilavati Hospital (Bandra) — Private",
+        "Hinduja Hospital (Mahim) — Private",
+        "Kokilaben Dhirubhai Ambani Hospital (Andheri) — Private, Trauma"
+      ]
+    },
+    {
+      "slug": "bangalore",
+      "display_name": "Bangalore",
+      "country": "India",
+      "flag": "🇮🇳",
+      "region": "Asia",
+      "lat": 12.9716,
+      "lon": 77.5946,
+      "primary": "112",
+      "numbers": {
+        "police": "100",
+        "traffic_police": "103",
+        "fire": "101",
+        "ambulance": "108",
+        "women_helpline": "1091",
+        "senior_citizen": "1090",
+        "disaster_management": "1077",
+        "cyber_crime": "1930"
+      },
+      "laws": [
+        {
+          "title": "Good Samaritan Law",
+          "ref": "Supreme Court Guidelines 2016 + MoRTH 2020 + Karnataka Notification 2018",
+          "text": "Karnataka has explicitly adopted the Good Samaritan guidelines. Anyone aiding a road accident victim cannot be harassed, detained, or compelled to disclose identity. Hospitals must provide immediate care without insisting on police/financial formalities first."
+        },
+        {
+          "title": "Hospital Emergency Duty",
+          "ref": "Pt. Parmanand Katara v. Union of India, 1989",
+          "text": "All hospitals, including private, must render immediate emergency care regardless of medico-legal formalities."
+        },
+        {
+          "title": "Mental Healthcare Act",
+          "ref": "Mental Healthcare Act 2017",
+          "text": "Decriminalizes attempted suicide. Care, not custody, is the mandated response."
+        }
+      ],
+      "notes": [
+        "108 ambulance (Arogya Kavacha) is GPS-dispatched and free in Karnataka. City coverage generally under 15-20 min off-peak; can be much longer during peak traffic (5-9 PM).",
+        "For time-critical events (stroke FAST symptoms, MI), consider private transport directly to hospital if 108 ETA is high.",
+        "Monsoon (Jun-Sep) flooding: low-lying ORR pockets, Silk Board, Bellandur often submerge. Do NOT drive through flowing water deeper than 6 inches.",
+        "Snake bite (esp. ORR, Whitefield, Sarjapur peripheries): do not apply tourniquet, do not cut, do not suck venom. Immobilize limb, mark bite time, get to hospital with antivenom.",
+        "Most large tech parks (Manyata, EGL, ITPL) have on-site medical rooms with AEDs — use before public 108 if response time matters.",
+        "Bangalore Police 'Suraksha' app allows panic-button + GPS to nearest patrol car."
+      ],
+      "hospitals": [
+        "Manipal Hospital (HAL Road / Whitefield / Hebbal / Jayanagar)",
+        "Apollo Hospital (Jayanagar / Bannerghatta / Sheshadripuram)",
+        "Fortis Hospital (Bannerghatta Road / Cunningham Road)",
+        "Narayana Health City (Bommasandra) — major cardiac",
+        "Victoria Hospital (Kalasipalyam) — Govt, free",
+        "Bowring & Lady Curzon Hospital (Central) — Govt",
+        "NIMHANS (Hosur Road) — National mental health referral"
+      ]
+    },
+    {
+      "slug": "delhi",
+      "display_name": "Delhi",
+      "country": "India",
+      "flag": "🇮🇳",
+      "region": "Asia",
+      "lat": 28.6139,
+      "lon": 77.209,
+      "primary": "112",
+      "numbers": {
+        "police": "100",
+        "fire": "101",
+        "ambulance": "102",
+        "ambulance_advanced": "108",
+        "women_helpline": "1091",
+        "child_helpline": "1098",
+        "disaster_management": "1077",
+        "cyber_crime": "1930",
+        "poison_control": "011-26589391"
+      },
+      "laws": [
+        {
+          "title": "Good Samaritan Law",
+          "ref": "Supreme Court Guidelines 2016 + MoRTH 2020",
+          "text": "Anyone who helps a road accident victim is protected from civil/criminal liability and cannot be detained or compelled to disclose identity beyond a voluntary statement."
+        },
+        {
+          "title": "Hospital Emergency Duty",
+          "ref": "Pt. Parmanand Katara v. Union of India, 1989",
+          "text": "Every doctor, government or private, has a constitutional duty to provide immediate emergency care regardless of medico-legal formalities or payment status."
+        },
+        {
+          "title": "Mental Healthcare Act",
+          "ref": "Mental Healthcare Act 2017",
+          "text": "Attempted suicide is decriminalized. The person must be provided care and support, not treated as a criminal."
+        }
+      ],
+      "notes": [
+        "112 is the single unified emergency number covering police, fire, and ambulance across Delhi.",
+        "CATS (Centralized Accident and Trauma Services) ambulances are free, GPS-tracked, and Delhi-specific. Dial 102 or 112.",
+        "Delhi Metro emergencies: press the emergency button inside coaches. CISF security staff are at every station.",
+        "Air quality (AQI): Delhi frequently exceeds 300 AQI in winter (Nov-Jan). At AQI >300, outdoor exertion can trigger respiratory and cardiac events — stay indoors with N95.",
+        "Traffic congestion is severe during peak hours and monsoon. For time-critical emergencies (stroke, MI), consider private vehicle directly to hospital if ambulance ETA is long.",
+        "Heat wave (Apr-Jun): Delhi sees extreme heat above 45°C. Cool the person rapidly — shade, wet cloth, fan — and call 112 immediately."
+      ],
+      "hospitals": [
+        "AIIMS Trauma Centre (Ansari Nagar) — Apex trauma, 24/7",
+        "Safdarjung Hospital (Ansari Nagar) — Govt, Level 1 equivalent",
+        "LNJP Hospital (Central Delhi) — Govt, free",
+        "GTB Hospital (Dilshad Garden) — Govt, major East Delhi trauma",
+        "Apollo Hospital (Sarita Vihar) — Private, 24/7 trauma",
+        "Max Super Speciality Hospital (Saket / Patparganj)",
+        "Fortis Hospital (Vasant Kunj / Shalimar Bagh)"
+      ]
+    },
+    {
+      "slug": "los-angeles",
+      "display_name": "Los Angeles",
+      "country": "USA",
+      "flag": "🇺🇸",
+      "region": "North America",
+      "lat": 34.0522,
+      "lon": -118.2437,
+      "primary": "911",
+      "numbers": {
+        "poison_control": "1-800-222-1222",
+        "crisis_lifeline": "988",
+        "dmh_crisis": "800-854-7771",
+        "non_emergency_lapd": "877-275-5273",
+        "non_emergency": "311"
+      },
+      "laws": [
+        {
+          "title": "California Good Samaritan Law",
+          "ref": "Health & Safety Code §1799.102",
+          "text": "Provides immunity for both medical and non-medical care rendered in good faith at the scene of an emergency. Applies statewide."
+        },
+        {
+          "title": "California 911 Good Samaritan Drug Law",
+          "ref": "Health & Safety Code §11376.5",
+          "text": "Calling 911 for a drug overdose grants limited immunity for possession and being under the influence. Caller and victim are protected if they remain at the scene and cooperate with emergency services."
+        }
+      ],
+      "notes": [
+        "LAFD and LAPD respond to 911; specify whether you need fire/medical or police to speed routing.",
+        "Wildfire risk is year-round but peaks October-February (Santa Ana winds). If under evacuation order, leave immediately — do not wait.",
+        "Earthquake preparedness: ShakeAlert early warning system provides seconds of warning via Wireless Emergency Alerts. Drop-Cover-Hold-On.",
+        "Freeway accidents: stay in your vehicle if it is drivable and move to the right shoulder. Call 511 or 911 if injuries or debris block lanes.",
+        "Los Angeles County Department of Mental Health crisis line (800-854-7771) dispatches clinicians, not police, for mental health calls.",
+        "Narcan (naloxone) is available without prescription at most LA pharmacies under a statewide standing order."
+      ],
+      "hospitals": [
+        "LAC+USC Medical Center (Boyle Heights) — Level 1 Trauma, county flagship",
+        "Ronald Reagan UCLA Medical Center (Westwood) — Level 1 Trauma",
+        "Cedars-Sinai Medical Center (Beverly Grove) — Level 1 Trauma",
+        "Harbor-UCLA Medical Center (Torrance) — Level 1 Trauma",
+        "Keck Hospital of USC (Health Sciences Campus)"
+      ]
+    },
+    {
+      "slug": "chicago",
+      "display_name": "Chicago",
+      "country": "USA",
+      "flag": "🇺🇸",
+      "region": "North America",
+      "lat": 41.8781,
+      "lon": -87.6298,
+      "primary": "911",
+      "numbers": {
+        "poison_control": "1-800-222-1222",
+        "crisis_lifeline": "988",
+        "copa_non_emergency": "312-744-5000",
+        "non_emergency": "311"
+      },
+      "laws": [
+        {
+          "title": "Illinois Good Samaritan Act",
+          "ref": "745 ILCS 49",
+          "text": "Any person who in good faith provides emergency care without fee is immune from civil liability unless the act constitutes willful or wanton misconduct."
+        },
+        {
+          "title": "Illinois Drug Overdose Prevention Act",
+          "ref": "20 ILCS 301/5-501.5",
+          "text": "A person who calls 911 in good faith to report a drug overdose emergency is granted limited immunity from arrest and prosecution for small amounts of controlled substances."
+        }
+      ],
+      "notes": [
+        "CFD (Chicago Fire Department) handles medical emergencies. IDPH licenses all paramedics who respond via 911.",
+        "Extreme cold (wind chill below -15°F): Chicago issues Warming Center activations. Call 311 for nearest warming center; hypothermia is life-threatening within minutes in severe wind chill.",
+        "Chicago 'L' emergency: use the intercom button on each rail car. Do not pull the brake unless there is an immediate life-threatening reason.",
+        "Violence and trauma: Chicago has active trauma networks — Advocate Christ, Northwestern, Stroger — all with Level 1 status.",
+        "Heat emergencies (July-August): call 311 for cooling center locations. The 1995 heat wave killed 739 — take heat illness seriously."
+      ],
+      "hospitals": [
+        "John H. Stroger Jr. Hospital of Cook County — Level 1 Trauma, county flagship",
+        "Northwestern Memorial Hospital (Streeterville) — Level 1 Trauma",
+        "Advocate Christ Medical Center (Oak Lawn) — Level 1 Trauma",
+        "Rush University Medical Center (Near West Side) — Level 1 Trauma",
+        "University of Chicago Medicine (Hyde Park) — Level 1 Trauma"
+      ]
+    },
+    {
+      "slug": "paris",
+      "display_name": "Paris",
+      "country": "France",
+      "flag": "🇫🇷",
+      "region": "Europe",
+      "lat": 48.8566,
+      "lon": 2.3522,
+      "primary": "112",
+      "numbers": {
+        "samu_medical": "15",
+        "police": "17",
+        "fire_pompiers": "18",
+        "eu_emergency": "112",
+        "suicide_prevention": "3114",
+        "poison_control": "01-40-05-48-48"
+      },
+      "laws": [
+        {
+          "title": "Duty to Assist a Person in Danger",
+          "ref": "Code Pénal Art. 223-6",
+          "text": "French law imposes a positive legal obligation on every person to assist someone in danger, provided they can do so without risk to themselves. Failure to assist is a criminal offence punishable by up to 5 years imprisonment and €75,000 fine."
+        },
+        {
+          "title": "Good Samaritan Liability Protection",
+          "ref": "Code de la Santé Publique Art. L1110-5-3",
+          "text": "A person who provides emergency assistance in good faith cannot be held civilly or criminally liable for harm caused by that assistance, provided they acted reasonably."
+        }
+      ],
+      "notes": [
+        "France has three emergency lines: 15 (SAMU — medical), 17 (police), 18 (pompiers/fire). 112 reaches all three and is the recommended single number.",
+        "SAMU (15) dispatches a regulation médecin if needed; they may triage by phone and send the appropriate response level.",
+        "Paris Métro emergency: press the red alarm button on platforms. Do not use it between stations.",
+        "French law requires assisting a person in danger (non-assistance à personne en danger) — bystanders have a legal duty to call for help at minimum.",
+        "Heat waves (July-August): France implemented Plan Canicule after 2003. Elderly in top-floor apartments without AC are highest risk. Call 15 for heat-related emergencies.",
+        "Paris attacks protocol: Run-Hide-Tell (Protéger-Alerter-Secourir). Follow police instructions; stay off streets."
+      ],
+      "hospitals": [
+        "Hôpital Lariboisière (10th arr.) — Trauma, SAMU base",
+        "Hôpital Pitié-Salpêtrière (13th arr.) — Major trauma, neurology",
+        "Hôpital Necker (15th arr.) — Pediatric and adult emergency",
+        "Hôpital Beaujon (Clichy) — Digestive surgery, trauma",
+        "Hôpital Bicêtre (Le Kremlin-Bicêtre) — Level 1 equivalent"
+      ]
+    },
+    {
+      "slug": "berlin",
+      "display_name": "Berlin",
+      "country": "Germany",
+      "flag": "🇩🇪",
+      "region": "Europe",
+      "lat": 52.52,
+      "lon": 13.405,
+      "primary": "112",
+      "numbers": {
+        "police": "110",
+        "eu_emergency": "112",
+        "poison_control": "030-19240",
+        "telefonseelsorge_crisis": "0800-111 0 111",
+        "non_emergency_police": "030-4664-664400"
+      },
+      "laws": [
+        {
+          "title": "Duty to Render Aid",
+          "ref": "Strafgesetzbuch (StGB) §323c",
+          "text": "German law imposes a legal duty on every person to render first aid in an emergency if it is necessary and can be expected of them given the circumstances. Failure is a criminal offence (unterlassene Hilfeleistung) punishable by fine or up to 1 year imprisonment."
+        },
+        {
+          "title": "Civil Liability Protection for First Aiders",
+          "ref": "BGB §680 + Rettungsgesetz Berlin",
+          "text": "A person who renders emergency assistance acts in a state of emergency (Notstand) and is protected from civil liability for ordinary negligence. Only gross negligence or intent can create liability."
+        }
+      ],
+      "notes": [
+        "Germany uses 112 for fire/medical and 110 for police. Both work from any phone including mobiles without SIM.",
+        "Berliner Feuerwehr (fire department) handles all medical emergencies and dispatches paramedics (Rettungssanitäter) or emergency physicians (Notarzt) based on triage.",
+        "U-Bahn/S-Bahn emergency: use the intercom in each car or the red emergency call buttons on platforms. Do not pull the emergency brake between stations.",
+        "Poison Control Berlin (030-19240) is a 24/7 specialist line for toxicological advice.",
+        "German law mandates first aid training for driver's licenses — most adults have basic CPR training.",
+        "Heat warnings (Hitzewarnung) issued by DWD (German Weather Service) at high risk periods; elderly in Gründerzeit buildings without AC are most vulnerable."
+      ],
+      "hospitals": [
+        "Charité — Universitätsmedizin Berlin (Campus Virchow-Klinikum, Mitte, Benjamin Franklin) — Level 1 Trauma",
+        "Vivantes Klinikum im Friedrichshain — 24/7 emergency",
+        "Vivantes Klinikum Neukölln — 24/7 emergency",
+        "BG Klinikum Unfallkrankenhaus Berlin (Marzahn) — specialized trauma",
+        "DRK Kliniken Berlin Köpenick"
+      ]
+    },
+    {
+      "slug": "sydney",
+      "display_name": "Sydney",
+      "country": "Australia",
+      "flag": "🇦🇺",
+      "region": "Oceania",
+      "lat": -33.8688,
+      "lon": 151.2093,
+      "primary": "000",
+      "numbers": {
+        "alternate_emergency": "112",
+        "police_non_emergency": "131 444",
+        "poisons_information": "13 11 26",
+        "mental_health_crisis": "1800 011 511",
+        "lifeline": "13 11 14",
+        "ses_state_emergency": "132 500"
+      },
+      "laws": [
+        {
+          "title": "Good Samaritan Act",
+          "ref": "NSW Good Samaritan Act 2001",
+          "text": "A Good Samaritan who acts in good faith to assist a person apparently in need of emergency assistance is not personally liable for anything done or omitted to be done in the course of providing that assistance, unless the Good Samaritan was impaired by alcohol or drugs."
+        },
+        {
+          "title": "Drug Misuse and Trafficking Act — Limited Immunity",
+          "ref": "Drug Misuse and Trafficking Act 1985 (NSW) + 2019 Amendment",
+          "text": "NSW introduced drug checking and fixed-site pill testing; limited immunity exists for personal-use quantities at approved events. For overdose 000 calls: police attendance is generally discretionary, and saving a life is the priority."
+        }
+      ],
+      "notes": [
+        "Australia's primary emergency number is 000 (Triple Zero). 112 also works from mobile phones, including without SIM card.",
+        "Ambulance in NSW is fee-for-service unless you have an Ambulance cover (e.g., NRMA or private health). In a life-threatening emergency, always call 000 regardless — billing is secondary.",
+        "Bushfire: monitor NSW RFS (rfs.nsw.gov.au) and Fires Near Me app. If in an evacuation zone, leave early — do not shelter in place against an ember attack without a prepared structure.",
+        "Shark/marine: call 000. Lifeguard towers operate during patrolled hours; always swim between the red and yellow flags.",
+        "Heatwave: Sydney heat is intensifying. Misting stations at beaches; community cooling centres during Code Red heat events.",
+        "Snake bite: apply pressure immobilisation bandage (NOT a tourniquet), immobilise, call 000. NSW has death adders, eastern browns, tiger snakes — all potentially fatal."
+      ],
+      "hospitals": [
+        "Royal Prince Alfred Hospital (Camperdown) — Level 1 Trauma, major adult",
+        "St Vincent's Hospital (Darlinghurst) — Level 1 Trauma",
+        "Westmead Hospital (Westmead) — Level 1 Trauma, Western Sydney",
+        "Liverpool Hospital (Liverpool) — Level 1 Trauma, South-West Sydney",
+        "Prince of Wales Hospital (Randwick) — Level 1 Trauma, Eastern Sydney"
+      ]
+    },
+    {
+      "slug": "singapore",
+      "display_name": "Singapore",
+      "country": "Singapore",
+      "flag": "🇸🇬",
+      "region": "Asia",
+      "lat": 1.3521,
+      "lon": 103.8198,
+      "primary": "999",
+      "numbers": {
+        "ambulance_scdf": "995",
+        "police": "999",
+        "non_emergency_police": "1800-255-0000",
+        "samaritans": "1800-221-4444",
+        "poison_control": "6423-9119",
+        "mental_health_sos": "1800-606-0221"
+      },
+      "laws": [
+        {
+          "title": "Good Samaritan Provision",
+          "ref": "Emergency Medical Services Act (Cap. 85A) + Penal Code §88",
+          "text": "Under Penal Code §88, an act done in good faith for the benefit of a person even without consent is not an offence if it is done with due care and attention. SCDF and MOH guidance explicitly encourages bystander CPR; civil suits against good-faith rescuers are extremely rare."
+        }
+      ],
+      "notes": [
+        "Singapore has two emergency numbers: 995 (SCDF — fire and ambulance) and 999 (Singapore Police Force). Use 995 for medical and fire, 999 for police and crime.",
+        "SCDF response time target is under 11 minutes. Singapore is small enough that coverage is generally excellent.",
+        "AEDs are mandated in all MRT stations, community clubs, schools, and commercial buildings. The MyResponder app (SCDF) alerts nearby CPR-trained volunteers when a cardiac arrest is reported.",
+        "MRT emergency: press the intercom or alarm handle. SMRT staff respond very quickly; every station has a first-aid room.",
+        "Singapore Poison Control Centre (6423-9119) at Singapore General Hospital — 24/7 toxicology advice.",
+        "Dengue fever is endemic. High fever, severe headache, eye pain, rash — seek medical attention within 24 hours. Monitor platelet count.",
+        "Strict laws on controlled substances: no Good Samaritan drug immunity statute. Always call 995 for an overdose — saving a life is prioritized."
+      ],
+      "hospitals": [
+        "Singapore General Hospital (Outram) — National University Hospital, Level 1 Trauma",
+        "Tan Tock Seng Hospital (Novena) — 24/7 A&E, major public hospital",
+        "National University Hospital (Kent Ridge) — Level 1 Trauma",
+        "Changi General Hospital (Simei) — East Singapore 24/7 A&E",
+        "Sengkang General Hospital (Sengkang) — North-East 24/7 A&E"
+      ]
+    },
+    {
+      "slug": "toronto",
+      "display_name": "Toronto",
+      "country": "Canada",
+      "flag": "🇨🇦",
+      "region": "North America",
+      "lat": 43.6532,
+      "lon": -79.3832,
+      "primary": "911",
+      "numbers": {
+        "poison_control": "1-800-268-9017",
+        "crisis_lifeline": "988",
+        "distress_centre": "416-408-4357",
+        "non_emergency_police": "416-808-2222",
+        "non_emergency": "311"
+      },
+      "laws": [
+        {
+          "title": "Ontario Good Samaritan Act",
+          "ref": "Good Samaritan Act, RSO 1990, c G.8",
+          "text": "A person who renders emergency medical services or first aid to an injured person at the immediate scene of an accident is not liable for damages that result from that person's negligence in acting or failing to act while rendering such services, unless it is gross negligence."
+        },
+        {
+          "title": "Ontario Drug and Pharmacies Regulation Act — Overdose Response",
+          "ref": "Federal CDSA §4(2) + Ontario Naloxone Program",
+          "text": "Ontario does not have a formal Good Samaritan drug law at provincial level, but the federal Good Samaritan Drug Overdose Act (2017) provides limited immunity from simple drug possession charges when calling 911 for an overdose. Naloxone is free at Ontario pharmacies under the Ontario Naloxone Program."
+        }
+      ],
+      "notes": [
+        "Toronto EMS, Toronto Fire, and Toronto Police all respond to 911. Medical calls are triaged to EMS (paramedics) with fire as first responder backup on life-threatening calls.",
+        "TTC (subway) emergency: pull the passenger assistance alarm (PA alarm) in each car or use the yellow strip intercom on platforms. Operators stop at the next station to assess.",
+        "Federal Good Samaritan Drug Overdose Act (2017): calling 911 for an overdose provides limited immunity from simple possession charges for the caller and others present — stay with the patient.",
+        "Extreme cold warnings are issued at -20°C or below. Frostbite can occur within 10-15 minutes on exposed skin. Call 311 for Warming Centre locations.",
+        "Toronto has the Toronto Overdose Prevention Society sites and supervised consumption sites — these reduce overdose fatalities.",
+        "Naloxone (Narcan) nasal spray is free at any Ontario pharmacy — no prescription required under the Ontario Naloxone Program."
+      ],
+      "hospitals": [
+        "Sunnybrook Health Sciences Centre (North York) — Level 1 Trauma, regional trauma centre",
+        "St. Michael's Hospital (Unity Health Toronto, Downtown) — Level 1 Trauma",
+        "Toronto General Hospital (University Health Network, Downtown)",
+        "Toronto Western Hospital (University Health Network)",
+        "SickKids — The Hospital for Sick Children (Downtown) — Pediatric Level 1 Trauma"
+      ]
+    }
+  ]
+}

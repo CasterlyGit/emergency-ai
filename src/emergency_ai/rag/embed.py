@@ -10,7 +10,6 @@ from __future__ import annotations
 
 import logging
 import os
-from typing import Optional
 
 log = logging.getLogger("emergency_ai.rag.embed")
 
@@ -25,7 +24,7 @@ def _get_model():
     if os.environ.get("RAG_ENABLED") != "1":
         raise RuntimeError("RAG_ENABLED is not set — refusing to load embedding model")
     try:
-        from sentence_transformers import SentenceTransformer  # noqa: PLC0415
+        from sentence_transformers import SentenceTransformer
 
         log.info("Loading embedding model all-MiniLM-L6-v2 …")
         _model = SentenceTransformer("all-MiniLM-L6-v2")

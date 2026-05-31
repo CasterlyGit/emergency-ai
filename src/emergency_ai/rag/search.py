@@ -9,7 +9,6 @@ from __future__ import annotations
 
 import logging
 import os
-from typing import Optional
 
 from sqlalchemy.ext.asyncio import AsyncSession
 
@@ -17,7 +16,7 @@ log = logging.getLogger("emergency_ai.rag.search")
 
 
 async def retrieve_context(
-    session: Optional[AsyncSession],
+    session: AsyncSession | None,
     query: str,
     jurisdiction: str,
     top_k: int = 5,
@@ -41,10 +40,10 @@ async def retrieve_context(
     if session is None:
         return []
     try:
-        from sqlalchemy import select, text as sa_text  # noqa: PLC0415
+        from sqlalchemy import select
 
-        from .embed import embed_texts  # noqa: PLC0415
-        from ..db.models import StatuteChunk  # noqa: PLC0415
+        from ..db.models import StatuteChunk
+        from .embed import embed_texts
 
         query_vec = embed_texts([query])[0]
         # pgvector cosine distance operator: <=>
@@ -57,6 +56,6 @@ async def retrieve_context(
         result = await session.execute(stmt)
         rows = result.scalars().all()
         return list(rows)
-    except Exception as exc:  # noqa: BLE001
+    except Exception as exc:
         log.warning("RAG retrieval failed (%s) — returning empty context", exc)
         return []

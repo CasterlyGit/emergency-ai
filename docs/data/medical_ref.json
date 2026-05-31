@@ -1,0 +1,103 @@
+{
+  "recovery_position": [
+    "Kneel beside the person and ensure the airway is open (tilt head back, lift chin).",
+    "Place the arm nearest you at a right angle to the body, elbow bent, palm facing up.",
+    "Bring the far arm across the chest and hold the back of that hand against the nearest cheek.",
+    "With your other hand, pull the far knee up until the foot is flat on the ground.",
+    "Keeping the hand against the cheek, pull on the bent knee to roll the person onto their side toward you.",
+    "Adjust the top leg so both the hip and knee are at right angles.",
+    "Tilt the head back gently to keep the airway open; the hand under the cheek keeps the airway aligned.",
+    "Call 911 (or local emergency number); monitor breathing continuously until help arrives.",
+    "If breathing stops at any point, begin CPR immediately."
+  ],
+  "cpr": {
+    "adult": [
+      "Confirm the scene is safe; check the person — tap shoulders and shout 'Are you okay?'",
+      "Call 911 (or have a bystander call) and request an AED if available.",
+      "Lay the person flat on their back on a firm surface.",
+      "Kneel beside the chest; place the heel of one hand on the center of the chest (lower half of sternum).",
+      "Place your other hand on top, interlace fingers, and keep fingers off the ribs.",
+      "Keep arms straight; compress the chest at least 2 inches (5 cm) deep at a rate of 100–120 compressions per minute.",
+      "Allow the chest to fully recoil between compressions — do not lean on the chest.",
+      "After 30 compressions, open the airway: tilt the head back and lift the chin.",
+      "Pinch the nose shut, create a seal over the mouth, and give 2 rescue breaths each lasting about 1 second — look for chest rise.",
+      "Continue cycles of 30 compressions then 2 breaths until an AED is ready, the person shows signs of life, or EMS takes over.",
+      "If you are untrained or unwilling to give rescue breaths, perform compression-only CPR at 100–120 per minute continuously."
+    ],
+    "child": [
+      "Confirm the scene is safe; check the child — tap and shout. Call 911 after about 2 minutes of CPR if alone.",
+      "Lay the child flat on their back on a firm surface.",
+      "Place the heel of one hand (or two hands for a larger child) on the lower half of the sternum.",
+      "Compress the chest about 2 inches (5 cm) — roughly one-third the chest depth — at 100–120 per minute.",
+      "Allow full chest recoil between compressions.",
+      "After 30 compressions (15 if two rescuers), open the airway: tilt head back, lift chin.",
+      "Pinch the nose, seal over the mouth, and give 2 gentle rescue breaths — just enough to see the chest rise.",
+      "Continue 30:2 cycles (or 15:2 with two rescuers). Use a pediatric AED pad set if available.",
+      "Continue until the child shows signs of life, an AED is ready, or EMS arrives."
+    ],
+    "infant": [
+      "Confirm scene safety; tap the foot and shout. Call 911 after 2 minutes of CPR if you are alone.",
+      "Place the infant on a firm, flat surface.",
+      "Use two fingers (middle and ring) on the center of the chest, just below the nipple line.",
+      "Compress about 1.5 inches (4 cm) — roughly one-third the chest depth — at 100–120 per minute.",
+      "Allow full chest recoil between compressions.",
+      "After 30 compressions (15 if two rescuers), tilt the head back slightly (neutral position — do not hyperextend).",
+      "Cover the infant's mouth AND nose with your mouth and give 2 small puffs lasting 1 second each — just enough to see the chest rise.",
+      "Continue 30:2 cycles (or 15:2 with two rescuers).",
+      "Use an infant AED pad set if available. Continue until the infant shows signs of life or EMS arrives."
+    ]
+  },
+  "fast": {
+    "F": "FACE: Ask the person to smile — check for drooping or unevenness on one side of the face.",
+    "A": "ARMS: Ask the person to raise both arms — watch for one arm that drifts downward or cannot be raised.",
+    "S": "SPEECH: Ask the person to repeat a simple phrase (e.g., 'The sky is blue') — listen for slurred, strange, or absent speech.",
+    "T": "TIME: If ANY of the above signs are present, call 911 immediately and note the exact time symptoms started — do not wait to see if symptoms improve."
+  },
+  "tourniquet": [
+    "Expose the wound by cutting away clothing if needed; do NOT remove impaled objects.",
+    "Apply direct firm pressure with a clean cloth first to assess severity.",
+    "If bleeding is life-threatening and does not stop with pressure, apply a tourniquet 2–3 inches (5–7 cm) above the wound — never over a joint.",
+    "Use a commercial tourniquet (CAT or SOFTT-W) or improvise with a strip of cloth at least 2 inches (5 cm) wide — never wire or cord.",
+    "Tighten the tourniquet until the bleeding stops — this will be painful; tightness is necessary.",
+    "Note the exact time of application (write directly on the skin with a marker if possible).",
+    "Do NOT remove the tourniquet once applied — leave it for EMS personnel.",
+    "Keep the limb elevated if possible; keep the person warm and still.",
+    "Call 911 immediately if not already done; monitor for signs of shock (pale, cold, rapid breathing, confusion)."
+  ],
+  "epipen": [
+    "Confirm signs of anaphylaxis: hives, swelling of face/throat, difficulty breathing, drop in blood pressure, rapid pulse — act immediately.",
+    "Call 911 before or immediately after administering epinephrine.",
+    "Remove the EpiPen from its case; grip firmly in your dominant hand, blue safety cap up, orange tip pointing down.",
+    "Pull off the blue safety release cap with your other hand.",
+    "Hold the orange tip close to the outer mid-thigh (can inject through clothing).",
+    "Swing and push the orange tip firmly against the thigh until you hear a click — hold in place for 10 seconds.",
+    "Remove the pen and massage the injection site for 10 seconds.",
+    "Note the time of injection; a second dose may be given after 5–15 minutes if symptoms do not improve and EMS has not arrived.",
+    "Lay the person down with legs elevated unless breathing is difficult — then keep them sitting upright.",
+    "Even if the person feels better, transport to emergency care immediately — biphasic reactions can occur hours later.",
+    "Give the used EpiPen to EMS personnel on arrival."
+  ],
+  "heimlich": {
+    "adult": [
+      "Ask 'Are you choking?' — if the person cannot speak, cough, or breathe, act immediately; call 911.",
+      "Stand behind the person; place one foot forward for stability.",
+      "Make a fist with one hand and place the thumb side against the abdomen, just above the navel and well below the breastbone.",
+      "Grasp your fist firmly with the other hand.",
+      "Give a quick, firm inward-and-upward thrust — repeat up to 5 times.",
+      "Alternate 5 back blows (firm strikes between shoulder blades with the heel of your hand) with 5 abdominal thrusts if the object is not expelled.",
+      "Continue alternating until the object is expelled or the person loses consciousness.",
+      "If the person becomes unconscious, lower them to the ground carefully, call 911, and begin CPR — each time you open the airway to give breaths, look for and remove any visible object."
+    ],
+    "infant": [
+      "Confirm the infant cannot cry, cough, or breathe — call 911 immediately.",
+      "Hold the infant face-down along your forearm, supporting the head; keep head lower than chest.",
+      "Give 5 firm back blows between the shoulder blades using the heel of your hand.",
+      "Flip the infant face-up on your other forearm, still supporting the head below chest level.",
+      "Place two fingers on the center of the chest just below the nipple line.",
+      "Give 5 quick downward chest thrusts about 1.5 inches deep.",
+      "Alternate 5 back blows and 5 chest thrusts; check the mouth after each set and remove any visible object — do NOT perform blind finger sweeps.",
+      "If the infant becomes unconscious, begin infant CPR and look for the object each time you open the airway to give breaths.",
+      "Continue until the object is expelled, the infant starts breathing, or EMS arrives."
+    ]
+  }
+}

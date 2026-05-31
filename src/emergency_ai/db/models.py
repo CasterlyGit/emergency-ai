@@ -10,7 +10,6 @@ from __future__ import annotations
 
 import hashlib
 from datetime import datetime
-from typing import Optional
 
 from pgvector.sqlalchemy import Vector
 from sqlalchemy import Boolean, DateTime, ForeignKey, Integer, String, Text, func
@@ -52,19 +51,19 @@ class RequestLog(Base):
     __tablename__ = "request_logs"
 
     id: Mapped[int] = mapped_column(Integer, primary_key=True, autoincrement=True)
-    api_key_id: Mapped[Optional[int]] = mapped_column(
+    api_key_id: Mapped[int | None] = mapped_column(
         Integer, ForeignKey("api_keys.id"), nullable=True, index=True
     )
     city_slug: Mapped[str] = mapped_column(String(64), nullable=False)
     urgency: Mapped[str] = mapped_column(String(32), nullable=False)
-    ttft_ms: Mapped[Optional[int]] = mapped_column(Integer, nullable=True)
-    total_ms: Mapped[Optional[int]] = mapped_column(Integer, nullable=True)
+    ttft_ms: Mapped[int | None] = mapped_column(Integer, nullable=True)
+    total_ms: Mapped[int | None] = mapped_column(Integer, nullable=True)
     cache_hit: Mapped[bool] = mapped_column(Boolean, default=False, nullable=False)
     created_at: Mapped[datetime] = mapped_column(
         DateTime(timezone=True), server_default=func.now(), nullable=False
     )
 
-    api_key: Mapped[Optional[APIKey]] = relationship("APIKey", back_populates="logs")
+    api_key: Mapped[APIKey | None] = relationship("APIKey", back_populates="logs")
 
 
 class StatuteChunk(Base):
@@ -76,7 +75,7 @@ class StatuteChunk(Base):
     jurisdiction: Mapped[str] = mapped_column(String(32), nullable=False, index=True)
     title: Mapped[str] = mapped_column(String(256), nullable=False)
     body: Mapped[str] = mapped_column(Text, nullable=False)
-    embedding: Mapped[Optional[list[float]]] = mapped_column(Vector(384), nullable=True)
+    embedding: Mapped[list[float] | None] = mapped_column(Vector(384), nullable=True)
     created_at: Mapped[datetime] = mapped_column(
         DateTime(timezone=True), server_default=func.now(), nullable=False
     )

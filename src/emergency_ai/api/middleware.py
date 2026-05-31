@@ -9,7 +9,7 @@ from __future__ import annotations
 import hashlib
 import logging
 import os
-from typing import Annotated, Optional
+from typing import Annotated
 
 from fastapi import Depends, Header, HTTPException
 from sqlalchemy.ext.asyncio import AsyncSession
@@ -23,7 +23,7 @@ log = logging.getLogger("emergency_ai.middleware")
 _NO_AUTH = os.environ.get("EMERGENCY_AI_NO_AUTH") == "1"
 
 # Module-level rate limiter singleton (initialised lazily)
-_limiter: Optional[RateLimiter] = None
+_limiter: RateLimiter | None = None
 
 
 def get_limiter() -> RateLimiter:
@@ -35,9 +35,9 @@ def get_limiter() -> RateLimiter:
 
 
 async def require_api_key(
-    x_api_key: Annotated[Optional[str], Header()] = None,
-    session: Optional[AsyncSession] = Depends(get_session),
-) -> Optional[str]:
+    x_api_key: Annotated[str | None, Header()] = None,
+    session: AsyncSession | None = Depends(get_session),
+) -> str | None:
     """FastAPI dependency that validates the ``X-Api-Key`` header.
 
     Returns the raw API key string on success so downstream handlers can
@@ -57,7 +57,7 @@ async def require_api_key(
         return x_api_key
 
     key_hash = hashlib.sha256(x_api_key.encode()).hexdigest()
-    from sqlalchemy import select  # noqa: PLC0415
+    from sqlalchemy import select
 
     result = await session.execute(
         select(APIKey).where(APIKey.key_hash == key_hash, APIKey.is_active.is_(True))
@@ -70,7 +70,7 @@ async def require_api_key(
 
 
 async def check_rate_limit(
-    api_key: Optional[str],
+    api_key: str | None,
     limiter: RateLimiter,
 ) -> None:
     """Raise HTTP 429 with a ``Retry-After`` header if the key is over the limit.
