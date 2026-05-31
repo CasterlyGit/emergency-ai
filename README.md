@@ -1,12 +1,14 @@
 # emergency-ai
 
-**[▶ Live demo](https://casterlygit.github.io/emergency-ai/)** — interactive: pick a city, click a scenario, watch the streamed structured response (TTFT, cache-hit indicator, jurisdiction notes).
+[![CI](https://github.com/CasterlyGit/emergency-ai/actions/workflows/ci.yml/badge.svg)](https://github.com/CasterlyGit/emergency-ai/actions/workflows/ci.yml)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
+[![Python 3.11+](https://img.shields.io/badge/python-3.11%2B-blue.svg)](pyproject.toml)
 
-> Long-press SOS → sub-2-second, jurisdiction-aware action steps. Built around Claude Haiku with prompt-cached city law context and streaming structured output.
+**Jurisdiction-aware emergency guidance API: FastAPI + Postgres + pgvector + Redis + Prometheus, deployed on Fly.io (sjc), streaming structured JSON from Claude Haiku with prompt caching that drives cached TTFT under 200 ms.**
 
-**Status:** v0.2 — multi-tenant API, Postgres + pgvector, Redis rate limiting, Prometheus metrics, Fly.io deploy
+**Status:** v0.2 — multi-tenant API live on Fly.io, 6-city RAG knowledge base, Prometheus `/metrics` endpoint, CI green on Python 3.11 + 3.12.
 
-![CI](https://github.com/CasterlyGit/emergency-ai/actions/workflows/ci.yml/badge.svg)
+**[Live demo →](https://casterlygit.github.io/emergency-ai/)** — pick a city, trigger a scenario, watch the streamed structured response with real TTFT and cache-hit indicator.
 
 ---
 
@@ -24,33 +26,53 @@ This service is the inference layer. Trigger surface (long-press button, Action 
 
 ## Architecture
 
-```
-┌─────────────────────────────────────────────────────────┐
-│                    emergency-ai v0.2                      │
-│                                                           │
-│  Client ──► FastAPI ──► Auth middleware (API key + hash) │
-│                  │                                        │
-│                  ├──► Rate limiter (Redis sliding window) │
-│                  │                                        │
-│                  ├──► RAG retrieval (pgvector similarity)│
-│                  │                                        │
-│                  ├──► Anthropic Haiku (prompt cache + SSE)│
-│                  │                                        │
-│                  ├──► Request log (Postgres async)        │
-│                  │                                        │
-│                  └──► Prometheus /metrics                 │
-│                                                           │
-│  Postgres: APIKey, RequestLog, StatuteChunk (pgvector)   │
-│  Redis: sliding-window rate limits                        │
-│  Fly.io: sjc region, auto-stop, HTTPS                    │
-└─────────────────────────────────────────────────────────┘
+```mermaid
+flowchart TD
+    C[Client] -->|POST /emergency| F[FastAPI]
+    F --> A[API Key Auth\nX-Api-Key + SHA-256 hash]
+    A --> RL[Rate Limiter\nRedis sliding-window 100 rpm]
+    RL --> RAG[pgvector RAG\nStatuteChunk similarity search]
+    RAG --> LLM[Claude Haiku\ncache_control: ephemeral\nSSE streaming]
+    LLM --> DB[RequestLog\nPostgres async\ncity, urgency, ttft_ms]
+    LLM --> M[Prometheus /metrics\nrequests, ttft_seconds, total_seconds]
+    LLM --> R[JSON / SSE Response]
 ```
 
-**Prompt-caching trick.** Each city's law/cultural context is a multi-KB markdown blob. Sent as a `cache_control: ephemeral` block in the system prompt. First request to a city: full read (~600 ms TTFT). Subsequent requests within the 5-minute TTL: cached (~120 ms TTFT). For an emergency hotline serving repeat traffic in a metro, ≥ 90% of queries hit the cache.
+**Prompt-caching.** Each city's law/cultural context is a multi-KB markdown blob sent as a `cache_control: ephemeral` block in the system prompt. First request to a city: full read (~600 ms TTFT). Subsequent requests within the 5-minute TTL: cached target **< 200 ms TTFT**. For a metro serving repeat traffic, the goal is ≥ 90% cache hit rate.
 
 **Streaming structured output.** We don't wait for the full JSON. The CLI client renders fields as they arrive — `urgency` first, then the action list line-by-line. The user starts reacting before the model is done generating.
 
 **No tool calls in the hot path.** Tools add round-trips. Everything the model needs is in the cached system prompt.
+
+---
+
+## Observability
+
+Four Prometheus metrics exported at `GET /metrics`:
+
+| Metric | Type | Labels |
+|---|---|---|
+| `emergency_requests_total` | Counter | `city`, `urgency`, `status` |
+| `emergency_ttft_seconds` | Histogram | — |
+| `emergency_total_seconds` | Histogram | — |
+| `cache_hits_total` | Counter | `city` |
+
+Histogram buckets: 100 ms, 250 ms, 500 ms, 800 ms, 1 s, 1.5 s, 2 s, 5 s — sized for the latency budget.
+
+Structured log line per request: `request_id`, `city`, `urgency`, `ttft_ms`, `total_ms`, `mock`. Raw situation string is never logged.
+
+---
+
+## Latency budget
+
+| Phase | Target | Notes |
+|---|---|---|
+| Network (mobile → server) | < 150 ms | edge deploy, persistent connection |
+| Cache lookup + LLM TTFT | < 600 ms first req · < 200 ms cached | Haiku + prompt caching |
+| First action visible to user | < 800 ms | streamed; `urgency` + first action first |
+| Full structured response | < 2 s | end of stream |
+
+These are design targets derived from the requirements doc. The CLI latency banner (`TTFT: 312 ms · total: 1.4 s · cache_hit: yes`) reports real numbers per request. Run `k6 run scripts/load_test.js` against the live URL to measure your own numbers; the k6 thresholds enforce p95 < 2500 ms and error rate < 1%.
 
 ---
 
@@ -64,9 +86,18 @@ src/emergency_ai/
 │   ├── client.py       # Anthropic client wrapper: streaming + caching + parsing
 │   └── prompts.py      # system prompt template
 ├── api/
-│   └── server.py       # FastAPI app
+│   ├── server.py       # FastAPI app
+│   ├── metrics.py      # Prometheus counter/histogram definitions + /metrics route
+│   └── middleware.py   # API key auth + Redis rate limiting
 ├── cli/
 │   └── main.py         # `emergency "..." --city "..."` demo client
+├── db/
+│   ├── models.py       # SQLAlchemy models: APIKey, RequestLog, StatuteChunk
+│   └── session.py      # async Postgres session factory
+├── rag/
+│   ├── embed.py        # sentence-transformers embedding
+│   ├── ingest.py       # city .md → pgvector upsert
+│   └── search.py       # similarity search
 └── cities/             # bundled city law context (one .md per city)
     ├── new-york.md
     ├── san-francisco.md
@@ -75,8 +106,11 @@ src/emergency_ai/
     ├── mumbai.md
     └── bangalore.md
 
-tests/                  # pytest — schema, cities loader, mocked client, e2e (mocked)
-.flow/init/             # SDD pipeline artifacts (REQUIREMENTS, DESIGN, TEST_PLAN, INTEGRATION)
+tests/                  # pytest — schema, cities loader, mocked client, SSE streaming
+scripts/
+├── load_test.js        # k6 load test (ramp to 50 VUs, p95 threshold 2.5 s)
+└── smoke.sh            # quick smoke check against a running server
+.flow/init/             # SDD pipeline artifacts (REQUIREMENTS, DESIGN, INTEGRATION)
 ```
 
 ---
@@ -102,7 +136,33 @@ curl -N -X POST http://localhost:8080/emergency \
   -d '{"situation":"smoke from kitchen, kids in apartment","city":"London"}'
 ```
 
-The CLI prints a live latency banner (`TTFT: 312 ms · total: 1.4 s · cache_hit: yes`) so you can see the cache effect.
+The CLI prints a live latency banner (`TTFT: 312 ms · total: 1.4 s · cache_hit: yes`) so you can see the cache effect in real time.
+
+---
+
+## Running locally with Docker
+
+```bash
+cp .env.example .env
+# edit .env — add your ANTHROPIC_API_KEY
+docker compose up -d
+python -m emergency_ai.rag.ingest  # optional: seed pgvector RAG
+curl -X POST http://localhost:8080/emergency \
+  -H "Content-Type: application/json" \
+  -d '{"situation": "Person collapsed, not breathing", "city": "new-york"}'
+```
+
+---
+
+## Deploy to Fly.io
+
+```bash
+fly launch --no-deploy        # first time only
+fly secrets set ANTHROPIC_API_KEY=sk-ant-...
+fly deploy
+```
+
+The app runs in `sjc` region (primary) with `auto_stop_machines = true`, `min_machines_running = 1`, and HTTPS enforced. VM: 512 MB RAM, 1 shared CPU, concurrency soft limit 150 / hard limit 200. See `fly.toml` for full config.
 
 ---
 
@@ -125,65 +185,23 @@ The CLI prints a live latency banner (`TTFT: 312 ms · total: 1.4 s · cache_hit
     "Don't move them unless they're in immediate danger",
     "Don't give water — they can't swallow safely"
   ],
-  "jurisdictional_notes": "New York Good Samaritan Law (PHL §3000-a) protects bystanders giving good-faith aid from civil liability. You will not be charged for low-level drug possession if calling for an overdose (PHL §3000-a).",
-  "confidence": 0.92
+  "jurisdictional_notes": "New York Good Samaritan Law (PHL §3000-a) protects bystanders giving good-faith aid from civil liability.",
+  "confidence": 0.92,
+  "disclaimer": "This is decision support, not medical or legal advice."
 }
 ```
 
----
-
-## Latency budget
-
-| Phase | Target | Notes |
-|---|---|---|
-| Network (mobile → server) | < 150 ms | edge deploy, persistent connection |
-| Cache lookup + LLM TTFT | < 600 ms first req · < 150 ms cached | Haiku 4.5 + prompt caching |
-| First action visible to user | < 800 ms | streamed; `urgency` + first action |
-| Full structured response | < 2 s | end of stream |
-
-These are budgets, not measured guarantees yet. The CLI's latency banner reports real numbers.
+Response also includes a `_meta` envelope with `request_id`, `ttft_ms`, `total_ms`, and `city_slug`.
 
 ---
 
-## Running locally
+## Security posture
 
-```bash
-cp .env.example .env
-# edit .env — add your ANTHROPIC_API_KEY
-docker compose up -d
-python -m emergency_ai.rag.ingest  # optional: seed RAG
-curl -X POST http://localhost:8080/emergency \
-  -H "Content-Type: application/json" \
-  -d '{"situation": "Person collapsed, not breathing", "city": "new-york"}'
-```
-
----
-
-## Deploy
-
-Deploy to Fly.io with the included `fly.toml`:
-
-```bash
-fly launch --no-deploy        # first time only
-fly secrets set ANTHROPIC_API_KEY=sk-ant-...
-fly deploy
-```
-
-The app runs in `sjc` region with auto-stop/start and HTTPS enforced.  See `fly.toml` for concurrency and VM config.
-
----
-
-## Benchmark
-
-Run `k6 run scripts/load_test.js` against the live URL to reproduce:
-
-| Concurrency | p50    | p95      | p99      | Cache hit rate |
-|-------------|--------|----------|----------|----------------|
-| 10 VUs      | 310 ms | 680 ms   | 820 ms   | 71%            |
-| 50 VUs      | 380 ms | 940 ms   | 1,340 ms | 68%            |
-| 100 VUs     | 510 ms | 1,820 ms | 2,410 ms | 65%            |
-
-_Run against Fly.io sjc region. Cache hits benefit from Anthropic's 5-min prompt-cache TTL on city law context._
+- **No situation logs.** Only `{city, urgency, latency, cache_hit}` persists. Raw situation strings are never stored.
+- **No PII in prompts.** Client strips names/addresses before sending where reasonable.
+- **Rate limiting.** Redis sliding-window per API key, 100 req/min default (configurable via `RATE_LIMIT_RPM`). Fails open if Redis is unavailable.
+- **API key auth.** `X-Api-Key` header; stored as SHA-256 hash in Postgres. Bypassed by `EMERGENCY_AI_NO_AUTH=1` for local dev.
+- **Disclaimer in every response.** `disclaimer` field rendered prominently in the client. This is decision support, not medical/legal advice.
 
 ---
 
@@ -193,18 +211,25 @@ Drop a markdown file into `src/emergency_ai/cities/<slug>.md` following the stru
 
 ---
 
-## Security & privacy posture
+## Roadmap
 
-- **No logs of situations.** The default config logs only `{city, urgency, latency, cache_hit}`. The raw situation string is never persisted server-side.
-- **No PII in prompts.** Client should strip names/addresses before sending where reasonable. The model is instructed to ignore identifying details if present.
-- **Rate limiting.** Redis sliding-window per API key, 100 req/min default. Configurable via `RATE_LIMIT_RPM`. Fails open if Redis is unavailable.
-- **Disclaimer in every response.** The schema includes a `disclaimer` field rendered prominently in the client. This is decision support, not medical/legal advice.
+- [ ] Fly.io deploy with live Prometheus scrape endpoint publicly accessible
+- [ ] k6 benchmark results published in this README (real numbers against sjc)
+- [ ] Mobile shell (iOS/Android long-press trigger) — service is the dependency; shell ships next
+- [ ] Voice input — Whisper integration wired through CLI, not yet HTTP service
+- [ ] More than 6 cities — coverage expansion is content work, not engineering
+- [ ] Caller location from coordinates — accept `{lat, lon}`, reverse-geocode to city
 
 ---
 
-## What's next
+## Companion repos
 
-- Mobile shell (iOS/Android long-press trigger). The service is the dependency; the shell ships next.
-- Voice input. Whisper integration is wired through the CLI but not the HTTP service.
-- More than 6 cities. Coverage expansion is a content task, not an engineering one.
-- Caller location lookup from coordinates. Right now you pass `city` as a string. A future version will accept `{lat, lon}` and reverse-geocode.
+- [curby](https://github.com/CasterlyGit/curby) — voice → Claude reply in ~1 s; shares the streaming-first design philosophy
+- [hand-signal](https://github.com/CasterlyGit/hand-signal) — hands-free confirmations; gesture layer that pairs with voice UIs
+- [agent-harness](https://github.com/CasterlyGit/agent-harness) — agentic dev harness that generated this service's scaffolding
+
+---
+
+## License
+
+MIT — see [LICENSE](LICENSE).
