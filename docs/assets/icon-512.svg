@@ -1,0 +1,99 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="512" height="512" shape-rendering="crispEdges">
+  <defs>
+    <!-- Matte-black background gradient -->
+    <linearGradient id="bg512" x1="0" y1="0" x2="512" y2="512" gradientUnits="userSpaceOnUse">
+      <stop offset="0%" stop-color="#070b12"/>
+      <stop offset="100%" stop-color="#04060a"/>
+    </linearGradient>
+    <!-- Cyan neon glow for cross -->
+    <filter id="neon512" x="-40%" y="-40%" width="180%" height="180%" color-interpolation-filters="sRGB">
+      <feGaussianBlur in="SourceGraphic" stdDeviation="6" result="blur1"/>
+      <feGaussianBlur in="SourceGraphic" stdDeviation="14" result="blur2"/>
+      <feGaussianBlur in="SourceGraphic" stdDeviation="22" result="blur3"/>
+      <feMerge>
+        <feMergeNode in="blur3"/>
+        <feMergeNode in="blur2"/>
+        <feMergeNode in="blur1"/>
+        <feMergeNode in="SourceGraphic"/>
+      </feMerge>
+    </filter>
+    <!-- Pulse waveform glow -->
+    <filter id="pulse512" x="-20%" y="-60%" width="140%" height="220%" color-interpolation-filters="sRGB">
+      <feGaussianBlur in="SourceGraphic" stdDeviation="3.5" result="b1"/>
+      <feGaussianBlur in="SourceGraphic" stdDeviation="8" result="b2"/>
+      <feMerge>
+        <feMergeNode in="b2"/>
+        <feMergeNode in="b1"/>
+        <feMergeNode in="SourceGraphic"/>
+      </feMerge>
+    </filter>
+    <!-- Clip to rounded square for maskable safe zone -->
+    <clipPath id="mask512">
+      <rect x="0" y="0" width="512" height="512" rx="100" ry="100"/>
+    </clipPath>
+  </defs>
+
+  <!-- Background: matte-black rounded square -->
+  <rect x="0" y="0" width="512" height="512" rx="100" ry="100" fill="url(#bg512)"/>
+
+  <!-- Luminous rim -->
+  <rect x="2" y="2" width="508" height="508" rx="99" ry="99" fill="none"
+        stroke="rgba(46,230,255,0.10)" stroke-width="2"/>
+
+  <!-- Very subtle inner glass sheen — top-left quadrant highlight -->
+  <ellipse cx="180" cy="140" rx="140" ry="80"
+           fill="rgba(180,230,255,0.025)" style="mix-blend-mode:screen"/>
+
+  <!-- === MEDICAL CROSS === centered at 256,220 -->
+  <!-- Horizontal: x=152, y=196, w=208, h=80  (cross arm thickness=80) -->
+  <!-- Vertical:   x=216, y=132, w=80,  h=208 -->
+  <g filter="url(#neon512)" clip-path="url(#mask512)">
+    <!-- Horizontal bar -->
+    <rect x="152" y="196" width="208" height="80" rx="14" ry="14"
+          fill="rgba(46,230,255,0.07)" stroke="#2ee6ff" stroke-width="4"/>
+    <!-- Vertical bar -->
+    <rect x="216" y="132" width="80" height="208" rx="14" ry="14"
+          fill="rgba(46,230,255,0.07)" stroke="#2ee6ff" stroke-width="4"/>
+    <!-- Center intersection highlight -->
+    <rect x="216" y="196" width="80" height="80" rx="8" ry="8"
+          fill="rgba(46,230,255,0.16)" stroke="none"/>
+    <!-- Inner cross arms brightening fill for center -->
+    <rect x="232" y="212" width="48" height="48" rx="4" ry="4"
+          fill="rgba(46,230,255,0.12)" stroke="none"/>
+  </g>
+
+  <!-- === PULSE / ECG WAVEFORM === y≈378..420 -->
+  <!-- Scale up from 192 version: multiply coords roughly x2.67 and shift -->
+  <g filter="url(#pulse512)" clip-path="url(#mask512)">
+    <polyline
+      points="
+        88,398
+        160,398
+        178,398
+        190,366
+        208,430
+        222,372
+        234,398
+        332,398
+        342,398
+        352,381
+        364,416
+        374,398
+        422,398"
+      fill="none"
+      stroke="#2ee6ff"
+      stroke-width="5.5"
+      stroke-linecap="round"
+      stroke-linejoin="round"/>
+  </g>
+
+  <!-- Divider line between cross and waveform -->
+  <line x1="88" y1="356" x2="424" y2="356"
+        stroke="rgba(46,230,255,0.07)" stroke-width="1.5"/>
+
+  <!-- Corner accent dots (subtle HUD feel) -->
+  <circle cx="48"  cy="48"  r="3" fill="rgba(46,230,255,0.25)"/>
+  <circle cx="464" cy="48"  r="3" fill="rgba(46,230,255,0.25)"/>
+  <circle cx="48"  cy="464" r="3" fill="rgba(46,230,255,0.25)"/>
+  <circle cx="464" cy="464" r="3" fill="rgba(46,230,255,0.25)"/>
+</svg>

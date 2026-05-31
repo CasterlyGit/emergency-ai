@@ -1,0 +1,325 @@
+{
+  "version": 1,
+  "languages": {
+    "en": { "name": "English",    "flag": "🇺🇸", "dir": "ltr" },
+    "es": { "name": "Español",    "flag": "🇪🇸", "dir": "ltr" },
+    "hi": { "name": "हिन्दी",       "flag": "🇮🇳", "dir": "ltr" },
+    "ja": { "name": "日本語",       "flag": "🇯🇵", "dir": "ltr" },
+    "fr": { "name": "Français",   "flag": "🇫🇷", "dir": "ltr" },
+    "de": { "name": "Deutsch",    "flag": "🇩🇪", "dir": "ltr" },
+    "zh": { "name": "中文",         "flag": "🇨🇳", "dir": "ltr" },
+    "ar": { "name": "العربية",     "flag": "🇸🇦", "dir": "rtl" }
+  },
+  "strings": {
+    "app_title": {
+      "en": "Emergency AI",
+      "es": "Emergencia IA",
+      "hi": "इमरजेंसी AI",
+      "ja": "緊急AI",
+      "fr": "Urgence IA",
+      "de": "Notfall-KI",
+      "zh": "急救AI",
+      "ar": "الذكاء الاصطناعي للطوارئ"
+    },
+    "tagline": {
+      "en": "Life-saving guidance, online or off",
+      "es": "Guía para salvar vidas, con o sin conexión",
+      "hi": "जीवन बचाने वाली मार्गदर्शिका, ऑनलाइन या ऑफलाइन",
+      "ja": "いつでも使える、命を救うガイダンス",
+      "fr": "Des conseils vitaux, connecté ou hors ligne",
+      "de": "Lebensrettende Anleitung – mit oder ohne Netz",
+      "zh": "挽救生命的指导，联网或离线均可使用",
+      "ar": "إرشادات منقذة للحياة، متصلاً أو غير متصل"
+    },
+    "ask_placeholder": {
+      "en": "Describe the emergency — what's happening?",
+      "es": "Describe la emergencia — ¿qué está pasando?",
+      "hi": "आपात स्थिति का वर्णन करें — क्या हो रहा है?",
+      "ja": "緊急事態を説明してください — 何が起きていますか？",
+      "fr": "Décrivez l'urgence — que se passe-t-il ?",
+      "de": "Beschreiben Sie den Notfall — was passiert?",
+      "zh": "描述紧急情况——发生了什么？",
+      "ar": "صف حالة الطوارئ — ماذا يحدث؟"
+    },
+    "locate_me": {
+      "en": "Locate me",
+      "es": "Ubicarme",
+      "hi": "मेरी लोकेशन ढूंढें",
+      "ja": "現在地を取得",
+      "fr": "Me localiser",
+      "de": "Mich orten",
+      "zh": "定位我的位置",
+      "ar": "تحديد موقعي"
+    },
+    "listen": {
+      "en": "Listen",
+      "es": "Escuchar",
+      "hi": "सुनें",
+      "ja": "聴く",
+      "fr": "Écouter",
+      "de": "Hören",
+      "zh": "朗读",
+      "ar": "استمع"
+    },
+    "speak": {
+      "en": "Speak",
+      "es": "Hablar",
+      "hi": "बोलें",
+      "ja": "話す",
+      "fr": "Parler",
+      "de": "Sprechen",
+      "zh": "语音输入",
+      "ar": "تحدث"
+    },
+    "actions": {
+      "en": "Immediate actions",
+      "es": "Acciones inmediatas",
+      "hi": "तत्काल कार्रवाई",
+      "ja": "今すぐ行うこと",
+      "fr": "Actions immédiates",
+      "de": "Sofortmaßnahmen",
+      "zh": "立即行动",
+      "ar": "الإجراءات الفورية"
+    },
+    "avoid": {
+      "en": "What to avoid",
+      "es": "Qué evitar",
+      "hi": "क्या न करें",
+      "ja": "やってはいけないこと",
+      "fr": "Ce qu'il faut éviter",
+      "de": "Was zu vermeiden ist",
+      "zh": "注意事项",
+      "ar": "ما يجب تجنبه"
+    },
+    "who_to_call": {
+      "en": "Who to call",
+      "es": "A quién llamar",
+      "hi": "किसे कॉल करें",
+      "ja": "連絡先",
+      "fr": "Qui appeler",
+      "de": "Wen anrufen",
+      "zh": "紧急联系方式",
+      "ar": "من تتصل"
+    },
+    "call_now": {
+      "en": "Call now",
+      "es": "Llamar ahora",
+      "hi": "अभी कॉल करें",
+      "ja": "今すぐ電話",
+      "fr": "Appeler maintenant",
+      "de": "Jetzt anrufen",
+      "zh": "立即拨打",
+      "ar": "اتصل الآن"
+    },
+    "share_location": {
+      "en": "Share location",
+      "es": "Compartir ubicación",
+      "hi": "लोकेशन शेयर करें",
+      "ja": "位置を共有",
+      "fr": "Partager la position",
+      "de": "Standort teilen",
+      "zh": "分享位置",
+      "ar": "مشاركة الموقع"
+    },
+    "alert_contact": {
+      "en": "Alert contact",
+      "es": "Alertar contacto",
+      "hi": "संपर्क को सतर्क करें",
+      "ja": "緊急連絡先に通知",
+      "fr": "Alerter un contact",
+      "de": "Kontakt alarmieren",
+      "zh": "通知紧急联系人",
+      "ar": "تنبيه جهة الاتصال"
+    },
+    "siren": {
+      "en": "Siren",
+      "es": "Sirena",
+      "hi": "सायरन",
+      "ja": "サイレン",
+      "fr": "Sirène",
+      "de": "Sirene",
+      "zh": "警报声",
+      "ar": "صفارة إنذار"
+    },
+    "beacon": {
+      "en": "Strobe beacon",
+      "es": "Baliza estroboscópica",
+      "hi": "स्ट्रोब बीकन",
+      "ja": "ストロボビーコン",
+      "fr": "Balise stroboscopique",
+      "de": "Stroboskopleuchte",
+      "zh": "闪光信标",
+      "ar": "منارة ضوئية وامضة"
+    },
+    "medical_id": {
+      "en": "Medical ID",
+      "es": "ID médica",
+      "hi": "मेडिकल आईडी",
+      "ja": "医療ID",
+      "fr": "ID médical",
+      "de": "Medizin-ID",
+      "zh": "医疗ID",
+      "ar": "الهوية الطبية"
+    },
+    "guided_mode": {
+      "en": "Guided mode",
+      "es": "Modo guiado",
+      "hi": "गाइडेड मोड",
+      "ja": "ガイドモード",
+      "fr": "Mode guidé",
+      "de": "Geführter Modus",
+      "zh": "引导模式",
+      "ar": "الوضع الموجَّه"
+    },
+    "explain_why": {
+      "en": "Explain why",
+      "es": "Explicar por qué",
+      "hi": "कारण बताएं",
+      "ja": "理由を説明",
+      "fr": "Expliquer pourquoi",
+      "de": "Warum erklären",
+      "zh": "解释原因",
+      "ar": "اشرح السبب"
+    },
+    "confidence": {
+      "en": "Confidence",
+      "es": "Confianza",
+      "hi": "विश्वसनीयता",
+      "ja": "信頼度",
+      "fr": "Confiance",
+      "de": "Konfidenz",
+      "zh": "置信度",
+      "ar": "مستوى الثقة"
+    },
+    "disclaimer": {
+      "en": "This is decision support, not a substitute for emergency services. Call 911 or your local emergency number.",
+      "es": "Esto es apoyo para la toma de decisiones, no un sustituto de los servicios de emergencia. Llame al 112 o al número de emergencias local.",
+      "hi": "यह निर्णय-सहायता है, आपातकालीन सेवाओं का विकल्प नहीं। 112 या अपने स्थानीय आपातकालीन नंबर पर कॉल करें।",
+      "ja": "これは判断を助けるツールであり、緊急サービスの代替ではありません。119番またはお近くの緊急番号に電話してください。",
+      "fr": "Ceci est une aide à la décision, pas un substitut aux services d'urgence. Composez le 15, 17, 18 ou le 112.",
+      "de": "Dies ist eine Entscheidungshilfe und kein Ersatz für den Notruf. Rufen Sie 112 oder Ihre lokale Notrufnummer an.",
+      "zh": "本工具仅供辅助决策，不能替代急救服务。请拨打120或当地急救电话。",
+      "ar": "هذه أداة دعم للقرار، وليست بديلاً عن خدمات الطوارئ. اتصل بـ 911 أو برقم الطوارئ المحلي."
+    },
+    "urgency": {
+      "en": "Urgency",
+      "es": "Urgencia",
+      "hi": "तात्कालिकता",
+      "ja": "緊急度",
+      "fr": "Urgence",
+      "de": "Dringlichkeit",
+      "zh": "紧急程度",
+      "ar": "مستوى الإلحاح"
+    },
+    "act_within": {
+      "en": "Act within",
+      "es": "Actúa en",
+      "hi": "इतने समय में कार्य करें",
+      "ja": "対応時間",
+      "fr": "Agir dans",
+      "de": "Handeln binnen",
+      "zh": "须在此时间内行动",
+      "ar": "تصرف خلال"
+    },
+    "offline_badge": {
+      "en": "Offline — all data bundled locally",
+      "es": "Sin conexión — todos los datos están disponibles localmente",
+      "hi": "ऑफलाइन — सभी डेटा स्थानीय रूप से उपलब्ध है",
+      "ja": "オフライン — すべてのデータがローカルに保存済み",
+      "fr": "Hors ligne — toutes les données sont disponibles localement",
+      "de": "Offline — alle Daten lokal verfügbar",
+      "zh": "离线模式 — 所有数据已本地缓存",
+      "ar": "غير متصل — جميع البيانات متوفرة محلياً"
+    },
+    "cache_hit": {
+      "en": "Cached response",
+      "es": "Respuesta en caché",
+      "hi": "कैश्ड प्रतिक्रिया",
+      "ja": "キャッシュ済み",
+      "fr": "Réponse en cache",
+      "de": "Gecachte Antwort",
+      "zh": "已缓存的响应",
+      "ar": "استجابة مخزنة مؤقتاً"
+    },
+    "language": {
+      "en": "Language",
+      "es": "Idioma",
+      "hi": "भाषा",
+      "ja": "言語",
+      "fr": "Langue",
+      "de": "Sprache",
+      "zh": "语言",
+      "ar": "اللغة"
+    },
+    "scenarios": {
+      "en": "Scenarios",
+      "es": "Escenarios",
+      "hi": "परिदृश्य",
+      "ja": "シナリオ",
+      "fr": "Scénarios",
+      "de": "Szenarien",
+      "zh": "急救场景",
+      "ar": "السيناريوهات"
+    },
+    "law_explorer": {
+      "en": "Law explorer",
+      "es": "Explorador legal",
+      "hi": "कानून एक्सप्लोरर",
+      "ja": "法律ガイド",
+      "fr": "Explorateur juridique",
+      "de": "Rechtshinweise",
+      "zh": "法律查询",
+      "ar": "مستكشف القوانين"
+    },
+    "incident_log": {
+      "en": "Incident log",
+      "es": "Registro de incidentes",
+      "hi": "घटना लॉग",
+      "ja": "インシデントログ",
+      "fr": "Journal des incidents",
+      "de": "Vorfallsprotokoll",
+      "zh": "事件记录",
+      "ar": "سجل الحوادث"
+    },
+    "export_report": {
+      "en": "Export report",
+      "es": "Exportar informe",
+      "hi": "रिपोर्ट निर्यात करें",
+      "ja": "レポートを書き出す",
+      "fr": "Exporter le rapport",
+      "de": "Bericht exportieren",
+      "zh": "导出报告",
+      "ar": "تصدير التقرير"
+    },
+    "settings": {
+      "en": "Settings",
+      "es": "Configuración",
+      "hi": "सेटिंग्स",
+      "ja": "設定",
+      "fr": "Paramètres",
+      "de": "Einstellungen",
+      "zh": "设置",
+      "ar": "الإعدادات"
+    },
+    "fast_test": {
+      "en": "FAST stroke test",
+      "es": "Prueba de ictus FAST",
+      "hi": "FAST स्ट्रोक परीक्षण",
+      "ja": "FAST脳卒中チェック",
+      "fr": "Test AVC FAST",
+      "de": "FAST-Schlaganfall-Test",
+      "zh": "FAST卒中测试",
+      "ar": "اختبار السكتة الدماغية FAST"
+    },
+    "more": {
+      "en": "More",
+      "es": "Más",
+      "hi": "और",
+      "ja": "もっと見る",
+      "fr": "Plus",
+      "de": "Mehr",
+      "zh": "更多",
+      "ar": "المزيد"
+    }
+  }
+}

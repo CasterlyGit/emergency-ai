@@ -11,9 +11,13 @@ from emergency_ai.core.cities import (
 
 def test_bundled_cities_load():
     cities = load_cities()
-    # 6 seeded
-    assert len(cities) == 6
-    expected_slugs = {"new-york", "san-francisco", "london", "tokyo", "mumbai", "bangalore"}
+    # 14 seeded: original 6 + 8 expanded (delhi, los-angeles, chicago, paris, berlin,
+    # sydney, singapore, toronto)
+    assert len(cities) == 14
+    expected_slugs = {
+        "new-york", "san-francisco", "london", "tokyo", "mumbai", "bangalore",
+        "delhi", "los-angeles", "chicago", "paris", "berlin", "sydney", "singapore", "toronto",
+    }
     assert expected_slugs.issubset(set(cities))
 
 

@@ -4,8 +4,8 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "emergency-ai"
-version = "0.1.0"
-description = "Sub-2-second emergency response: long-press SOS, get jurisdiction-aware action steps."
+version = "1.0.0"
+description = "Offline-first emergency-response PWA + FastAPI service: triage, retrieval-augmented jurisdiction lookup, Redis cache, Postgres audit store, and Prometheus metrics."
 readme = "README.md"
 requires-python = ">=3.11"
 authors = [{ name = "CasterlyGit" }]
@@ -21,6 +21,12 @@ dependencies = [
 ]
 
 [project.optional-dependencies]
+redis = [
+    "redis>=5.0",
+]
+postgres = [
+    "asyncpg>=0.29",
+]
 dev = [
     "pytest>=8.3.0",
     "pytest-asyncio>=0.24.0",

@@ -23,6 +23,10 @@ permissions:
 jobs:
   sync:
     runs-on: ubuntu-latest
+    # Surfaces whether PROJECT_TOKEN is configured (mapping a secret to a job-level env
+    # is permitted; this keeps the run green-with-skip when the board PAT is absent).
+    env:
+      HAS_PROJECT_TOKEN: ${{ secrets.PROJECT_TOKEN != '' }}
     steps:
       - name: Compute target status
         id: status
@@ -55,7 +59,7 @@ jobs:
           echo "Computed status: $STATUS"
 
       - name: Update project card
-        if: steps.status.outputs.status != ''
+        if: steps.status.outputs.status != '' && env.HAS_PROJECT_TOKEN == 'true'
         env:
           GH_TOKEN: ${{ secrets.PROJECT_TOKEN }}
           PROJECT_OWNER: CasterlyGit

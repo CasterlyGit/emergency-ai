@@ -1,97 +1,161 @@
 # emergency-ai
 
-**[▶ Live demo](https://casterlygit.github.io/emergency-ai/)** — interactive: pick a city, click a scenario, watch the streamed structured response (TTFT, cache-hit indicator, jurisdiction notes).
+**[Live PWA](https://casterlygit.github.io/emergency-ai/)** — installable, works with zero signal.
 
-> Long-press SOS → sub-2-second, jurisdiction-aware action steps. Built around Claude Haiku with prompt-cached city law context and streaming structured output.
+> Long-press SOS → jurisdiction-aware action steps in under two seconds — online or completely offline. The same UX runs whether you are on a plane, in a tunnel, or on a live server.
 
-**Status:** v0.1 — core service, CLI demo, 6 seeded cities. Mobile shell is the next milestone.
+[![FastAPI](https://img.shields.io/badge/FastAPI-0.115-009688?style=flat-square)](https://fastapi.tiangolo.com)
+[![Python 3.11+](https://img.shields.io/badge/Python-3.11%2B-3776AB?style=flat-square)](https://python.org)
+[![Fly.io ready](https://img.shields.io/badge/Fly.io-deploy--ready-8B5CF6?style=flat-square)](infra/fly.toml)
+[![MIT License](https://img.shields.io/badge/license-MIT-22C55E?style=flat-square)](LICENSE)
 
 ---
 
-## Why this exists
+## The offline-first story
 
-Most "AI for safety" demos are repackaged chatbots. Real emergencies need three things a chatbot fails at:
+The PWA ships a full offline inference engine (`docs/js/engine.js`). When network is absent
+(or `window.EMERGENCY_API_BASE` is not set), it runs entirely in the browser:
 
-1. **Speed.** A frozen 4-second model call is useless when someone is choking. Target: first action visible in **< 800 ms TTFT**, full structured response **< 2 s**.
-2. **Jurisdiction.** What you should *do* in an emergency depends on where you are. The Good Samaritan law in California differs from New York. Drug amnesty in some jurisdictions changes whether you say *"opioid"* on the phone. The model needs grounded local context, not vibes.
-3. **Discipline.** A wall of text wastes critical seconds. The output is a strict schema: urgency, ordered actions, who to call, what to avoid, time-to-act.
+- Classifies free-text situations with a deterministic weighted-keyword triage engine
+- Selects from a corpus of 20 structured scenarios (cardiac arrest, choking, stroke, ...)
+- Streams fields to the UI with realistic inter-token delays (simulated TTFT 90-260 ms,
+  full response under 1.6 s) so the UX is **identical online or off**
+- Caches all data JSON via a Service Worker so the app installs and opens without any
+  network after first load
 
-This service is the inference layer. Trigger surface (long-press button, Action Button on iOS, Android SOS) is a thin client that posts to `/emergency`.
+When `EMERGENCY_API_BASE` is set and reachable, the engine transparently proxies the same
+call to the live FastAPI service over SSE. The response shape is identical — the UI never
+knows the difference.
+
+This dual path is the core architectural story. The offline engine is not a stub; it follows
+the same triage logic as `src/emergency_ai/core/triage.py`.
 
 ---
 
 ## Architecture
 
 ```
-┌──────────────────────┐    POST /emergency      ┌─────────────────────┐
-│ Mobile / CLI client  │ ──────────────────────▶ │ FastAPI service     │
-│  (long-press SOS)    │   {situation, city}     │                     │
-└──────────────────────┘                         │   1. Load city ctx  │
-        ▲                                        │      (prompt cache) │
-        │  streamed JSON                         │   2. Call Haiku 4.5 │
-        │  (urgency → actions → calls → avoid)   │      with cache hit │
-        └────────────────────────────────────────│   3. Stream parsed  │
-                                                 │      schema fields  │
-                                                 └─────────────────────┘
+┌─────────────────────────────────────────────────────┐
+│  Browser / Installed PWA  (docs/)                   │
+│                                                     │
+│  ┌──────────────┐   ┌───────────────────────────┐  │
+│  │  app.js       │   │  engine.js (offline path) │  │
+│  │  (controller) │──▶│  classify → scenario →    │  │
+│  │               │   │  simulated SSE stream      │  │
+│  └──────┬────────┘   └───────────────────────────┘  │
+│         │ if EMERGENCY_API_BASE set & reachable      │
+│         │ POST /emergency  (SSE)                     │
+└─────────┼───────────────────────────────────────────┘
+          │
+          ▼
+┌─────────────────────────────────────────────────────┐
+│  FastAPI service  (src/emergency_ai/)               │
+│                                                     │
+│  /emergency ──▶ triage.py (offline classify)        │
+│             ──▶ retrieval.py (TF-IDF RAG, law ctx)  │
+│             ──▶ cache.py (Redis / in-memory LRU)    │
+│             ──▶ Claude Haiku 4.5 (streaming SSE)    │
+│             ──▶ store.py (audit log, no raw text)   │
+│             ──▶ metrics.py (Prometheus counters)    │
+│                                                     │
+│  /metrics  ──▶ Prometheus text exposition           │
+│  /triage   ──▶ pure-Python classifier, no key       │
+│  /cities   ──▶ city index + geo resolve             │
+│  /scenarios──▶ scenario catalog                     │
+└──────────────────┬──────────────────────────────────┘
+                   │
+       ┌───────────┴───────────────────┐
+       │                               │
+  ┌────▼─────┐                  ┌──────▼──────┐
+  │  Redis   │                  │  Postgres   │
+  │  cache   │                  │  (SQLite or │
+  │  (or in- │                  │  in-memory  │
+  │  memory) │                  │  fallback)  │
+  └──────────┘                  └─────────────┘
 ```
-
-**Prompt-caching trick.** Each city's law/cultural context is a multi-KB markdown blob. Sent as a `cache_control: ephemeral` block in the system prompt. First request to a city: full read (~600 ms TTFT). Subsequent requests within the 5-minute TTL: cached (~120 ms TTFT). For an emergency hotline serving repeat traffic in a metro, ≥ 90% of queries hit the cache.
-
-**Streaming structured output.** We don't wait for the full JSON. The CLI client renders fields as they arrive — `urgency` first, then the action list line-by-line. The user starts reacting before the model is done generating.
-
-**No tool calls in the hot path.** Tools add round-trips. Everything the model needs is in the cached system prompt. Tools are reserved for a slower v2 "look up specific shelter location" path.
 
 ---
 
-## Project layout
+## Stack
 
-```
-src/emergency_ai/
-├── core/
-│   ├── schema.py       # pydantic models — EmergencyRequest, EmergencyResponse
-│   ├── cities.py       # city context loader (filesystem → cached prompt blocks)
-│   ├── client.py       # Anthropic client wrapper: streaming + caching + parsing
-│   └── prompts.py      # system prompt template
-├── api/
-│   └── server.py       # FastAPI app
-├── cli/
-│   └── main.py         # `emergency "..." --city "..."` demo client
-└── cities/             # bundled city law context (one .md per city)
-    ├── new-york.md
-    ├── san-francisco.md
-    ├── london.md
-    ├── tokyo.md
-    ├── mumbai.md
-    └── bangalore.md
+| Technology | Where used | In-memory fallback? |
+|---|---|---|
+| **FastAPI + Uvicorn** | HTTP server, SSE streaming, CORS | — (always required) |
+| **Claude Haiku 4.5** | LLM inference, streaming structured output | Offline engine (no key) |
+| **Prompt caching** | City law context block; cache_control: ephemeral | — |
+| **TF-IDF retrieval** (`core/retrieval.py`) | RAG: top-k statute paragraphs injected per query | Pure-Python, zero deps |
+| **Redis** (`core/cache.py`) | Response cache keyed on (city, normalized situation) | Yes — LRU dict |
+| **Postgres / asyncpg** (`core/store.py`) | Append-only audit log (request_id, city, urgency, latency) | Yes — SQLite, then in-memory |
+| **Prometheus** (`core/metrics.py`) | `/metrics` text exposition; counters + histograms | Yes — pure-Python renderer |
+| **Service Worker** (`docs/sw.js`) | Cache-first app shell + data JSON; network-first for API | — (browser) |
+| **Pydantic v2** | Request/response schema validation | — |
+| **Haversine geo** (`core/geo.py`) | `/geo/resolve` lat/lon → nearest city | — |
+| **Python triage engine** (`core/triage.py`) | Weighted-keyword urgency classify; mirrors `engine.js` | — (pure-Python) |
+| **Fly.io** (`infra/fly.toml`) | Deploy target; internal :8080, HTTPS, health check | Docker Compose locally |
 
-tests/                  # pytest — schema, cities loader, mocked client, e2e (mocked)
-.flow/init/             # SDD pipeline artifacts (REQUIREMENTS, DESIGN, TEST_PLAN, INTEGRATION)
+`pip install -e .` has zero infra dependencies. Redis and Postgres extras are opt-in:
+
+```bash
+pip install -e ".[redis,postgres]"
 ```
 
 ---
 
 ## Quickstart
 
+### Option A — local Python (zero infra)
+
 ```bash
-# 1. Install (one-time)
-python3.12 -m venv .venv
-source .venv/bin/activate
+python3.12 -m venv .venv && source .venv/bin/activate
 pip install -e ".[dev]"
 
-# 2. Set your API key
 export ANTHROPIC_API_KEY=sk-ant-...
 
-# 3. Try the CLI
+# CLI demo
 emergency "person collapsed on the platform, not breathing" --city "New York"
 
-# 4. Or run the HTTP server
-emergency-server   # listens on :8080
-curl -N -X POST http://localhost:8080/emergency \
-  -H 'content-type: application/json' \
-  -d '{"situation":"smoke from kitchen, kids in apartment","city":"London"}'
+# HTTP server (in-memory cache + SQLite audit log, no Redis/Postgres needed)
+emergency-server
+# listens on :8080
 ```
 
-The CLI prints a live latency banner (`TTFT: 312 ms · total: 1.4 s · cache_hit: yes`) so you can see the cache effect.
+The CLI prints a live latency banner: `TTFT: 312 ms · total: 1.4 s · cache_hit: yes`
+
+### Option B — full stack with Docker Compose (app + Redis + Postgres)
+
+```bash
+# copy and fill your key
+cp .env.example .env
+# edit .env: ANTHROPIC_API_KEY=sk-ant-...
+
+docker compose up
+```
+
+Services started: `app` on :8080, `redis:7-alpine`, `postgres:16-alpine`. Health check
+at `/health`. Stop with `Ctrl-C`; data persists in named volumes.
+
+### Option C — pure offline (no API key)
+
+Open `https://casterlygit.github.io/emergency-ai/` — or open `docs/index.html` directly
+in any modern browser. No server, no key, no network required after first load.
+
+---
+
+## Endpoints
+
+| Method | Path | Description |
+|---|---|---|
+| `POST` | `/emergency` | Main inference endpoint — streams SSE fields |
+| `POST` | `/triage` | Offline classifier only — no API key needed |
+| `POST` | `/geo/resolve` | `{lat, lon}` → nearest city |
+| `GET` | `/cities` | Full city index |
+| `GET` | `/cities/{slug}` | Single city detail |
+| `GET` | `/scenarios` | Scenario catalog |
+| `GET` | `/metrics` | Prometheus text exposition |
+| `GET` | `/health` | Liveness check |
+| `GET` | `/version` | Build version |
+
+CORS is enabled for all origins so the GitHub Pages PWA can call a deployed instance.
 
 ---
 
@@ -102,56 +166,164 @@ The CLI prints a live latency banner (`TTFT: 312 ms · total: 1.4 s · cache_hit
   "urgency": "critical",
   "time_to_act_seconds": 30,
   "immediate_actions": [
-    "Tilt head back, check breathing for 5 seconds",
-    "If not breathing: begin chest compressions, 30 fast pushes",
-    "Have someone else call 911 and put phone on speaker"
+    "Tilt head back, check for breathing — 5 seconds",
+    "Begin chest compressions: 30 pushes at 100-120 bpm",
+    "Have someone call 911 and fetch an AED if nearby"
   ],
-  "who_to_call": {
-    "primary": "911",
-    "poison_control": "1-800-222-1222"
-  },
-  "avoid": [
-    "Don't move them unless they're in immediate danger",
-    "Don't give water — they can't swallow safely"
+  "reasoning": [
+    "Airway must be open before compressions can circulate blood",
+    "AHA guideline: 100-120 bpm restores ~30% of normal cardiac output",
+    "AED within 3-5 minutes triples survival odds"
   ],
-  "jurisdictional_notes": "New York Good Samaritan Law (PHL §3000-a) protects bystanders giving good-faith aid from civil liability. You will not be charged for low-level drug possession if calling for an overdose (PHL §3000-a).",
-  "confidence": 0.92
+  "who_to_call": { "primary": "911", "poison_control": "1-800-222-1222" },
+  "avoid": ["Do not stop compressions to check pulse more than every 2 minutes"],
+  "jurisdictional_notes": "New York Good Samaritan Law (PHL §3000-a) protects bystanders giving good-faith aid from civil liability.",
+  "confidence": 0.94,
+  "disclaimer": "Decision support only — not a substitute for professional medical or legal advice.",
+  "_meta": { "ttft_ms": 312, "total_ms": 1390, "cache_hit": true, "source": "live", "city_slug": "new-york" }
 }
 ```
+
+The `reasoning` array is the same length as `immediate_actions` — one sentence explaining
+the clinical rationale for each step. The UI's "Explain why" toggle reveals it inline.
+
+---
+
+## 35 features
+
+See [FEATURES.md](FEATURES.md) for the full catalog with one-line rationale per feature.
+
+Headline features: offline PWA · voice SOS + TTS · CPR metronome (100-120 bpm) ·
+auto-geo jurisdiction · tap-to-dial · adaptive triage questions · instant translation (8 languages) ·
+precise location share · strobe SOS beacon · contact auto-alert · siren · medical-ID card ·
+guided full-screen mode · scenario quick-grid · honesty layer (confidence + disclaimer).
+
+Depth features: FAST stroke test · tourniquet/bleeding guide · offline urgency classifier ·
+jurisdiction law explorer · incident timeline + export · poison lookup · EpiPen/anaphylaxis ·
+drowning + recovery position · disaster protocols · explain-why reasoning.
 
 ---
 
 ## Latency budget
 
-| Phase | Target | Notes |
-|---|---|---|
-| Network (mobile → server) | < 150 ms | edge deploy, persistent connection |
-| Cache lookup + LLM TTFT | < 600 ms first req · < 150 ms cached | Haiku 4.5 + prompt caching |
-| First action visible to user | < 800 ms | streamed; `urgency` + first action |
-| Full structured response | < 2 s | end of stream |
+See [bench/results.md](bench/results.md) for full methodology and numbers.
 
-These are budgets, not measured guarantees yet. The CLI's latency banner reports real numbers.
+| Phase | Budget | Notes |
+|---|---|---|
+| Network (browser → server) | < 150 ms | edge deploy |
+| Cache lookup + TTFT (cold) | < 650 ms | Haiku 4.5, first city request |
+| Cache lookup + TTFT (warm) | < 160 ms | Redis or in-memory LRU hit |
+| First action visible | < 800 ms | streaming; `urgency` + action 1 |
+| Full structured response | < 2 s | end of SSE stream |
+| Offline (no network) | < 300 ms | engine.js, no server hop |
+
+"Budget" = design target. "Mock-measured" = numbers from `bench/bench.py` against a local
+mock provider. Live Haiku latency depends on Anthropic's API and your deploy region.
+
+---
+
+## Privacy posture
+
+**The raw situation text is never persisted anywhere.**
+
+- `core/store.py` records only: `{request_id, ts, city, urgency, ttft_ms, total_ms, source, cache_hit}`
+- `core/metrics.py` labels only: `{city, urgency, source, cache_hit}`
+- Server logs contain no situation text at any log level
+- The PWA's medical-ID card and incident log live in `localStorage` only — never transmitted
+- Cache keys are derived from a normalized hash of the situation; the plaintext is not stored
+
+This is enforced as a hard rule across every layer. See [ARCHITECTURE.md](ARCHITECTURE.md) §7.
+
+---
+
+## Deploy to Fly.io
+
+```bash
+fly auth login
+fly apps create emergency-ai          # one-time
+fly secrets set ANTHROPIC_API_KEY=sk-ant-...  --config infra/fly.toml
+# optional: wire Redis and Postgres Fly addons
+fly secrets set REDIS_URL=redis://...         --config infra/fly.toml
+fly secrets set DATABASE_URL=postgres://...   --config infra/fly.toml
+fly deploy --config infra/fly.toml
+```
+
+Config: 512 MB shared VM, internal :8080, HTTPS enforced, health check on `/health`,
+auto-stop when idle (zero cost at rest). See [`infra/fly.toml`](infra/fly.toml).
+
+Without Redis/Postgres secrets the service starts cleanly with in-memory fallbacks —
+safe for a free-tier demo deploy.
+
+---
+
+## Project layout
+
+```
+src/emergency_ai/
+├── core/
+│   ├── schema.py       # Pydantic models — EmergencyRequest, EmergencyResponse
+│   ├── triage.py       # Pure-Python weighted-keyword classifier (mirrors engine.js)
+│   ├── retrieval.py    # TF-IDF jurisdiction RAG — JurisdictionIndex.search()
+│   ├── cache.py        # ResponseCache — Redis / in-memory LRU
+│   ├── store.py        # IncidentStore — Postgres / SQLite / in-memory audit log
+│   ├── metrics.py      # Prometheus counters + histograms, pure-Python renderer
+│   ├── geo.py          # nearest_city(lat, lon) — haversine
+│   ├── scenarios.py    # Scenario loader (docs/data/scenarios.json)
+│   ├── report.py       # Markdown incident report renderer
+│   ├── cities.py       # City context loader + prompt-cache block builder
+│   ├── client.py       # Anthropic client: streaming, caching, parsing
+│   └── prompts.py      # System prompt template
+├── api/
+│   └── server.py       # FastAPI app — all endpoints
+├── cli/
+│   └── main.py         # `emergency "..." --city "..."` CLI
+└── cities/             # Per-city law context (Markdown, hot-reloaded)
+    ├── new-york.md, san-francisco.md, london.md, tokyo.md,
+    ├── mumbai.md, bangalore.md, delhi.md, los-angeles.md,
+    ├── chicago.md, paris.md, berlin.md, sydney.md,
+    └── singapore.md, toronto.md   (14 cities total)
+
+docs/                   # GitHub Pages PWA
+├── index.html          # App shell (pinned DOM IDs)
+├── js/
+│   ├── engine.js       # Offline inference engine — EmergencyEngine class
+│   ├── app.js          # Controller, state machine, all feature modules
+│   └── effects.js      # Visual helpers — token reveal, latency gauge, heat-map
+├── data/               # JSON corpus shared with backend
+│   ├── scenarios.json  # 20 scenarios (all categories)
+│   ├── cities.json     # 14 cities with law + hospital data
+│   ├── i18n.json       # 8 languages (en es hi ja fr de zh ar)
+│   ├── poison.json     # Substance first-aid reference
+│   ├── disasters.json  # 8 disaster protocols
+│   └── medical_ref.json# CPR, FAST, tourniquet, EpiPen, Heimlich
+├── sw.js               # Service worker — cache-first shell, network-first API
+└── manifest.webmanifest# PWA install metadata
+
+infra/
+└── fly.toml            # Fly.io deploy config
+
+bench/
+├── bench.py            # asyncio load test against mock provider
+└── results.md          # Methodology + numbers (mock-measured + live-budget)
+
+tests/                  # pytest — schema, triage, retrieval, cache, store, e2e
+.flow/SHOWCASE_SPEC.md  # Build contract (canonical source of truth)
+```
 
 ---
 
 ## Adding a city
 
-Drop a markdown file into `src/emergency_ai/cities/<slug>.md` following the structure of an existing city. Frontmatter fields: `display_name`, `country`, `emergency_numbers`. The loader hot-reloads on next request.
+Add `src/emergency_ai/cities/<slug>.md` following the existing structure (frontmatter:
+`display_name`, `country`, `emergency_numbers`). Then add a corresponding entry to
+`docs/data/cities.json`. The service hot-reloads on next request; the PWA picks up the
+JSON on next cache invalidation.
 
 ---
 
-## Security & privacy posture
+## Content accuracy note
 
-- **No logs of situations.** The default config logs only `{city, urgency, latency, cache_hit}`. The raw situation string is never persisted server-side.
-- **No PII in prompts.** Client should strip names/addresses before sending where reasonable. The model is instructed to ignore identifying details if present.
-- **Rate limiting.** v0.1 has a per-IP limiter (in-memory). Production needs a real edge limiter.
-- **Disclaimer in every response.** The schema includes a `disclaimer` field rendered prominently in the client. This is decision support, not medical/legal advice.
-
----
-
-## What's NOT in v0.1
-
-- Mobile shell (iOS/Android long-press trigger). The service is the dependency; the shell ships next.
-- Voice input. Whisper integration is wired through the CLI but not the HTTP service.
-- More than 6 cities. Coverage expansion is a content task, not an engineering one.
-- Caller location lookup from coordinates. Right now you pass `city` as a string. v0.2 will accept `{lat, lon}` and reverse-geocode.
+First-aid guidance follows standard public references (AHA 2020 CPR guidelines: 100-120 bpm,
+30:2 ratio; Red Cross Heimlich; FAST stroke mnemonic; recovery position; EpiPen technique).
+All responses include a `disclaimer` field rendered prominently. This is decision support,
+not a replacement for calling emergency services or trained medical personnel.

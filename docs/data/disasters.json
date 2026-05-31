@@ -1,0 +1,195 @@
+{
+  "version": 1,
+  "protocols": [
+    {
+      "id": "earthquake",
+      "title": "Earthquake",
+      "icon": "🏚️",
+      "region": "global",
+      "steps": [
+        "DROP to hands and knees immediately to prevent being knocked down.",
+        "Take COVER under a sturdy desk or table; if no table is nearby, cover your head and neck with your arms and crouch against an interior wall away from windows.",
+        "HOLD ON and protect your head/neck until shaking stops — do not attempt to run outside during shaking.",
+        "Once shaking stops, check yourself and others for injuries before moving.",
+        "Exit the building calmly using stairs, not elevators — inspect each step for cracks before putting weight on it.",
+        "Move to an open area away from buildings, power lines, and trees; expect aftershocks.",
+        "If trapped under debris, cover your mouth with clothing, tap on a pipe or wall to signal rescuers — shout only as a last resort to conserve air.",
+        "Do not re-enter any building until authorities declare it structurally safe."
+      ],
+      "avoid": [
+        "Do not stand in a doorway — modern doorframes offer no special protection and you risk being hit by a swinging door.",
+        "Do not run outside during shaking — most injuries occur from falling debris when people try to flee.",
+        "Do not use elevators after an earthquake.",
+        "Do not light matches or candles until you have confirmed there is no gas leak.",
+        "Do not use tap water until local authorities confirm supply integrity.",
+        "Do not return to a damaged building to retrieve belongings."
+      ]
+    },
+    {
+      "id": "house-fire",
+      "title": "House Fire",
+      "icon": "🔥",
+      "region": "global",
+      "steps": [
+        "Activate the nearest fire alarm if not already sounding, and shout 'FIRE' to alert all occupants.",
+        "Call emergency services (911 / local number) immediately — do this before attempting any action.",
+        "Feel closed doors with the back of your hand before opening; if hot, do not open — use an alternative exit route.",
+        "Stay low and crawl below the smoke line (cleaner air is near the floor) as you exit.",
+        "Exit through the nearest safe route; close — do not lock — doors behind you to slow fire spread.",
+        "Once outside, go directly to your pre-agreed meeting point and stay there.",
+        "If a person's clothing is on fire: STOP, DROP, and ROLL, or smother with a heavy blanket — do not allow them to run.",
+        "If you cannot escape, seal door gaps with towels or clothing, signal from a window, and call emergency services to give your exact location."
+      ],
+      "avoid": [
+        "Do not use elevators — use stairs only.",
+        "Do not open a door without feeling it first — a hot door means fire is on the other side.",
+        "Do not waste time collecting belongings.",
+        "Do not re-enter a burning building for any reason.",
+        "Do not attempt to fight a fire beyond its incipient (small, contained) stage — evacuate instead.",
+        "Do not stand upright in a smoke-filled corridor."
+      ]
+    },
+    {
+      "id": "flood",
+      "title": "Flood",
+      "icon": "🌊",
+      "region": "global",
+      "steps": [
+        "Monitor official alerts (weather radio, emergency broadcast, government apps) and heed evacuation orders immediately — do not wait.",
+        "If time permits before evacuation: move valuables and important documents to upper floors, turn off electricity at the breaker panel if safe to do so.",
+        "Evacuate on foot or vehicle along designated high-ground routes — avoid all flood-water crossings.",
+        "If caught in rising water indoors, move to the highest floor and, if necessary, the roof; signal for rescue from there.",
+        "If swept into moving water: float on your back, feet downstream, and work toward the bank at an angle with the current rather than fighting it directly.",
+        "Once floodwaters recede, do not return home until authorities declare it safe — waters may still be rising in your area.",
+        "Before re-entering a flooded structure, confirm utilities are off; document damage for insurance before cleanup begins.",
+        "Discard any food or water that has contacted floodwater — assume it is contaminated."
+      ],
+      "avoid": [
+        "Do not drive or walk through floodwater — 15 cm (6 in) of moving water can knock an adult off their feet; 30 cm (12 in) can sweep away a vehicle.",
+        "Do not touch electrical equipment in wet areas.",
+        "Do not use tap water, well water, or stored water that may have been contaminated until tested.",
+        "Do not enter a building with structural damage visible — it may collapse.",
+        "Do not ignore evacuation orders to protect property.",
+        "Do not camp or park near streams, rivers, or drainage channels during heavy rainfall."
+      ]
+    },
+    {
+      "id": "active-threat",
+      "title": "Active Threat (Run-Hide-Fight)",
+      "icon": "🚨",
+      "region": "global",
+      "steps": [
+        "RUN — If there is an accessible escape route, evacuate immediately; leave belongings behind; keep hands visible as you exit and follow law enforcement instructions.",
+        "Help others escape if you can do so safely, but do not let those who refuse to go slow your exit.",
+        "Call emergency services once you are safe; provide your location, number of people with you, and any information about the threat.",
+        "HIDE — If evacuation is not possible, get out of the threat's view: lock or barricade the door, turn off lights, silence all devices, and stay low and silent.",
+        "Move away from the door, position yourself behind solid cover (not just concealment), and do not open the door for anyone until law enforcement gives the all-clear.",
+        "FIGHT — As a last resort and only when your life is in imminent danger, act with aggression: improvise weapons (fire extinguisher, furniture), commit fully, and aim to incapacitate.",
+        "When law enforcement arrives: keep hands empty and visible, follow all instructions, avoid sudden movements, and do not run toward officers."
+      ],
+      "avoid": [
+        "Do not pull fire alarms — this moves people into hallways and can expose them to greater danger.",
+        "Do not cluster in groups in open spaces.",
+        "Do not attempt to confront or negotiate with a threat unless FIGHT is your only option.",
+        "Do not use a hiding spot where you may be trapped with no alternate exit if the threat enters.",
+        "Do not assume the situation is over because shooting has stopped — wait for official all-clear.",
+        "Do not use elevators during evacuation."
+      ]
+    },
+    {
+      "id": "wildfire",
+      "title": "Wildfire",
+      "icon": "🌲🔥",
+      "region": "global",
+      "steps": [
+        "Evacuate immediately when authorities issue an evacuation order or warning — wildfires can change direction and speed without warning.",
+        "Before leaving (only if time safely allows): close all windows, doors, vents, and fireplace dampers; shut off gas; leave exterior lights on so your home is visible in smoke.",
+        "Take your emergency go-bag: documents, medications, water, phone charger, N95 masks, and clothing that covers all skin.",
+        "Drive with headlights on and windows closed; monitor official radio for route guidance and road closures.",
+        "If caught in a vehicle: pull off the road, turn on hazards and headlights, stay inside below window level with engine off but blower fan on recirculate setting, cover yourself with a wool blanket.",
+        "If on foot and escape is impossible: find a depression or cleared area, lie face down with feet toward the fire, cover your body, and breathe through a cloth or N95 mask close to the ground.",
+        "After the fire passes your location: check for smoldering embers on clothing and body; move to a clear area and seek medical attention.",
+        "Do not return home until authorities declare the area safe — spot fires and hot spots persist for days."
+      ],
+      "avoid": [
+        "Do not shelter in a structure in the fire's direct path — most structures are not rated to withstand direct flame impingement.",
+        "Do not drive into smoke — zero-visibility conditions cause accidents and can trap you in the fire's path.",
+        "Do not ignore evacuation warnings at 'Watch' level, waiting for 'Warning/Order' — roads clog quickly.",
+        "Do not park under trees or power lines during evacuation.",
+        "Do not re-enter a burned area while embers are still hot — structural collapse and carbon monoxide are ongoing hazards.",
+        "Do not use synthetic clothing — it melts and causes severe burns."
+      ]
+    },
+    {
+      "id": "tornado",
+      "title": "Tornado",
+      "icon": "🌪️",
+      "region": "global",
+      "steps": [
+        "Go immediately to your designated shelter: the lowest floor of a sturdy building, in an interior room or hallway away from windows (a bathroom over a basement drain, or a closet under stairs).",
+        "If in a basement, shelter under a heavy workbench or staircase and cover your head with a mattress, heavy coat, or hands.",
+        "If on an upper floor with no basement, move to the interior-most room on the lowest floor — a bathroom with no exterior walls is ideal.",
+        "Crouch low, face down, protecting your neck and head with your arms.",
+        "If outdoors and no shelter is reachable: abandon the vehicle, move to the nearest ditch or low-lying ground, lie flat face down with hands covering your head — do not shelter under a bridge.",
+        "Stay in shelter until the all-clear is issued by emergency services — the tornado may change direction or a second funnel may follow.",
+        "After the storm: check for injuries, watch for downed power lines, gas leaks, and structural damage before re-entering any building."
+      ],
+      "avoid": [
+        "Do not attempt to outrun a tornado in a vehicle — vehicles offer almost no protection and can be rolled or carried.",
+        "Do not shelter under highway overpasses or bridges — wind speeds are higher in these tunnels.",
+        "Do not stay near windows, glass doors, or exterior walls.",
+        "Do not use elevators.",
+        "Do not go outdoors immediately after a tornado passes — secondary funnels are common.",
+        "Do not use candles or open flames after the storm until you confirm there is no gas leak."
+      ]
+    },
+    {
+      "id": "heatwave",
+      "title": "Heatwave",
+      "icon": "☀️",
+      "region": "global",
+      "steps": [
+        "Move to the coolest available environment: air-conditioned spaces (libraries, shopping centers, cooling centers) are safest; if none available, the lowest floor of a building stays coolest.",
+        "Drink cool water frequently — do not wait until you are thirsty; aim for at least 250 ml (8 oz) every 20–30 minutes if active or exposed.",
+        "Apply cool, wet cloths to skin, especially the neck, armpits, and groin where major blood vessels are close to the surface.",
+        "If heat exhaustion is suspected (heavy sweating, cold clammy skin, fast weak pulse, nausea, fainting): move the person to a cool place, loosen clothing, apply cool wet cloths, and sip cool water.",
+        "If heat stroke is suspected (hot dry or damp skin, rapid strong pulse, confusion, loss of consciousness): call emergency services immediately and cool the person by immersing in cold water or applying ice packs to armpits, groin, and neck.",
+        "Check on vulnerable people (elderly, infants, those with chronic illness) at least twice daily during extreme heat.",
+        "Close window blinds and curtains on sun-facing sides of the building during the day; ventilate at night when outdoor temperature drops below indoor temperature.",
+        "Avoid strenuous outdoor activity between 10:00 and 16:00 local time when solar radiation and temperatures peak."
+      ],
+      "avoid": [
+        "Do not leave children, elderly, or pets in parked vehicles even briefly — interior temperatures can exceed 55°C (130°F) within minutes.",
+        "Do not consume alcohol or caffeinated beverages as primary hydration — they accelerate dehydration.",
+        "Do not rely solely on fans above 35°C (95°F) ambient temperature — fans circulate hot air and provide minimal cooling at these temperatures.",
+        "Do not ignore early warning symptoms (dizziness, headache, dark urine) — they precede heat stroke.",
+        "Do not eat large, protein-heavy meals that increase metabolic heat production.",
+        "Do not reduce water intake if you are not sweating — you may still be losing fluid through respiration."
+      ]
+    },
+    {
+      "id": "gas-leak",
+      "title": "Gas Leak",
+      "icon": "💨",
+      "region": "global",
+      "steps": [
+        "If you smell rotten eggs or sulfur (mercaptan odor added to natural gas), or hear a hissing sound near a gas appliance or pipe: do not ignore it — act immediately.",
+        "Do not operate any electrical switches, light switches, or electronic devices — even a spark from a switch can ignite gas.",
+        "Extinguish all open flames (candles, stoves, fireplaces) only if you can do so without using electrical ignition.",
+        "Alert all occupants to evacuate immediately — leave doors and windows open as you exit to allow gas to disperse, but do not delay departure to open them.",
+        "Leave the building and move at least 100 metres (330 ft) upwind from the suspected leak site.",
+        "Call your gas utility emergency line and emergency services (911 / local number) from outside the building or a safe distance away.",
+        "Do not re-enter the building until the utility company and emergency responders declare it safe.",
+        "If someone has been overcome by gas inhalation: move them to fresh air, call emergency services, and be prepared to perform CPR if they are unresponsive and not breathing."
+      ],
+      "avoid": [
+        "Do not turn any electrical switches on or off — including light switches, garage door openers, or appliances.",
+        "Do not use a cell phone, landline, or doorbell inside the building — use them only after you are outside and at a safe distance.",
+        "Do not attempt to locate or repair the leak yourself.",
+        "Do not start a vehicle in an attached garage — exhaust and ignition sparks are hazardous.",
+        "Do not re-enter for any reason until cleared by the utility company.",
+        "Do not assume the smell disappearing means the leak has stopped — gas may still be present in unventilated pockets."
+      ]
+    }
+  ]
+}
