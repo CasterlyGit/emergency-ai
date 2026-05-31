@@ -15,7 +15,7 @@ COPY src/ ./src/
 
 # Install into a prefix we can copy cleanly into the runtime image
 RUN pip install --upgrade pip && \
-    pip install --prefix=/install ".[redis,postgres]"
+    pip install --prefix=/install "."
 
 # ── Stage 2: runtime ────────────────────────────────────────────────────────
 FROM python:3.12-slim AS runtime

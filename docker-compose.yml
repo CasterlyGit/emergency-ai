@@ -16,7 +16,7 @@ services:
       # Optional infrastructure — the service uses in-memory fallbacks if unset,
       # but the compose stack wires them up properly.
       REDIS_URL: "redis://redis:6379/0"
-      DATABASE_URL: "postgresql://emergency:emergency@db:5432/emergency"
+      DATABASE_URL: "postgresql+asyncpg://emergency:emergency@db:5432/emergency"
       # Bind to all interfaces inside the container
       HOST: "0.0.0.0"
       PORT: "8080"
