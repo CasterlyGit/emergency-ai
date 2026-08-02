@@ -315,7 +315,7 @@ class TestResponseCache:
     """All tests use the in-memory LRU path (no REDIS_URL set)."""
 
     def _run(self, coro):
-        return asyncio.get_event_loop().run_until_complete(coro)
+        return asyncio.run(coro)
 
     @pytest.fixture
     def cache(self):
@@ -408,7 +408,7 @@ class TestIncidentStore:
     """In-memory backend (no DATABASE_URL or SQLITE_PATH)."""
 
     def _run(self, coro):
-        return asyncio.get_event_loop().run_until_complete(coro)
+        return asyncio.run(coro)
 
     @pytest.fixture
     def store(self):
