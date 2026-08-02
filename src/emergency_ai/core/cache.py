@@ -213,7 +213,7 @@ class ResponseCache:
 
         # Fire both writes; gather so Redis failure doesn't block LRU
         tasks: list[asyncio.Task] = []
-        loop = asyncio.get_event_loop()
+        loop = asyncio.get_running_loop()
 
         if self._redis is not None:
             tasks.append(loop.create_task(self._redis.set(key, value, ttl=ttl)))
