@@ -18,7 +18,7 @@ echo "  emergency-ai smoke test"
 echo "════════════════════════════════════════════════════════════════"
 echo
 
-echo "▸ pytest (39 tests)"
+echo "▸ pytest"
 ./.venv/bin/pytest -q --tb=short
 echo
 
