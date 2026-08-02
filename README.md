@@ -21,6 +21,10 @@ FastAPI service, and deploy configuration. The public PWA uses the local
 deterministic engine unless an API base is configured; the repository does not
 claim that a public API backend is currently deployed.
 
+The latest published release is `v0.2.0`; the default branch is an unreleased
+`1.0.0` development line. [Version status and release eligibility](docs/VERSIONING.md)
+explain why the manifest alone is not a stable-v1 claim.
+
 The latency values below are either simulated UI timing or design budgets.
 [Reproducible benchmarks](bench/results.md) measure parser and serialization
 overhead with a mock provider, not live model or network latency.
