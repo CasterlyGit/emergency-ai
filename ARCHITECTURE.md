@@ -171,9 +171,9 @@ Block 2: full city knowledge base text     (cache_control: ephemeral)
 The retrieved jurisdiction snippets are appended as a **third block without cache_control**
 because they vary per request.
 
-Effect: on a warm cache hit, the city-block tokens are not re-processed by the model.
-This translates to a ~30–60 % reduction in TTFT for repeated same-city requests, which is
-the common case in any real deployment. The offline engine mirrors this warming behavior:
+Intended effect: on a warm cache hit, the city-block tokens are not re-processed by the
+model. This repository's benchmark does not measure the resulting live-model latency
+change. The offline engine mirrors the warm/cold presentation behavior:
 `engine._warm` tracks which city slugs have been classified before and uses a shorter
 simulated TTFT (90 ms vs 220 ms cold).
 
@@ -294,9 +294,9 @@ Benchmarked with `bench/bench.py` (50 requests, concurrency 5, 16-byte chunks):
 | Throughput | ~236 req/s | — |
 
 **Interpretation.** These numbers measure only the Python parsing and serialization
-overhead in the service layer (no model, no network). The dominant latency in production is
-model TTFT from the Anthropic API (~300–600 ms for claude-haiku-4-5 on a warm cache) plus
-network RTT. The service layer adds well under 30 ms — it is not the bottleneck.
+overhead in the service layer (no model, network, Redis, or Postgres). They do not establish
+end-to-end latency for a deployed service. Live results depend on the configured provider,
+network path, region, cache state, and infrastructure.
 
 ### Budget breakdown for a live request
 
@@ -310,12 +310,12 @@ t=~1200ms Full EmergencyResponse JSON → final SSE frame
 t=~1201ms fire-and-forget: cache.set, store.record, metrics.inc_*
 ```
 
-On a **cache hit** (same city + normalized situation seen before): the LRU returns the
-stored dict in under 1 ms; the full JSON response returns in under 5 ms total.
+The timeline above is a design budget, not a recorded live trace. Cache behavior is
+covered by tests; end-to-end cache-hit latency is not measured by the current benchmark.
 
 ---
 
-## 9. PWA service worker — true offline
+## 9. PWA service worker — offline after initial load
 
 The service worker (`docs/sw.js`) enables the PWA to function with zero network after
 first visit.

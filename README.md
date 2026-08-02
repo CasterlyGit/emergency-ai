@@ -1,13 +1,47 @@
 # emergency-ai
 
-**[Live PWA](https://casterlygit.github.io/emergency-ai/)** — installable, works with zero signal.
+**[Runnable PWA](https://casterlygit.github.io/emergency-ai/)** — installable and
+usable offline after its first successful load.
 
-> Long-press SOS → jurisdiction-aware action steps in under two seconds — online or completely offline. The same UX runs whether you are on a plane, in a tunnel, or on a live server.
+> One interface, two bounded paths: deterministic in-browser scenario guidance
+> when offline, or the same response schema from a configured FastAPI service.
 
 [![FastAPI](https://img.shields.io/badge/FastAPI-0.115-009688?style=flat-square)](https://fastapi.tiangolo.com)
 [![Python 3.11+](https://img.shields.io/badge/Python-3.11%2B-3776AB?style=flat-square)](https://python.org)
+[![CI](https://github.com/CasterlyGit/emergency-ai/actions/workflows/ci.yml/badge.svg)](https://github.com/CasterlyGit/emergency-ai/actions/workflows/ci.yml)
 [![Fly.io ready](https://img.shields.io/badge/Fly.io-deploy--ready-8B5CF6?style=flat-square)](infra/fly.toml)
 [![MIT License](https://img.shields.io/badge/license-MIT-22C55E?style=flat-square)](LICENSE)
+
+---
+
+## Current status and limits
+
+This repository is an engineering prototype with a public static PWA, a tested
+FastAPI service, and deploy configuration. The public PWA uses the local
+deterministic engine unless an API base is configured; the repository does not
+claim that a public API backend is currently deployed.
+
+The latency values below are either simulated UI timing or design budgets.
+[Reproducible benchmarks](bench/results.md) measure parser and serialization
+overhead with a mock provider, not live model or network latency.
+
+This is not an emergency service. The bundled guidance has not been clinically
+or legally validated for real-world reliance. Repository tests verify software
+behavior and privacy boundaries, not medical outcomes or jurisdictional
+accuracy. In an emergency, contact local emergency services and follow trained
+professional guidance.
+
+## Evaluation path
+
+1. Try the [static PWA](https://casterlygit.github.io/emergency-ai/) and inspect
+   the [offline engine](docs/js/engine.js).
+2. Follow the zero-infrastructure or Docker setup below.
+3. Read [ARCHITECTURE.md](ARCHITECTURE.md) for data flow, fallbacks, and privacy
+   boundaries.
+4. Run `pytest -ra --tb=short` and `ruff check src tests`; the same matrix runs
+   in [GitHub Actions](https://github.com/CasterlyGit/emergency-ai/actions/workflows/ci.yml).
+5. Reproduce only the scoped measurements described in
+   [bench/results.md](bench/results.md).
 
 ---
 
@@ -18,14 +52,14 @@ The PWA ships a full offline inference engine (`docs/js/engine.js`). When networ
 
 - Classifies free-text situations with a deterministic weighted-keyword triage engine
 - Selects from a corpus of 20 structured scenarios (cardiac arrest, choking, stroke, ...)
-- Streams fields to the UI with realistic inter-token delays (simulated TTFT 90-260 ms,
-  full response under 1.6 s) so the UX is **identical online or off**
+- Streams fields to the UI with simulated inter-field delays (90-260 ms to the
+  first field, under 1.6 s to finish); these are presentation timings, not
+  measured inference latency
 - Caches all data JSON via a Service Worker so the app installs and opens without any
   network after first load
 
-When `EMERGENCY_API_BASE` is set and reachable, the engine transparently proxies the same
-call to the live FastAPI service over SSE. The response shape is identical — the UI never
-knows the difference.
+When `EMERGENCY_API_BASE` is set and reachable, the engine proxies the same call
+to that FastAPI service over SSE. The response shape is shared across both paths.
 
 This dual path is the core architectural story. The offline engine is not a stub; it follows
 the same triage logic as `src/emergency_ai/core/triage.py`.
@@ -93,10 +127,11 @@ the same triage logic as `src/emergency_ai/core/triage.py`.
 | **Python triage engine** (`core/triage.py`) | Weighted-keyword urgency classify; mirrors `engine.js` | — (pure-Python) |
 | **Fly.io** (`infra/fly.toml`) | Deploy target; internal :8080, HTTPS, health check | Docker Compose locally |
 
-`pip install -e .` has zero infra dependencies. Redis and Postgres extras are opt-in:
+The default package includes Redis and Postgres clients, but the service starts
+without running either service by using in-memory fallbacks:
 
 ```bash
-pip install -e ".[redis,postgres]"
+pip install -e .
 ```
 
 ---
@@ -106,7 +141,7 @@ pip install -e ".[redis,postgres]"
 ### Option A — local Python (zero infra)
 
 ```bash
-python3.12 -m venv .venv && source .venv/bin/activate
+python3 -m venv .venv && source .venv/bin/activate
 pip install -e ".[dev]"
 
 export ANTHROPIC_API_KEY=sk-ant-...
@@ -114,12 +149,12 @@ export ANTHROPIC_API_KEY=sk-ant-...
 # CLI demo
 emergency "person collapsed on the platform, not breathing" --city "New York"
 
-# HTTP server (in-memory cache + SQLite audit log, no Redis/Postgres needed)
+# HTTP server (in-memory cache + audit log, no Redis/Postgres needed)
 emergency-server
 # listens on :8080
 ```
 
-The CLI prints a live latency banner: `TTFT: 312 ms · total: 1.4 s · cache_hit: yes`
+The CLI reports the observed TTFT, total time, and cache-hit state for each run.
 
 ### Option B — full stack with Docker Compose (app + Redis + Postgres)
 
@@ -136,8 +171,14 @@ at `/health`. Stop with `Ctrl-C`; data persists in named volumes.
 
 ### Option C — pure offline (no API key)
 
-Open `https://casterlygit.github.io/emergency-ai/` — or open `docs/index.html` directly
-in any modern browser. No server, no key, no network required after first load.
+Open `https://casterlygit.github.io/emergency-ai/` once while online. After the
+service worker caches the application shell and data, subsequent use can run
+without a server, API key, or network. For local evaluation, serve `docs/` over
+HTTP so browser service-worker rules apply:
+
+```bash
+python3 -m http.server 8000 --directory docs
+```
 
 ---
 
@@ -321,9 +362,9 @@ JSON on next cache invalidation.
 
 ---
 
-## Content accuracy note
+## Content boundary
 
-First-aid guidance follows standard public references (AHA 2020 CPR guidelines: 100-120 bpm,
-30:2 ratio; Red Cross Heimlich; FAST stroke mnemonic; recovery position; EpiPen technique).
-All responses include a `disclaimer` field rendered prominently. This is decision support,
-not a replacement for calling emergency services or trained medical personnel.
+The bundled scenario and jurisdiction data are demonstration content. Every
+response schema includes a disclaimer, but that is not a substitute for
+independent clinical, legal, accessibility, and localization review. The
+repository's automated checks do not perform those reviews.
